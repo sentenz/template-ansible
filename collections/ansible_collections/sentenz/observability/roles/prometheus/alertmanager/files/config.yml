@@ -1,0 +1,38 @@
+# ---
+# global:
+#   resolve_timeout: 5m
+
+# route:
+#   # group_by: ["alertname"]
+#   group_wait: 30s
+#   group_interval: 5m
+#   repeat_interval: 3h
+#   receiver: "team-X-mails"
+#   # routes:
+#   #   - match:
+#   #       severity: critical
+#   #     receiver: "team-X-mails"
+#   #   - match_re:
+#   #       service: ^(ssh|auth)$
+#   #     receiver: "team-X-mails"
+
+# receivers:
+#   - name: "team-X-mails"
+#     email_configs:
+#       - from: alexej.kloos@sentenzgroup.com
+#         to: alexej.kloos@sentenzgroup.com
+#         send_resolved: false
+#         headers:
+#           subject: "Prometheus Mail Alerts"
+
+---
+route:
+  group_by: ["alertname"]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 1h
+  receiver: "webhook"
+receivers:
+  - name: "webhook"
+    webhook_configs:
+      - url: "http://localhost:9093/api/alerts"

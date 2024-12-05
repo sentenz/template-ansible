@@ -1,0 +1,24 @@
+---
+networks:
+  observability:
+    name: observability
+    driver: bridge
+
+volumes:
+  grafana_data: {}
+
+services:
+  grafana:
+    image: {{ grafana_image }}
+    container_name: {{ grafana_name }}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - {{ grafana_path }}/dashboards:/var/lib/grafana/dashboards
+      - {{ grafana_path }}/provisioning:/etc/grafana/provisioning
+    ports:
+      - "{{ grafana_port }}:3000"
+    restart: always
+    networks:
+      - observability
+    deploy:
+      mode: global

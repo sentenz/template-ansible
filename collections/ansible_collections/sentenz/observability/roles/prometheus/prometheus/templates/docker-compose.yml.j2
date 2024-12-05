@@ -1,0 +1,23 @@
+---
+networks:
+  observability:
+    name: observability
+    driver: bridge
+
+volumes:
+  prometheus_data: {}
+
+services:
+  prometheus:
+    image: {{ prometheus_image }}
+    container_name: {{ prometheus_name }}
+    volumes:
+      - prometheus_data:/prometheus
+      - {{ prometheus_path }}:/etc/prometheus
+    ports:
+      - "{{ prometheus_port }}:9090"
+    restart: always
+    networks:
+      - observability
+    deploy:
+      mode: global

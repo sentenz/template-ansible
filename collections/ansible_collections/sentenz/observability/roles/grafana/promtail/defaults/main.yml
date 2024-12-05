@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+
+---
+grafana_promtail_name: promtail
+grafana_promtail_image: grafana/promtail:latest
+grafana_promtail_port: 9080
+grafana_promtail_path: /etc/promtail
+
+grafana_promtail_handler_restart: True

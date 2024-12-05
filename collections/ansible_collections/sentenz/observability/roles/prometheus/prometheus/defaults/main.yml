@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+
+---
+prometheus_name: prometheus
+prometheus_image: prom/prometheus:latest
+prometheus_port: 9090
+prometheus_path: /etc/prometheus
+
+prometheus_handler_restart: True

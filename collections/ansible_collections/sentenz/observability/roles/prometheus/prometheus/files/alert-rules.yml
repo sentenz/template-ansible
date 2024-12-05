@@ -1,0 +1,179 @@
+---
+groups:
+  - name: USE Method CPU
+    rules:
+      # CPU Utilization
+      - alert: HighCPUUtilization
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU utilization (instance {{ $labels.instance }})"
+          description: "CPU utilization is above 80% for 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+      # CPU Saturation
+      - alert: HighCPULoadAverage
+        expr: node_load1 > count(count(node_cpu_seconds_total) by (cpu))
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU load average (instance {{ $labels.instance }})"
+          description: "CPU load average is above the number of CPU cores for 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+      # CPU Errors (Potential Disk Issues)
+      - alert: HighCPUContextSwitches
+        expr: rate(node_context_switches_total[5m]) > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU context switches (instance {{ $labels.instance }})"
+          description: "CPU context switches are above 1000 per second for 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - name: USE Method Memory
+    rules:
+      # Memory Utilization
+      - alert: HighMemoryUtilization
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory utilization (instance {{ $labels.instance }})"
+          description: "Memory utilization is above 80% for 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+      # Memory Saturation
+      - alert: HighMemorySwapSaturation
+        expr: (node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes) / node_memory_SwapTotal_bytes * 100 > 50
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory swap saturation (instance {{ $labels.instance }})"
+          description: "Memory swap saturation is above 50% for 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+      # Memory Errors
+      - alert: OOMKillsDetected
+        expr: increase(node_vmstat_oom_kill[5m]) > 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "OOM kills detected (instance {{ $labels.instance }})"
+          description: "OOM kills have occurred in the last 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+      - alert: HighMemoryPageFaults
+        expr: rate(node_vmstat_pgmajfault[5m]) > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory page faults (instance {{ $labels.instance }})"
+          description: "Memory page faults are above 1000 per second for 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - name: USE Method Network
+    rules:
+      # Network Utilization
+      - alert: HighNetworkUtilization
+        expr: sum by(instance, device) (rate(node_network_receive_bytes_total[5m]) + rate(node_network_transmit_bytes_total[5m])) / 1024 / 1024 > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High network utilization (instance {{ $labels.instance }}, device {{ $labels.device }})"
+          description: "Network utilization is above 100 MB/s for 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+      # Network Saturation
+      - alert: HighNetworkDroppedPackets
+        expr: sum by(instance, device) (rate(node_network_receive_drop_total[5m]) + rate(node_network_transmit_drop_total[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High network dropped packets (instance {{ $labels.instance }}, device {{ $labels.device }})"
+          description: "Network dropped packets are above 10 per second for 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+      # Network Errors
+      - alert: HighNetworkErrors
+        expr: sum by(instance, device) (rate(node_network_receive_errs_total[5m]) + rate(node_network_transmit_errs_total[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High network errors (instance {{ $labels.instance }}, device {{ $labels.device }})"
+          description: "Network errors are above 10 per second for 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - name: USE Method Disk I/O
+    rules:
+      # Disk I/O Utilization
+      - alert: HighDiskIOUtilization
+        expr: rate(node_disk_io_time_seconds_total[5m]) / rate(node_disk_io_time_weighted_seconds_total[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High disk I/O utilization (instance {{ $labels.instance }})"
+          description: "Disk I/O utilization is above 80% for 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+      # Disk I/O Saturation
+      - alert: HighDiskIOWait
+        expr: rate(node_disk_io_time_seconds_total[5m]) / rate(node_disk_io_time_weighted_seconds_total[5m]) > 0.2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High disk I/O wait (instance {{ $labels.instance }})"
+          description: "Disk I/O wait is above 20% for 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+      #  Disk I/O Erors (Potential Disk Issues)
+      - alert: LowDiskReadRate
+        expr: rate(node_disk_reads_completed_total[5m]) < 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk read rate (instance {{ $labels.instance }})"
+          description: "Disk read rate is below 100 ops/sec for 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+      - alert: LowDiskWriteRate
+        expr: rate(node_disk_writes_completed_total[5m]) < 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk write rate (instance {{ $labels.instance }})"
+          description: "Disk write rate is below 100 ops/sec for 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - name: USE Method Storage
+    rules:
+      # Storage Utilization
+      - alert: LowDiskSpace
+        expr: node_filesystem_avail_bytes{mountpoint="/", fstype !~ "tmpfs|shmpfs|overlay"} / node_filesystem_size_bytes{mountpoint="/", fstype !~ "tmpfs|shmpfs|overlay"} * 100 < 20
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space (instance {{ $labels.instance }})"
+          description: "Disk space is below 20% for 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+      # Storage Saturation (Potential Inode Exhaustion)
+      - alert: LowFreeInodes
+        expr: node_filesystem_files_free{mountpoint="/", fstype !~ "tmpfs|shmpfs|overlay"} / node_filesystem_files{mountpoint="/", fstype !~ "tmpfs|shmpfs|overlay"} * 100 < 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low free inodes (instance {{ $labels.instance }})"
+          description: "Free inodes are below 10% for 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+      # Storage Errors (Potential Permissions or Configuration Issues)
+      - alert: DiskFilesystemError
+        expr: node_filesystem_device_error{mountpoint="/", fstype !~ "tmpfs|shmpfs|overlay"} > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disk/Filesystem error (instance {{ $labels.instance }})"
+          description: "Disk or filesystem errors have occurred for 5 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"

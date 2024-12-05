@@ -1,0 +1,26 @@
+---
+networks:
+  observability:
+    name: observability
+    driver: bridge
+
+volumes:
+  loki_data: {}
+
+services:
+  loki:
+    image: {{ grafana_loki_image }}
+    container_name: {{ grafana_loki_name }}
+    volumes:
+      - loki_data:/loki
+      - {{ grafana_loki_path }}:/etc/loki
+    command: 
+      - --config.file=/etc/loki/config.yml
+    ports:
+      - "{{ grafana_loki_port }}:3100"
+    restart: always
+    networks:
+      - observability
+    deploy:
+      mode: global
+

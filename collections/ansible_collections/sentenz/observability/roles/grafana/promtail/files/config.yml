@@ -1,0 +1,101 @@
+---
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+    # external_labels:
+    #   instance: { { hostname -f } }
+    #   host: { { hostname } }
+    #   env: dev
+    # basic_auth:
+    #   username: ${GF_LOGS_USERNAME}
+    #   password: ${GF_LOGS_API_KEY}
+
+scrape_configs:
+  - job_name: system
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: varlog
+          __path__: /var/log/*log
+
+  - job_name: container
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+    relabel_configs:
+      - source_labels: ["__meta_docker_container_name"]
+        regex: "/(.*)"
+        target_label: "container"
+      - source_labels: ["__meta_docker_container_log_stream"]
+        target_label: "logstream"
+    # pipeline_stages:
+    #   - regex:
+    #       expression: '(level|lvl|severity)=(?P<level>\\w+)'
+    #   - labels:
+    #       level:
+    #   - regex: "(?i)(error)"
+    #     source_labels: ["__value__"]
+    #     target_label: level
+    #     replacement: "error"
+    #   - regex: "(?i)(warn)"
+    #     source_labels: ["__value__"]
+    #     target_label: level
+    #     replacement: "warn"
+    #   - regex: "(?i)(info)"
+    #     source_labels: ["__value__"]
+    #     target_label: level
+    #     replacement: "info"
+    #   - source_labels: ["__meta_docker_container_id"]
+    #     target_label: container_id
+    #   - source_labels: ["__meta_docker_image_name"]
+    #     target_label: image
+    #   - source_labels: ["__meta_docker_container_log_stream"]
+    #     target_label: logstream
+    #   - source_labels: ["__meta_docker_container_label_logging_jobname"]
+    #     target_label: job
+
+  # - job_name: journal
+  #   journal:
+  #     json: false
+  #     max_age: 12h
+  #     labels:
+  #       job: systemd-journal
+  #   relabel_configs:
+  #     - source_labels: ["__journal__systemd_unit"]
+  #       target_label: "unit"
+  #     - source_labels: ["__journal__hostname"]
+  #       target_label: "host"
+  #     - source_labels: ["__journal_syslog_identifier"]
+  #       target_label: "identifier"
+  #     - source_labels: ["__journal__transport"]
+  #       target_label: "transport"
+
+  # Promtail as a syslog receiver and can accept syslog entries in Promtail over TCP
+  # - job_name: syslog
+  #   syslog:
+  #     listen_address: 0.0.0.0:1514
+  #     listen_protocol: tcp
+  #     idle_timeout: 60s
+  #     label_structured_data: yes
+  #     labels:
+  #       job: syslog
+  #   relabel_configs:
+  #     - source_labels: ["__syslog_message_hostname"]
+  #       target_label: "host"
+
+  # - job_name: docker
+  #   pipeline_stages:
+  #     - docker: {}
+  #   static_configs:
+  #     - targets:
+  #         - localhost
+  #       labels:
+  #         job: docker
+  #         __path__: /var/lib/docker/containers/*/*.log

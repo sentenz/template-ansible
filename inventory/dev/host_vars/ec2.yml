@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
+
+---
+ansible_host: ec2-3-76-169-4.eu-central-1.compute.amazonaws.com

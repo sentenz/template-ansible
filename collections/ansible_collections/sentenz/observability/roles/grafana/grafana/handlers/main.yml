@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Restart Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ grafana_path }}"
+    files:
+      - docker-compose.yml
+    state: restarted
+  when: grafana_handler_restart | default(False)

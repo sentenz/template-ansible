@@ -1,0 +1,8 @@
+---
+- name: Deploy Dependency-Track on Amazon Linux 2023
+  hosts: aws_ec2
+  become: true
+
+  # ansible-playbook -i inventory.ini site.yml
+  roles:
+    - role: sentenz.dependency_track.dtrack

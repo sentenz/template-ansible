@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: Apache-2.0
+
+---
+grafana_name: grafana
+grafana_image: grafana/grafana:latest
+grafana_port: 3000
+grafana_path: /etc/grafana
+grafana_volume_name: grafana_data
+
+grafana_handler_restart: True
+
+grafana_version: "latest"
+
+# Admin user credentials
+grafana_admin_user: "admin"
+grafana_admin_password: "admin"
+
+# Plugins to install
+grafana_plugins:
+  - grafana-clock-panel
+  - grafana-piechart-panel
+
+# Data sources to configure
+grafana_datasources:
+  - name: Prometheus
+    type: prometheus
+    url: http://localhost:9090
+    access: proxy
+    is_default: true
+
+# Dashboards to import
+grafana_dashboards:
+  - dashboard_id: 6417       # Node Exporter Full
+    revision_id: 15
+    datasource: Prometheus

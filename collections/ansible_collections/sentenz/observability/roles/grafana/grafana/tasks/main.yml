@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Grafana Create Directory
+  ansible.builtin.file:
+    path: "{{ grafana_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+- name: Grafana Copy Content
+  ansible.builtin.copy:
+    src: "{{ item }}/"
+    dest: "{{ grafana_path }}/{{ item }}/"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - dashboards
+    - provisioning
+  become: true
+  notify: Restart Docker Compose
+
+- name: Grafana Template Expressions
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "{{ grafana_path }}/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - docker-compose.yml.j2
+    - grafana.ini.j2
+  become: true
+
+- name: Grafana Deploy
+  community.docker.docker_compose_v2:
+    project_src: "{{ grafana_path }}"
+    state: present
+  notify:
+    - Restart Docker Compose

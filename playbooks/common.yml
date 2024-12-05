@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Setup Common
+  hosts: local
+  become: true
+  roles:
+    - sentenz.container.docker.ubuntu

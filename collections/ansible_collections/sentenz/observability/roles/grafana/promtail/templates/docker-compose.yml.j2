@@ -1,0 +1,26 @@
+---
+networks:
+  observability:
+    name: observability
+    driver: bridge
+
+services:
+  promtail:
+    image: {{ grafana_promtail_image }}
+    container_name: {{ grafana_promtail_name }}
+    volumes:
+      - {{ grafana_promtail_path }}:/etc/promtail
+      - /var/log:/var/log:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    command: 
+      - --config.file=/etc/promtail/config.yml
+    privileged: true
+    ports:
+      - "{{ grafana_promtail_port }}:9080"
+    restart: always
+    networks:
+      - observability
+    deploy:
+      mode: global
+

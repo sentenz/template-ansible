@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+
+---
+collections:
+  - name: sentenz.container
+    src: ./collections/ansible_collections/sentenz/container
+    type: subdirs
+  - name: sentenz.observability
+    src: ./collections/ansible_collections/sentenz/observability
+    type: subdirs
+  - name: sentenz.dependency_track
+    src: ./collections/ansible_collections/sentenz/dependency_track
+    type: subdirs

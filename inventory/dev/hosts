@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+
+---
+all:
+  children:
+    aws:
+      hosts:
+        ec2:
+    local:
+      hosts:
+        localhost:

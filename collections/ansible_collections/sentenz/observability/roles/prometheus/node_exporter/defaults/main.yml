@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+
+---
+prometheus_node_exporter_name: node_exporter
+prometheus_node_exporter_image: prom/node-exporter:latest
+prometheus_node_exporter_port: 9100
+prometheus_node_exporter_path: /etc/node_exporter
+
+prometheus_node_exporter_handler_restart: True

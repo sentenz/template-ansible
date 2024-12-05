@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+
+---
+namespace: sentenz
+name: observability
+version: "1.0.0"
+readme: README.md
+authors:
+  - sentenz
+description: >-
+  Ansible Collection for Observability.
+license:
+  - Apache-2.0
+license_file: LICENSE
+tags:
+  - observability

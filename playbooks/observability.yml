@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Setup Observability
+  hosts: local
+  become: true
+  roles:
+    - sentenz.observability.prometheus.prometheus
+    - sentenz.observability.prometheus.alertmanager
+    - sentenz.observability.grafana.grafana
+    - sentenz.observability.grafana.loki
+    # TODO(sentenz)
+    # - sentenz.observability.grafana.tempo
+
+- name: Setup Observability Agents/Collectors
+  hosts: local
+  become: true
+  roles:
+    - sentenz.observability.prometheus.node_exporter
+    - sentenz.observability.grafana.promtail
+    # TODO(sentenz)
+    # - sentenz.observability.prometheus.blackbox_exporter
+    # - sentenz.observability.grafana.alloy

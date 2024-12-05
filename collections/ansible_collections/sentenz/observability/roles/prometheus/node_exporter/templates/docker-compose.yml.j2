@@ -1,0 +1,24 @@
+---
+networks:
+  observability:
+    name: observability
+    driver: bridge
+
+services:
+  node_exporter:
+    image: {{ prometheus_node_exporter_image }}
+    container_name: {{ prometheus_node_exporter_name }}
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+    ports:
+      - "{{ prometheus_node_exporter_port }}:9100"
+    restart: always
+    networks:
+      - observability
+    deploy:
+      mode: global

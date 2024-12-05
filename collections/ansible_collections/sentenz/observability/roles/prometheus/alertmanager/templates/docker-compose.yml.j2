@@ -1,0 +1,21 @@
+---
+networks:
+  observability:
+    name: observability
+    driver: bridge
+
+services:
+  alertmanager:
+    image: {{ prometheus_alertmanager_image }}
+    container_name: {{ prometheus_alertmanager_name }}
+    volumes:
+      - {{ prometheus_alertmanager_path }}:/etc/alertmanager
+    command:
+      - --config.file=/etc/alertmanager/config.yml
+    ports:
+      - "{{ prometheus_alertmanager_port }}:9093"
+    restart: always
+    networks:
+      - observability
+    deploy:
+      mode: global

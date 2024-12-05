@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Restart Docker
+  ansible.builtin.service:
+    name: docker
+    state: restarted
+    enabled: true

@@ -1,0 +1,38 @@
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Grafana Promtail Create Directory
+  ansible.builtin.file:
+    path: "{{ grafana_promtail_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+- name: Grafana Promtail Copy Content
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ grafana_promtail_path }}/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - config.yml
+  become: true
+
+- name: Grafana Promtail Template Expressions
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ grafana_promtail_path }}/docker-compose.yml"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+
+- name: Grafana Promtail Deploy
+  community.docker.docker_compose_v2:
+    project_src: "{{ grafana_promtail_path }}"
+    state: present
+  notify:
+    - Restart Docker Compose
