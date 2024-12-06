@@ -7,3 +7,5 @@ prometheus_port: 9090
 prometheus_path: /etc/prometheus
 
 prometheus_handler_restart: True
+prometheus_handler_stop: True
+prometheus_handler_absent: True

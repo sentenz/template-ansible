@@ -7,3 +7,5 @@ prometheus_node_exporter_port: 9100
 prometheus_node_exporter_path: /etc/node_exporter
 
 prometheus_node_exporter_handler_restart: True
+prometheus_node_exporter_handler_stop: True
+prometheus_node_exporter_handler_absent: True
