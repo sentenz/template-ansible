@@ -21,7 +21,7 @@
     - dashboards
     - provisioning
   become: true
-  # notify: Restart Docker Compose
+  notify: Restart Docker Compose
 
 - name: Grafana Template Expressions
   ansible.builtin.template:
