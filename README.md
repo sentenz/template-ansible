@@ -1,4 +1,4 @@
-# Ansible AWS
+# Ansible
 
 <!-- TODO(sentenz) -->
 

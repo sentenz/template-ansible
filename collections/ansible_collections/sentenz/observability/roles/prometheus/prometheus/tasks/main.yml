@@ -22,7 +22,7 @@
     - alert-rules.yml
   become: true
 
-- name: Prometheus Template Expressions
+- name: Prometheus Template Files
   ansible.builtin.template:
     src: docker-compose.yml.j2
     dest: "{{ prometheus_path }}/docker-compose.yml"

@@ -23,7 +23,7 @@
   become: true
   notify: Restart Docker Compose
 
-- name: Grafana Template Expressions
+- name: Grafana Template Files
   ansible.builtin.template:
     src: "{{ item }}"
     dest: "{{ grafana_path }}/{{ item | basename | regex_replace('.j2$', '') }}"

@@ -21,7 +21,7 @@
     - config.yml
   become: true
 
-- name: Grafana Loki Template Expressions
+- name: Grafana Loki Template Files
   ansible.builtin.template:
     src: docker-compose.yml.j2
     dest: "{{ grafana_loki_path }}/docker-compose.yml"

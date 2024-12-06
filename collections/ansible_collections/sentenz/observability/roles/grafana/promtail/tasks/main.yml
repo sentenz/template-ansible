@@ -21,7 +21,7 @@
     - config.yml
   become: true
 
-- name: Grafana Promtail Template Expressions
+- name: Grafana Promtail Template Files
   ansible.builtin.template:
     src: docker-compose.yml.j2
     dest: "{{ grafana_promtail_path }}/docker-compose.yml"
