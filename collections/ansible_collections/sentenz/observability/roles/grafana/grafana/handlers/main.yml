@@ -8,3 +8,19 @@
       - docker-compose.yml
     state: restarted
   when: grafana_handler_restart | default(False)
+
+- name: Stop Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ grafana_path }}"
+    files:
+      - docker-compose.yml
+    state: stopped
+  when: grafana_handler_stop | default(False)
+
+- name: Remove Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ grafana_path }}"
+    files:
+      - docker-compose.yml
+    state: absent
+  when: grafana_handler_absent | default(False)

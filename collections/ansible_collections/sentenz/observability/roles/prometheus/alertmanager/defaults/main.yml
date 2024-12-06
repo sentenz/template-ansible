@@ -7,3 +7,5 @@ prometheus_alertmanager_port: 9093
 prometheus_alertmanager_path: /etc/alertmanager
 
 prometheus_alertmanager_handler_restart: True
+prometheus_alertmanager_handler_stop: True
+prometheus_alertmanager_handler_absent: True

@@ -8,6 +8,8 @@ grafana_path: /etc/grafana
 grafana_volume_name: grafana_data
 
 grafana_handler_restart: True
+grafana_handler_stop: True
+grafana_handler_absent: True
 
 grafana_version: "latest"
 

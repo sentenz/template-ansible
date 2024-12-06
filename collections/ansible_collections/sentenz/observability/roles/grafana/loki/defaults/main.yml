@@ -7,3 +7,5 @@ grafana_loki_port: 3100
 grafana_loki_path: /etc/loki
 
 grafana_loki_handler_restart: True
+grafana_loki_handler_stop: True
+grafana_loki_handler_absent: True

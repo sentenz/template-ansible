@@ -8,3 +8,19 @@
       - docker-compose.yml
     state: restarted
   when: prometheus_node_exporter_handler_restart | default(False)
+
+- name: Stop Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ prometheus_node_exporter_path }}"
+    files:
+      - docker-compose.yml
+    state: stopped
+  when: prometheus_node_exporter_handler_stop | default(False)
+
+- name: Remove Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ prometheus_node_exporter_path }}"
+    files:
+      - docker-compose.yml
+    state: absent
+  when: prometheus_node_exporter_handler_absent | default(False)

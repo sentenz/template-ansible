@@ -7,3 +7,5 @@ grafana_promtail_port: 9080
 grafana_promtail_path: /etc/promtail
 
 grafana_promtail_handler_restart: True
+grafana_promtail_handler_stop: True
+grafana_promtail_handler_absent: True
