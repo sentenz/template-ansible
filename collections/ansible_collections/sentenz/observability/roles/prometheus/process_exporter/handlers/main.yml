@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Restart Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ prometheus_process_exporter_path }}"
+    files:
+      - docker-compose.yml
+    state: restarted
+  when: prometheus_process_exporter_handler_restart | default(False)
+  tags: restart_docker_compose
+
+- name: Stop Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ prometheus_process_exporter_path }}"
+    files:
+      - docker-compose.yml
+    state: stopped
+  when: prometheus_process_exporter_handler_stop | default(False)
+  tags: stop_docker_compose
+
+- name: Remove Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ prometheus_process_exporter_path }}"
+    files:
+      - docker-compose.yml
+    state: absent
+  when: prometheus_process_exporter_handler_absent | default(False)
+  tags: remove_docker_compose

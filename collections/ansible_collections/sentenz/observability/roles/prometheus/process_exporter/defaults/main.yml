@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+
+---
+prometheus_process_exporter_name: process-exporter
+prometheus_process_exporter_image: ncabatoff/process-exporter:latest
+prometheus_process_exporter_port: 9256
+prometheus_process_exporter_path: /etc/process-exporter
+
+prometheus_process_exporter_handler_restart: True
+prometheus_process_exporter_handler_stop: True
+prometheus_process_exporter_handler_absent: True
