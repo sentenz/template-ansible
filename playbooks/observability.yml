@@ -17,6 +17,7 @@
   become: true
   roles:
     - sentenz.observability.prometheus.node_exporter
+    - sentenz.observability.prometheus.process_exporter
     - sentenz.observability.grafana.promtail
     # TODO(sentenz)
     # - sentenz.observability.prometheus.blackbox_exporter
