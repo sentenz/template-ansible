@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
 # Ownership
-ownership_owner: "alertmanager"
-ownership_group: "alertmanager"
+ownership_owner: "root"
+ownership_group: "root"
 
 # Permissions Mode
 permission_directory: "0750"
