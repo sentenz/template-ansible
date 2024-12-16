@@ -5,8 +5,8 @@ ownership_owner: "root"
 ownership_group: "root"
 
 # Permissions Mode
-permission_directory: "0750"
-permission_file: "0640"
+permission_directory: "0755"
+permission_file: "0644"
 
 # Notifications and Service Names
 notify_restart: "Restart Docker Compose"
