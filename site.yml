@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: Apache-2.0
-
 ---
 - name: Deploy Common
   import_playbook: playbooks/common.yml

@@ -1,39 +1,38 @@
 # SPDX-License-Identifier: Apache-2.0
-
 ---
-- name: Prometheus Create Directory
+- name: Securely Create Directory for Prometheus
   ansible.builtin.file:
-    path: "{{ prometheus_path }}"
     state: directory
-    owner: root
-    group: root
-    mode: "0750"
+    path: "{{ prometheus_path }}"
+    owner: "{{ ownership_owner }}"
+    group: "{{ ownership_group }}"
+    mode: "{{ permission_directory }}"
   become: true
 
-- name: Prometheus Copy Content
+- name: Securely Copy Content for Prometheus
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ prometheus_path }}/{{ item }}"
-    owner: root
-    group: root
-    mode: "0640"
+    owner: "{{ ownership_owner }}"
+    group: "{{ ownership_group }}"
+    mode: "{{ permission_file }}"
   loop:
     - prometheus.yml
     - alert-rules.yml
   become: true
 
-- name: Prometheus Template Files
+- name: Securely Template Files for Prometheus
   ansible.builtin.template:
     src: docker-compose.yml.j2
     dest: "{{ prometheus_path }}/docker-compose.yml"
-    owner: root
-    group: root
-    mode: "0640"
+    owner: "{{ ownership_owner }}"
+    group: "{{ ownership_group }}"
+    mode: "{{ permission_file }}"
   become: true
 
-- name: Prometheus Deploy
+- name: Deploy Prometheus
   community.docker.docker_compose_v2:
     project_src: "{{ prometheus_path }}"
     state: present
   notify:
-    - Restart Docker Compose
+    - "{{ notify_restart }}"

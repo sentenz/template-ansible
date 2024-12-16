@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: Apache-2.0
-
 ---
 grafana_promtail_name: promtail
 grafana_promtail_image: grafana/promtail:latest

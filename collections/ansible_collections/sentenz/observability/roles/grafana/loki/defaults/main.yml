@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: Apache-2.0
-
 ---
 grafana_loki_name: loki
 grafana_loki_image: grafana/loki:latest

@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: Apache-2.0
-
 ---
 - name: Restart Docker Compose
   community.docker.docker_compose_v2:
@@ -8,6 +7,8 @@
       - docker-compose.yml
     state: restarted
   when: prometheus_alertmanager_handler_restart | default(False)
+  become: true
+  become_user: "{{ ownership_owner }}"
 
 - name: Stop Docker Compose
   community.docker.docker_compose_v2:
@@ -16,6 +17,8 @@
       - docker-compose.yml
     state: stopped
   when: prometheus_alertmanager_handler_stop | default(False)
+  become: true
+  become_user: "{{ ownership_owner }}"
 
 - name: Remove Docker Compose
   community.docker.docker_compose_v2:
@@ -24,3 +27,5 @@
       - docker-compose.yml
     state: absent
   when: prometheus_alertmanager_handler_absent | default(False)
+  become: true
+  become_user: "{{ ownership_owner }}"
