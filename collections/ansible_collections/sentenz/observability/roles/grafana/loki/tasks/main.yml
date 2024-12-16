@@ -7,7 +7,7 @@
     state: directory
     owner: root
     group: root
-    mode: "0755"
+    mode: "0750"
   become: true
 
 - name: Grafana Loki Copy Content
@@ -16,7 +16,7 @@
     dest: "{{ grafana_loki_path }}/{{ item }}"
     owner: root
     group: root
-    mode: "0644"
+    mode: "0640"
   loop:
     - config.yml
   become: true
@@ -27,7 +27,7 @@
     dest: "{{ grafana_loki_path }}/docker-compose.yml"
     owner: root
     group: root
-    mode: "0644"
+    mode: "0640"
   become: true
 
 - name: Grafana Loki Deploy

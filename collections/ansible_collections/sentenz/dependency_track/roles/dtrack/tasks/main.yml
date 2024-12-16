@@ -6,7 +6,8 @@
     name: docker
     state: present
   become: true
-  notify: Start Docker
+  notify:
+    - Start Docker
 
 - name: Install Docker Compose
   ansible.builtin.get_url:
@@ -24,7 +25,7 @@
   ansible.builtin.copy:
     src: docker-compose.yml
     dest: /home/ec2-user/docker-compose.yml
-    mode: "0644"
+    mode: "0640"
 
 - name: Docker Compose Run
   ansible.builtin.command:

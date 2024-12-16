@@ -7,7 +7,7 @@
     state: directory
     owner: root
     group: root
-    mode: "0755"
+    mode: "0750"
   become: true
 
 - name: Prometheus Node Exporter Template Files
@@ -16,7 +16,7 @@
     dest: "{{ prometheus_node_exporter_path }}/docker-compose.yml"
     owner: root
     group: root
-    mode: "0644"
+    mode: "0640"
   become: true
 
 - name: Prometheus Node Exporter Deploy
