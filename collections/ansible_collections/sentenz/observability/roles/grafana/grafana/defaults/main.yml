@@ -1,28 +1,35 @@
 # SPDX-License-Identifier: Apache-2.0
-
 ---
+# Ports and Networking
 grafana_name: grafana
 grafana_image: grafana/grafana:latest
 grafana_port: 3000
-grafana_path: /etc/grafana
 grafana_volume_name: grafana_data
+grafana_version: "latest"
+
+# Paths and Directories
+grafana_path: /etc/grafana
+
+# File and Template Names
+compose_file: "docker-compose.yml.j2"
+grafana_config_file: "grafana.ini.j2"
 
 grafana_handler_restart: True
 grafana_handler_stop: True
 grafana_handler_absent: True
 
-grafana_version: "latest"
-
-# Admin user credentials
+# Credentials (Sensitive Data - To be encrypted with Ansible Vault)
 grafana_admin_user: "admin"
 grafana_admin_password: "admin"
+# admin_user: "{{ vault_admin_user }}"
+# admin_password: "{{ vault_admin_password }}"
 
-# Plugins to install
+# Plugins
 grafana_plugins:
   - grafana-clock-panel
   - grafana-piechart-panel
 
-# Data sources to configure
+# Datasources
 grafana_datasources:
   - name: Prometheus
     type: prometheus
@@ -30,7 +37,7 @@ grafana_datasources:
     access: proxy
     is_default: true
 
-# Dashboards to import
+# Dashboards
 grafana_dashboards:
   - dashboard_id: 6417       # Node Exporter Full
     revision_id: 15

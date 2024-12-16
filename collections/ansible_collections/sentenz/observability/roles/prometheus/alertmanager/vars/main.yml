@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# Ownership
+ownership_owner: "alertmanager"
+ownership_group: "alertmanager"
+
+# Permissions Mode
+permission_directory: "0750"
+permission_file: "0640"
+
+# Notifications and Service Names
+notify_restart: "Restart Docker Compose"
+notify_stop: "Stop Docker Compose"
+notify_absent: "Remove Docker Compose"
