@@ -48,10 +48,10 @@ ansible-lint:
 	ansible-later **/*.yml
 .PHONY: ansible-lint
 
-## Provisioning of CaC to the development environment
-ansible-deploy-dev:
-	ansible-playbook --ask-become-pass -i inventory/dev/hosts site.yml
-.PHONY: ansible-deploy-dev
+## Provisioning of CaC to a specified environment
+ansible-deploy:
+	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass
+.PHONY: ansible-deploy
 
 ## Open AWS EC2 Instance in the terminal
 aws-terminal:
