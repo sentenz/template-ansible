@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: Apache-2.0
-
 ---
 prometheus_node_exporter_name: node_exporter
 prometheus_node_exporter_image: prom/node-exporter:latest
