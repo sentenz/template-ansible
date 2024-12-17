@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-- name: APT Uninstall Deprecated
+- name: APT Remove Deprecated Dependencies
   ansible.builtin.apt:
     name:
       - docker
@@ -19,7 +19,7 @@
     cache_valid_time: 3600
   become: true
 
-- name: APT Install packages to allow apt to use a repository over HTTPS
+- name: APT Install Dependencies
   ansible.builtin.apt:
     name:
       - apt-transport-https
@@ -30,25 +30,25 @@
     state: present
   become: true
 
-- name: APT Add Docker's official GPG key
+- name: APT Add Docker GPG Key
   ansible.builtin.apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
   become: true
 
-- name: APT Add Docker apt repository
+- name: APT Add Docker Repository
   ansible.builtin.apt_repository:
     repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
     state: present
     filename: docker
   become: true
 
-- name: APT Update the apt package index after adding Docker repo
+- name: APT Update
   ansible.builtin.apt:
     update_cache: true
   become: true
 
-- name: APT Install Docker Engine, CLI, containerd, and Docker Compose plugin
+- name: APT Install Docker
   ansible.builtin.apt:
     name:
       - docker-ce
@@ -58,13 +58,15 @@
     state: present
   become: true
   notify:
-    - Restart Docker
+    - "{{ notify_start }}"
 
-- name: Add users to the docker group
+- name: Add Docker Group
   ansible.builtin.user:
     name: "{{ item }}"
-    groups: docker
+    groups: "{{ ownership_owner }}"
     append: true
   loop: "{{ docker_users }}"
   when: docker_users | length > 0
   become: true
+  notify:
+    - "{{ notify_restart }}"
