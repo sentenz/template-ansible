@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# Ownership
+ownership_owner: "docker"
+ownership_group: "docker"
+
+# Permissions Mode
+permission_directory: "0750"
+permission_file: "0640"
+
+# Notifications and Service Names
+notify_start: "Start Docker"
+notify_restart: "Restart Docker"
+notify_stop: "Stop Docker"
+notify_absent: "Remove Docker"

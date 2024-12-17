@@ -1,7 +1,30 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
+- name: Start Docker
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+  become: true
+  become_user: "{{ ownership_owner }}"
+
 - name: Restart Docker
   ansible.builtin.service:
     name: docker
     state: restarted
-    enabled: true
+  become: true
+  become_user: "{{ ownership_owner }}"
+
+- name: Stop Docker
+  ansible.builtin.service:
+    name: docker
+    state: stopped
+  become: true
+  become_user: "{{ ownership_owner }}"
+
+- name: Remove Docker
+  ansible.builtin.service:
+    name: docker
+    state: absent
+  become: true
+  become_user: "{{ ownership_owner }}"
