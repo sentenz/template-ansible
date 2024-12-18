@@ -3,9 +3,9 @@
 namespace: sentenz
 name: container
 version: "1.0.0"
-readme: README.md
 authors:
   - sentenz
+readme: README.md
 description: >-
   Ansible Collection for Container.
 license:
