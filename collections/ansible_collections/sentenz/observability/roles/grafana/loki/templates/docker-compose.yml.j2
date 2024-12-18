@@ -1,4 +1,22 @@
 ---
+services:
+  {{ loki_name }}:
+    image: {{ loki_image }}
+    container_name: {{ loki_name }}
+    user: {{ ownership_owner }}
+    volumes:
+      - {{ loki_path }}:/etc/loki
+      - loki_data:/loki
+    command: 
+      - --config.file=/etc/loki/config.yml
+    ports:
+      - "{{ loki_port }}:3100"
+    restart: always
+    networks:
+      - observability
+    deploy:
+      mode: global
+
 networks:
   observability:
     name: observability
@@ -6,21 +24,3 @@ networks:
 
 volumes:
   loki_data: {}
-
-services:
-  loki:
-    image: {{ grafana_loki_image }}
-    container_name: {{ grafana_loki_name }}
-    volumes:
-      - loki_data:/loki
-      - {{ grafana_loki_path }}:/etc/loki
-    command: 
-      - --config.file=/etc/loki/config.yml
-    ports:
-      - "{{ grafana_loki_port }}:3100"
-    restart: always
-    networks:
-      - observability
-    deploy:
-      mode: global
-

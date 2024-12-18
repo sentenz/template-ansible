@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-prometheus_alertmanager_name: alertmanager
-prometheus_alertmanager_image: prom/alertmanager:latest
-prometheus_alertmanager_port: 9093
-prometheus_alertmanager_path: /etc/alertmanager
+alertmanager_name: alertmanager
+alertmanager_image: prom/alertmanager:latest
+alertmanager_port: 9093
+alertmanager_path: /etc/observability/alertmanager
 
-prometheus_alertmanager_handler_restart: True
-prometheus_alertmanager_handler_stop: True
-prometheus_alertmanager_handler_absent: True
+alertmanager_handler_start: True
+alertmanager_handler_restart: True
+alertmanager_handler_stop: True
+alertmanager_handler_absent: True
