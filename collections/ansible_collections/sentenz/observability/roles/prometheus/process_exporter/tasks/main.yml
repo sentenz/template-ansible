@@ -1,9 +1,24 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
+- name: Ensure Group for Prometheus Process Exporter
+  ansible.builtin.group:
+    name: "{{ ownership_group }}"
+    state: present
+    system: yes
+  become: true
+
+- name: Ensure User for Prometheus Process Exporter
+  ansible.builtin.user:
+    name: "{{ ownership_owner }}"
+    group: "{{ ownership_group }}"
+    shell: /usr/sbin/nologin
+    system: yes
+  become: true
+
 - name: Securely Create Directory for Prometheus Process Exporter
   ansible.builtin.file:
     state: directory
-    path: "{{ prometheus_process_exporter_path }}"
+    path: "{{ process_exporter_path }}"
     owner: "{{ ownership_owner }}"
     group: "{{ ownership_group }}"
     mode: "{{ permission_directory }}"
@@ -12,7 +27,7 @@
 - name: Securely Copy Content for Prometheus Process Exporter
   ansible.builtin.copy:
     src: "{{ item }}"
-    dest: "{{ prometheus_process_exporter_path }}/{{ item }}"
+    dest: "{{ process_exporter_path }}/{{ item }}"
     owner: "{{ ownership_owner }}"
     group: "{{ ownership_group }}"
     mode: "{{ permission_file }}"
@@ -20,10 +35,10 @@
     - config.yml
   become: true
 
-- name: Prometheus Process Exporter Template Files
+- name: Securely Template Files for Prometheus Process Exporter
   ansible.builtin.template:
     src: docker-compose.yml.j2
-    dest: "{{ prometheus_process_exporter_path }}/docker-compose.yml"
+    dest: "{{ process_exporter_path }}/docker-compose.yml"
     owner: "{{ ownership_owner }}"
     group: "{{ ownership_group }}"
     mode: "{{ permission_file }}"
@@ -31,7 +46,30 @@
 
 - name: Deploy Prometheus Process Exporter
   community.docker.docker_compose_v2:
-    project_src: "{{ prometheus_process_exporter_path }}"
+    project_src: "{{ process_exporter_path }}"
     state: present
+  become: true
   notify:
     - "{{ notify_restart }}"
+
+- name: Stop Prometheus Process Exporter
+  community.docker.docker_compose_v2:
+    project_src: "{{ process_exporter_path }}"
+    files:
+      - docker-compose.yml
+    state: stopped
+  tags:
+    - stop
+  notify:
+    - "{{ notify_stop }}"
+
+- name: Destroy Prometheus Process Exporter
+  community.docker.docker_compose_v2:
+    project_src: "{{ process_exporter_path }}"
+    files:
+      - docker-compose.yml
+    state: absent
+  tags:
+    - destroy
+  notify:
+    - "{{ notify_absent }}"

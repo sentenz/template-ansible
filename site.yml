@@ -13,4 +13,4 @@
 # - name: Deploy Dependency-Track
 #   import_playbook: playbooks/dependency-track.yml
 #   tags:
-#     - dependency-track
+#     - dependency_track

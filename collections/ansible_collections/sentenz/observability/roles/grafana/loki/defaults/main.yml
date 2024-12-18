@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-grafana_loki_name: loki
-grafana_loki_image: grafana/loki:latest
-grafana_loki_port: 3100
-grafana_loki_path: /etc/loki
+loki_name: loki
+loki_image: grafana/loki:latest
+loki_port: 3100
+loki_path: /etc/observability/loki
 
-grafana_loki_handler_restart: True
-grafana_loki_handler_stop: True
-grafana_loki_handler_absent: True
+loki_handler_start: True
+loki_handler_restart: True
+loki_handler_stop: True
+loki_handler_absent: True

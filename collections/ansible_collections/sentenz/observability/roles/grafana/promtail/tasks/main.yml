@@ -1,9 +1,24 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
+- name: Ensure Group for Grafana Promtail
+  ansible.builtin.group:
+    name: "{{ ownership_group }}"
+    state: present
+    system: yes
+  become: true
+
+- name: Ensure User for Grafana Promtail
+  ansible.builtin.user:
+    name: "{{ ownership_owner }}"
+    group: "{{ ownership_group }}"
+    shell: /usr/sbin/nologin
+    system: yes
+  become: true
+
 - name: Securely Create Directory for Grafana Promtail
   ansible.builtin.file:
     state: directory
-    path: "{{ grafana_promtail_path }}"
+    path: "{{ promtail_path }}"
     owner: "{{ ownership_owner }}"
     group: "{{ ownership_group }}"
     mode: "{{ permission_directory }}"
@@ -12,7 +27,7 @@
 - name: Securely Copy Content for Grafana Promtail
   ansible.builtin.copy:
     src: "{{ item }}"
-    dest: "{{ grafana_promtail_path }}/{{ item }}"
+    dest: "{{ promtail_path }}/{{ item }}"
     owner: "{{ ownership_owner }}"
     group: "{{ ownership_group }}"
     mode: "{{ permission_file }}"
@@ -23,7 +38,7 @@
 - name: Securely Template Files for Grafana Promtail
   ansible.builtin.template:
     src: docker-compose.yml.j2
-    dest: "{{ grafana_promtail_path }}/docker-compose.yml"
+    dest: "{{ promtail_path }}/docker-compose.yml"
     owner: "{{ ownership_owner }}"
     group: "{{ ownership_group }}"
     mode: "{{ permission_file }}"
@@ -31,7 +46,30 @@
 
 - name: Deploy Grafana Promtail
   community.docker.docker_compose_v2:
-    project_src: "{{ grafana_promtail_path }}"
+    project_src: "{{ promtail_path }}"
     state: present
+  become: true
   notify:
     - "{{ notify_restart }}"
+
+- name: Stop Grafana Promtail
+  community.docker.docker_compose_v2:
+    project_src: "{{ promtail_path }}"
+    files:
+      - docker-compose.yml
+    state: stopped
+  tags:
+    - stop
+  notify:
+    - "{{ notify_stop }}"
+
+- name: Destroy Grafana Promtail
+  community.docker.docker_compose_v2:
+    project_src: "{{ promtail_path }}"
+    files:
+      - docker-compose.yml
+    state: absent
+  tags:
+    - destroy
+  notify:
+    - "{{ notify_absent }}"

@@ -1,5 +1,20 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
+- name: Ensure Group for Grafana
+  ansible.builtin.group:
+    name: "{{ ownership_group }}"
+    state: present
+    system: yes
+  become: true
+
+- name: Ensure User for Grafana
+  ansible.builtin.user:
+    name: "{{ ownership_owner }}"
+    group: "{{ ownership_group }}"
+    shell: /usr/sbin/nologin
+    system: yes
+  become: true
+
 - name: Securely Create Directory for Grafana
   ansible.builtin.file:
     state: directory
@@ -39,5 +54,28 @@
   community.docker.docker_compose_v2:
     project_src: "{{ grafana_path }}"
     state: present
+  become: true
   notify:
     - "{{ notify_restart }}"
+
+- name: Stop Grafana
+  community.docker.docker_compose_v2:
+    project_src: "{{ grafana_path }}"
+    files:
+      - docker-compose.yml
+    state: stopped
+  tags:
+    - stop
+  notify:
+    - "{{ notify_stop }}"
+
+- name: Destroy Grafana
+  community.docker.docker_compose_v2:
+    project_src: "{{ grafana_path }}"
+    files:
+      - docker-compose.yml
+    state: absent
+  tags:
+    - destroy
+  notify:
+    - "{{ notify_absent }}"

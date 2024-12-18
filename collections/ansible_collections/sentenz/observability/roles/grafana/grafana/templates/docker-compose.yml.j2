@@ -1,16 +1,9 @@
 ---
-networks:
-  observability:
-    name: observability
-    driver: bridge
-
-volumes:
-  grafana_data: {}
-
 services:
-  grafana:
+  {{ grafana_name }}:
     image: {{ grafana_image }}
     container_name: {{ grafana_name }}
+    user: {{ ownership_owner }}
     volumes:
       - grafana_data:/var/lib/grafana
       - {{ grafana_path }}/dashboards:/var/lib/grafana/dashboards
@@ -22,3 +15,11 @@ services:
       - observability
     deploy:
       mode: global
+
+networks:
+  observability:
+    name: observability
+    driver: bridge
+
+volumes:
+  grafana_data: {}

@@ -1,5 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
+- name: Start Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ grafana_path }}"
+    files:
+      - docker-compose.yml
+    state: started
+  when: grafana_handler_start | default(False)
+
 - name: Restart Docker Compose
   community.docker.docker_compose_v2:
     project_src: "{{ grafana_path }}"
@@ -7,8 +15,6 @@
       - docker-compose.yml
     state: restarted
   when: grafana_handler_restart | default(False)
-  become: true
-  become_user: "{{ ownership_owner }}"
 
 - name: Stop Docker Compose
   community.docker.docker_compose_v2:
@@ -17,8 +23,7 @@
       - docker-compose.yml
     state: stopped
   when: grafana_handler_stop | default(False)
-  become: true
-  become_user: "{{ ownership_owner }}"
+  run_once: true
 
 - name: Remove Docker Compose
   community.docker.docker_compose_v2:
@@ -27,5 +32,5 @@
       - docker-compose.yml
     state: absent
   when: grafana_handler_absent | default(False)
-  become: true
-  become_user: "{{ ownership_owner }}"
+  run_once: true
+

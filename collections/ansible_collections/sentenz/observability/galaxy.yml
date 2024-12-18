@@ -3,9 +3,9 @@
 namespace: sentenz
 name: observability
 version: "1.0.0"
-readme: README.md
 authors:
   - sentenz
+readme: README.md
 description: >-
   Ansible Collection for Observability.
 license:

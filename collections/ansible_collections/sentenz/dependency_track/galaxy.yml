@@ -3,9 +3,9 @@
 namespace: sentenz
 name: dependency_track
 version: "1.0.2"
-readme: README.md
 authors:
   - sentenz
+readme: README.md
 description: >-
   Ansible Collection for OWASP Dependency-Track.
 license:

@@ -8,12 +8,13 @@ grafana_volume_name: grafana_data
 grafana_version: "latest"
 
 # Paths and Directories
-grafana_path: /etc/grafana
+grafana_path: /etc/observability/grafana
 
 # File and Template Names
 compose_file: "docker-compose.yml.j2"
 grafana_config_file: "grafana.ini.j2"
 
+grafana_handler_start: True
 grafana_handler_restart: True
 grafana_handler_stop: True
 grafana_handler_absent: True
