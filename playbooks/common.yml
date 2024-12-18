@@ -5,3 +5,8 @@
   become: true
   roles:
     - sentenz.container.docker.ubuntu
+  tasks:
+    - name: Ensure Runs Once
+      debug:
+        msg: "Task runs only once"
+      run_once: true
