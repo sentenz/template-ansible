@@ -41,17 +41,6 @@
   notify:
     - "{{ notify_restart }}"
 
-- name: Stop Prometheus Node Exporter
-  community.docker.docker_compose_v2:
-    project_src: "{{ node_exporter_path }}"
-    files:
-      - docker-compose.yml
-    state: stopped
-  tags:
-    - stop
-  notify:
-    - "{{ notify_stop }}"
-
 - name: Destroy Prometheus Node Exporter
   community.docker.docker_compose_v2:
     project_src: "{{ node_exporter_path }}"
@@ -62,3 +51,25 @@
     - destroy
   notify:
     - "{{ notify_absent }}"
+
+- name: Restart Prometheus Node Exporter
+  community.docker.docker_compose_v2:
+    project_src: "{{ node_exporter_path }}"
+    files:
+      - docker-compose.yml
+    state: restarted
+  tags:
+    - restart
+  notify:
+    - "{{ notify_restart }}"
+
+- name: Stop Prometheus Node Exporter
+  community.docker.docker_compose_v2:
+    project_src: "{{ node_exporter_path }}"
+    files:
+      - docker-compose.yml
+    state: stopped
+  tags:
+    - stop
+  notify:
+    - "{{ notify_stop }}"

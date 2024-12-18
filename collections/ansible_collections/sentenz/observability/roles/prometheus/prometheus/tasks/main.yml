@@ -53,17 +53,6 @@
   notify:
     - "{{ notify_restart }}"
 
-- name: Stop Prometheus
-  community.docker.docker_compose_v2:
-    project_src: "{{ prometheus_path }}"
-    files:
-      - docker-compose.yml
-    state: stopped
-  tags:
-    - stop
-  notify:
-    - "{{ notify_stop }}"
-
 - name: Destroy Prometheus
   community.docker.docker_compose_v2:
     project_src: "{{ prometheus_path }}"
@@ -74,3 +63,25 @@
     - destroy
   notify:
     - "{{ notify_absent }}"
+
+- name: Restart Prometheus
+  community.docker.docker_compose_v2:
+    project_src: "{{ prometheus_path }}"
+    files:
+      - docker-compose.yml
+    state: restarted
+  tags:
+    - restart
+  notify:
+    - "{{ notify_restart }}"
+
+- name: Stop Prometheus
+  community.docker.docker_compose_v2:
+    project_src: "{{ prometheus_path }}"
+    files:
+      - docker-compose.yml
+    state: stopped
+  tags:
+    - stop
+  notify:
+    - "{{ notify_stop }}"

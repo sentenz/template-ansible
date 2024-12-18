@@ -58,17 +58,6 @@
   notify:
     - "{{ notify_restart }}"
 
-- name: Stop Grafana
-  community.docker.docker_compose_v2:
-    project_src: "{{ grafana_path }}"
-    files:
-      - docker-compose.yml
-    state: stopped
-  tags:
-    - stop
-  notify:
-    - "{{ notify_stop }}"
-
 - name: Destroy Grafana
   community.docker.docker_compose_v2:
     project_src: "{{ grafana_path }}"
@@ -79,3 +68,25 @@
     - destroy
   notify:
     - "{{ notify_absent }}"
+
+- name: Restart Grafana
+  community.docker.docker_compose_v2:
+    project_src: "{{ grafana_path }}"
+    files:
+      - docker-compose.yml
+    state: restarted
+  tags:
+    - restart
+  notify:
+    - "{{ notify_restart }}"
+
+- name: Stop Grafana
+  community.docker.docker_compose_v2:
+    project_src: "{{ grafana_path }}"
+    files:
+      - docker-compose.yml
+    state: stopped
+  tags:
+    - stop
+  notify:
+    - "{{ notify_stop }}"

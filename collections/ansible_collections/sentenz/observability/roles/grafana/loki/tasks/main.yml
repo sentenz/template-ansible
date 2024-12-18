@@ -52,17 +52,6 @@
   notify:
     - "{{ notify_restart }}"
 
-- name: Stop Grafana Loki
-  community.docker.docker_compose_v2:
-    project_src: "{{ loki_path }}"
-    files:
-      - docker-compose.yml
-    state: stopped
-  tags:
-    - stop
-  notify:
-    - "{{ notify_stop }}"
-
 - name: Destroy Grafana Loki
   community.docker.docker_compose_v2:
     project_src: "{{ loki_path }}"
@@ -73,3 +62,25 @@
     - destroy
   notify:
     - "{{ notify_absent }}"
+
+- name: Restart Grafana Loki
+  community.docker.docker_compose_v2:
+    project_src: "{{ loki_path }}"
+    files:
+      - docker-compose.yml
+    state: restarted
+  tags:
+    - restart
+  notify:
+    - "{{ notify_restart }}"
+
+- name: Stop Grafana Loki
+  community.docker.docker_compose_v2:
+    project_src: "{{ loki_path }}"
+    files:
+      - docker-compose.yml
+    state: stopped
+  tags:
+    - stop
+  notify:
+    - "{{ notify_stop }}"

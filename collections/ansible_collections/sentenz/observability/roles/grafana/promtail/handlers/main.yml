@@ -1,13 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-- name: Start Docker Compose
-  community.docker.docker_compose_v2:
-    project_src: "{{ promtail_path }}"
-    files:
-      - docker-compose.yml
-    state: started
-  when: promtail_handler_start | default(False)
-
 - name: Restart Docker Compose
   community.docker.docker_compose_v2:
     project_src: "{{ promtail_path }}"

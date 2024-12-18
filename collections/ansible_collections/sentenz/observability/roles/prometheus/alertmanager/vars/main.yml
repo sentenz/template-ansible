@@ -9,7 +9,6 @@ permission_directory: "0755"
 permission_file: "0644"
 
 # Notifications and Service Names
-notify_start: "Start Docker Compose"
 notify_restart: "Restart Docker Compose"
 notify_stop: "Stop Docker Compose"
 notify_absent: "Remove Docker Compose"

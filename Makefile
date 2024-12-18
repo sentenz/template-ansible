@@ -56,7 +56,7 @@ ansible-lint:
 
 ## Provisioning of CaC to a specified environment
 ansible-deploy:
-	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --skip-tags stop,destroy
+	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --skip-tags restart,stop,destroy
 .PHONY: ansible-deploy
 
 ## Destroy of CaC to a specified environment
@@ -64,11 +64,10 @@ ansible-destroy:
 	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --tags destroy
 .PHONY: ansible-destroy
 
-## Starting of CaC to a specified environment
-ansible-start:
-	# TODO
-	# ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --tags start
-.PHONY: ansible-start
+## Restarting of CaC to a specified environment
+ansible-restart:
+	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --tags restart
+.PHONY: ansible-restart
 
 ## Stopping of CaC to a specified environment
 ansible-stop:
