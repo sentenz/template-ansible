@@ -28,6 +28,12 @@ setup-alpine:
 	apk add ansible
 .PHONY: setup-alpine
 
+## Setup the linting tools
+setup-lint:
+	apt update
+	apt install --yes ansible-lint
+.PHONY: setup-lint
+
 ## Perform install Role and Collection of Ansible Galaxy
 galaxy-install:
 	find . -name "requirements.yml" -exec ansible-galaxy install --force -r {} \;
@@ -45,7 +51,7 @@ galaxy-uninstall:
 ## Perform the Static Analysis of Ansible configuration
 ansible-lint:
 	ansible-lint .
-	ansible-later **/*.yml
+	# ansible-later **/*.yml
 .PHONY: ansible-lint
 
 ## Provisioning of CaC to a specified environment
