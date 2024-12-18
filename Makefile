@@ -50,8 +50,24 @@ ansible-lint:
 
 ## Provisioning of CaC to a specified environment
 ansible-deploy:
-	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass
+	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --skip-tags stop,destroy
 .PHONY: ansible-deploy
+
+## Destroy of CaC to a specified environment
+ansible-destroy:
+	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --tags destroy
+.PHONY: ansible-destroy
+
+## Starting of CaC to a specified environment
+ansible-start:
+	# TODO
+	# ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --tags start
+.PHONY: ansible-start
+
+## Stopping of CaC to a specified environment
+ansible-stop:
+	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --tags stop
+.PHONY: ansible-stop
 
 ## Open AWS EC2 Instance in the terminal
 aws-terminal:
