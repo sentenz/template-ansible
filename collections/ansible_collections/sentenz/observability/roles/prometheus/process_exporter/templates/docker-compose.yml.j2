@@ -16,6 +16,8 @@ services:
     restart: unless-stopped
     networks:
       - observability
+    security_opt:
+      - no-new-privileges:true
 
 networks:
   observability:

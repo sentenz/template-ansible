@@ -18,6 +18,8 @@ services:
       - observability
     deploy:
       mode: global
+    security_opt:
+      - no-new-privileges:true
 
 networks:
   observability:
