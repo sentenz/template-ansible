@@ -5,7 +5,7 @@ ownership_owner: "{{ alertmanager_name }}"
 ownership_group: "{{ alertmanager_name }}"
 
 # Permissions Mode
-permission_directory: "0755"
+permission_directory: "0751"
 permission_file: "0644"
 
 # Notifications and Service Names
