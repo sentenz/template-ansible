@@ -25,4 +25,3 @@
     state: absent
   when: grafana_handler_absent | default(False)
   run_once: true
-

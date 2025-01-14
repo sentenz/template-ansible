@@ -2,26 +2,26 @@
 ---
 - name: Restart Docker Compose
   community.docker.docker_compose_v2:
-    project_src: "{{ promtail_path }}"
+    project_src: "{{ grafana_promtail_path }}"
     files:
       - docker-compose.yml
     state: restarted
-  when: promtail_handler_restart | default(False)
+  when: grafana_handler_restart | default(False)
 
 - name: Stop Docker Compose
   community.docker.docker_compose_v2:
-    project_src: "{{ promtail_path }}"
+    project_src: "{{ grafana_promtail_path }}"
     files:
       - docker-compose.yml
     state: stopped
-  when: promtail_handler_stop | default(False)
+  when: grafana_handler_stop | default(False)
   run_once: true
 
 - name: Remove Docker Compose
   community.docker.docker_compose_v2:
-    project_src: "{{ promtail_path }}"
+    project_src: "{{ grafana_promtail_path }}"
     files:
       - docker-compose.yml
     state: absent
-  when: promtail_handler_absent | default(False)
+  when: grafana_handler_absent | default(False)
   run_once: true

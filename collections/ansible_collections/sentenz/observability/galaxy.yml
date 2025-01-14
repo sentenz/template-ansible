@@ -10,6 +10,8 @@ description: >-
   Ansible Collection for Observability.
 license:
   - Apache-2.0
-license_file: LICENSE
+repository: ""
 tags:
   - observability
+  - monitoring
+  - linux

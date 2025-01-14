@@ -4,8 +4,3 @@ prometheus_name: prometheus
 prometheus_image: prom/prometheus:latest
 prometheus_port: 9090
 prometheus_path: /etc/observability/prometheus
-
-prometheus_handler_start: True
-prometheus_handler_restart: True
-prometheus_handler_stop: True
-prometheus_handler_absent: True

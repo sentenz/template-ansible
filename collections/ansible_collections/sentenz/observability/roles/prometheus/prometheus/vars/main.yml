@@ -1,14 +1,19 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
 # Ownership
-ownership_owner: "{{ prometheus_name }}"
-ownership_group: "{{ prometheus_name }}"
+prometheus_ownership_owner: "{{ prometheus_name }}"
+prometheus_ownership_group: "{{ prometheus_name }}"
 
 # Permissions Mode
-permission_directory: "0751"
-permission_file: "0644"
+prometheus_permission_directory: "0751"
+prometheus_permission_file: "0644"
+
+# Handler Flags
+prometheus_handler_restart: true
+prometheus_handler_stop: true
+prometheus_handler_absent: true
 
 # Notifications and Service Names
-notify_restart: "Restart Docker Compose"
-notify_stop: "Stop Docker Compose"
-notify_absent: "Remove Docker Compose"
+prometheus_notify_restart: "Restart Docker Compose"
+prometheus_notify_stop: "Stop Docker Compose"
+prometheus_notify_absent: "Remove Docker Compose"

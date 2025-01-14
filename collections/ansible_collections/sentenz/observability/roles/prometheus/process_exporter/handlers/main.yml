@@ -2,26 +2,26 @@
 ---
 - name: Restart Docker Compose
   community.docker.docker_compose_v2:
-    project_src: "{{ process_exporter_path }}"
+    project_src: "{{ prometheus_process_exporter_path }}"
     files:
       - docker-compose.yml
     state: restarted
-  when: process_exporter_handler_restart | default(False)
+  when: prometheus_handler_restart | default(False)
 
 - name: Stop Docker Compose
   community.docker.docker_compose_v2:
-    project_src: "{{ process_exporter_path }}"
+    project_src: "{{ prometheus_process_exporter_path }}"
     files:
       - docker-compose.yml
     state: stopped
-  when: process_exporter_handler_stop | default(False)
+  when: prometheus_handler_stop | default(False)
   run_once: true
 
 - name: Remove Docker Compose
   community.docker.docker_compose_v2:
-    project_src: "{{ process_exporter_path }}"
+    project_src: "{{ prometheus_process_exporter_path }}"
     files:
       - docker-compose.yml
     state: absent
-  when: process_exporter_handler_absent | default(False)
+  when: prometheus_handler_absent | default(False)
   run_once: true

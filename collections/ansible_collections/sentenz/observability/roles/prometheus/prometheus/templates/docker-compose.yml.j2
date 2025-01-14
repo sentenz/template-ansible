@@ -4,8 +4,8 @@ services:
     image: {{ prometheus_image }}
     container_name: {{ prometheus_name }}
     volumes:
-      - {{ prometheus_path }}:/etc/prometheus
-      - prometheus_data:/prometheus
+      - {{ prometheus_path }}:/etc/prometheus:ro
+      - prometheus_data:/data/prometheus
     ports:
       - "{{ prometheus_port }}:9090"
     restart: always

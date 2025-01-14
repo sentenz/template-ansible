@@ -10,8 +10,8 @@ description: >-
   Ansible Collection for Container.
 license:
   - Apache-2.0
-license_file: LICENSE
+repository: ""
 tags:
   - container
-  - docker
-  - ubuntu
+  - infrastructure
+  - linux

@@ -19,8 +19,8 @@
 # receivers:
 #   - name: "team-X-mails"
 #     email_configs:
-#       - from: alexej.kloos@sentenzgroup.com
-#         to: alexej.kloos@sentenzgroup.com
+#       - from: alexej.kloos@outlook.com
+#         to: alexej.kloos@outlook.com
 #         send_resolved: false
 #         headers:
 #           subject: "Prometheus Mail Alerts"

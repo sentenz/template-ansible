@@ -30,8 +30,7 @@ setup-alpine:
 
 ## Setup the linting tools
 setup-lint:
-	apt update
-	apt install --yes ansible-lint
+	pip3 install ansible-lint==24.12.2 --break-system-packages
 .PHONY: setup-lint
 
 ## Perform install Role and Collection of Ansible Galaxy
@@ -50,7 +49,11 @@ galaxy-uninstall:
 
 ## Perform the Static Analysis of Ansible configuration
 ansible-lint:
-	ansible-lint .
+	ansible-lint ./
+	ansible-lint ./collections/ansible_collections/sentenz/observability/
+	ansible-lint ./inventory/
+	ansible-lint ./playbooks/
+
 	# ansible-later **/*.yml
 .PHONY: ansible-lint
 

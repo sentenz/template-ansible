@@ -1,14 +1,14 @@
 ---
 services:
-  {{ alertmanager_name }}:
-    image: {{ alertmanager_image }}
-    container_name: {{ alertmanager_name }}
+  {{ prometheus_alertmanager_name }}:
+    image: {{ prometheus_alertmanager_image }}
+    container_name: {{ prometheus_alertmanager_name }}
     volumes:
-      - {{ alertmanager_path }}:/etc/alertmanager
+      - {{ prometheus_alertmanager_path }}:/etc/alertmanager:ro
     command:
       - --config.file=/etc/alertmanager/config.yml
     ports:
-      - "{{ alertmanager_port }}:9093"
+      - "{{ prometheus_alertmanager_port }}:9093"
     restart: always
     networks:
       - observability

@@ -1,12 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-process_exporter_name: process_exporter
-process_exporter_image: ncabatoff/process-exporter:latest
-process_exporter_port: 9256
-process_exporter_path: /etc/observability/process-exporter
-
-# Manage Handlers Service
-process_exporter_handler_start: True
-process_exporter_handler_restart: True
-process_exporter_handler_stop: True
-process_exporter_handler_absent: True
+prometheus_process_exporter_name: process_exporter
+prometheus_process_exporter_image: ncabatoff/process-exporter:latest
+prometheus_process_exporter_port: 9256
+prometheus_process_exporter_path: /etc/observability/process-exporter

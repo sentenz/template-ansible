@@ -10,9 +10,6 @@ description: >-
   Ansible Collection for OWASP Dependency-Track.
 license:
   - Apache-2.0
-license_file: LICENSE
+repository: ""
 tags:
   - sca
-repository: "git@github/sentenz/sentenz.dependency_track.git"
-documentation: http://docs.example.com
-homepage: http://example.com

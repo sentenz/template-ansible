@@ -1,8 +1,8 @@
 ---
 services:
-  {{ node_exporter_name }}:
-    image: {{ node_exporter_image }}
-    container_name: {{ node_exporter_name }}
+  {{ prometheus_node_exporter_name }}:
+    image: {{ prometheus_node_exporter_image }}
+    container_name: {{ prometheus_node_exporter_name }}
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -11,7 +11,7 @@ services:
       - --path.procfs=/host/proc
       - --path.sysfs=/host/sys
     ports:
-      - "{{ node_exporter_port }}:9100"
+      - "{{ prometheus_node_exporter_port }}:9100"
     restart: always
     networks:
       - observability

@@ -1,5 +1,5 @@
 enabled: true
 process_names:
-- name: "{{.Comm}}"
-  cmdline:
-  - '.+'
+  - name: "{{.Comm}}"
+    cmdline:
+      - '.+'

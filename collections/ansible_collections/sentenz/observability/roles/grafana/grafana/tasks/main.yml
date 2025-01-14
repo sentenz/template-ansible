@@ -2,49 +2,48 @@
 ---
 - name: Ensure Group for Grafana
   ansible.builtin.group:
-    name: "{{ ownership_group }}"
+    name: "{{ grafana_ownership_group }}"
     state: present
-    system: yes
+    system: true
   become: true
 
 - name: Ensure User for Grafana
   ansible.builtin.user:
-    name: "{{ ownership_owner }}"
-    group: "{{ ownership_group }}"
-    shell: /usr/sbin/nologin
-    system: yes
+    name: "{{ grafana_ownership_owner }}"
+    group: "{{ grafana_ownership_group }}"
+    state: present
   become: true
 
 - name: Securely Create Directory for Grafana
   ansible.builtin.file:
     state: directory
     path: "{{ grafana_path }}"
-    owner: "{{ ownership_owner }}"
-    group: "{{ ownership_group }}"
-    mode: "{{ permission_directory }}"
+    owner: "{{ grafana_ownership_owner }}"
+    group: "{{ grafana_ownership_group }}"
+    mode: "{{ grafana_permission_directory }}"
   become: true
 
 - name: Securely Copy Content for Grafana
   ansible.builtin.copy:
     src: "{{ item }}/"
     dest: "{{ grafana_path }}/{{ item }}/"
-    owner: "{{ ownership_owner }}"
-    group: "{{ ownership_group }}"
-    mode: "{{ permission_file }}"
+    owner: "{{ grafana_ownership_owner }}"
+    group: "{{ grafana_ownership_group }}"
+    mode: "{{ grafana_permission_file }}"
   loop:
     - dashboards
     - provisioning
   become: true
   notify:
-    - "{{ notify_restart }}"
+    - "{{ grafana_notify_restart }}"
 
 - name: Securely Template Files for Grafana
   ansible.builtin.template:
     src: "{{ item }}"
     dest: "{{ grafana_path }}/{{ item | basename | regex_replace('.j2$', '') }}"
-    owner: "{{ ownership_owner }}"
-    group: "{{ ownership_group }}"
-    mode: "{{ permission_file }}"
+    owner: "{{ grafana_ownership_owner }}"
+    group: "{{ grafana_ownership_group }}"
+    mode: "{{ grafana_permission_file }}"
   loop:
     - docker-compose.yml.j2
     - grafana.ini.j2
@@ -56,7 +55,7 @@
     state: present
   become: true
   notify:
-    - "{{ notify_restart }}"
+    - "{{ grafana_notify_restart }}"
 
 - name: Destroy Grafana
   community.docker.docker_compose_v2:
@@ -67,7 +66,7 @@
   tags:
     - destroy
   notify:
-    - "{{ notify_absent }}"
+    - "{{ grafana_notify_absent }}"
 
 - name: Restart Grafana
   community.docker.docker_compose_v2:
@@ -78,7 +77,7 @@
   tags:
     - restart
   notify:
-    - "{{ notify_restart }}"
+    - "{{ grafana_notify_restart }}"
 
 - name: Stop Grafana
   community.docker.docker_compose_v2:
@@ -89,4 +88,4 @@
   tags:
     - stop
   notify:
-    - "{{ notify_stop }}"
+    - "{{ grafana_notify_stop }}"

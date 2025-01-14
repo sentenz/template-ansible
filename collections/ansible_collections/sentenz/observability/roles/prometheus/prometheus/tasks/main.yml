@@ -2,35 +2,34 @@
 ---
 - name: Ensure Group for Prometheus
   ansible.builtin.group:
-    name: "{{ ownership_group }}"
+    name: "{{ prometheus_ownership_group }}"
     state: present
-    system: yes
+    system: true
   become: true
 
 - name: Ensure User for Prometheus
   ansible.builtin.user:
-    name: "{{ ownership_owner }}"
-    group: "{{ ownership_group }}"
-    shell: /usr/sbin/nologin
-    system: yes
+    name: "{{ prometheus_ownership_owner }}"
+    group: "{{ prometheus_ownership_group }}"
+    state: present
   become: true
 
 - name: Securely Create Directory for Prometheus
   ansible.builtin.file:
     state: directory
     path: "{{ prometheus_path }}"
-    owner: "{{ ownership_owner }}"
-    group: "{{ ownership_group }}"
-    mode: "{{ permission_directory }}"
+    owner: "{{ prometheus_ownership_owner }}"
+    group: "{{ prometheus_ownership_group }}"
+    mode: "{{ prometheus_permission_directory }}"
   become: true
 
 - name: Securely Copy Content for Prometheus
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ prometheus_path }}/{{ item }}"
-    owner: "{{ ownership_owner }}"
-    group: "{{ ownership_group }}"
-    mode: "{{ permission_file }}"
+    owner: "{{ prometheus_ownership_owner }}"
+    group: "{{ prometheus_ownership_group }}"
+    mode: "{{ prometheus_permission_file }}"
   loop:
     - prometheus.yml
     - alert-rules.yml
@@ -40,9 +39,9 @@
   ansible.builtin.template:
     src: docker-compose.yml.j2
     dest: "{{ prometheus_path }}/docker-compose.yml"
-    owner: "{{ ownership_owner }}"
-    group: "{{ ownership_group }}"
-    mode: "{{ permission_file }}"
+    owner: "{{ prometheus_ownership_owner }}"
+    group: "{{ prometheus_ownership_group }}"
+    mode: "{{ prometheus_permission_file }}"
   become: true
 
 - name: Deploy Prometheus
@@ -51,7 +50,7 @@
     state: present
   become: true
   notify:
-    - "{{ notify_restart }}"
+    - "{{ prometheus_notify_restart }}"
 
 - name: Destroy Prometheus
   community.docker.docker_compose_v2:
@@ -62,7 +61,7 @@
   tags:
     - destroy
   notify:
-    - "{{ notify_absent }}"
+    - "{{ prometheus_notify_absent }}"
 
 - name: Restart Prometheus
   community.docker.docker_compose_v2:
@@ -73,7 +72,7 @@
   tags:
     - restart
   notify:
-    - "{{ notify_restart }}"
+    - "{{ prometheus_notify_restart }}"
 
 - name: Stop Prometheus
   community.docker.docker_compose_v2:
@@ -84,4 +83,4 @@
   tags:
     - stop
   notify:
-    - "{{ notify_stop }}"
+    - "{{ prometheus_notify_stop }}"

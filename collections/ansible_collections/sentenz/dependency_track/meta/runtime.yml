@@ -1,14 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
 requires_ansible: ">=2.16"
-collection_info:
-  author: sentenz
-  description: Ansible Collection for OWASP Dependency-Track.
-  license: Apache-2.0
-  min_ansible_version: "2.15.0"
-  dependencies:
-    - name: community.docker
-      version: ">=4.0.0"
 action_groups:
   dependency_track:
     - bom_create

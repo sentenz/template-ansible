@@ -3,11 +3,12 @@ services:
   {{ grafana_name }}:
     image: {{ grafana_image }}
     container_name: {{ grafana_name }}
-    user: {{ ownership_owner }}
+    user: {{ grafana_ownership_owner }}
     volumes:
+      # - {{ grafana_path }}/grafana.ini:/etc/grafana:ro
+      - {{ grafana_path }}/dashboards:/var/lib/grafana/dashboards:ro
+      - {{ grafana_path }}/provisioning:/etc/grafana/provisioning:ro
       - grafana_data:/var/lib/grafana
-      - {{ grafana_path }}/dashboards:/var/lib/grafana/dashboards
-      - {{ grafana_path }}/provisioning:/etc/grafana/provisioning
     ports:
       - "{{ grafana_port }}:3000"
     restart: always

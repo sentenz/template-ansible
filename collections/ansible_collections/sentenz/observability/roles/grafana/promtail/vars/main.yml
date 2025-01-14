@@ -1,14 +1,19 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
 # Ownership
-ownership_owner: "{{ promtail_name }}"
-ownership_group: "{{ promtail_name }}"
+grafana_ownership_owner: "{{ grafana_promtail_name }}"
+grafana_ownership_group: "{{ grafana_promtail_name }}"
 
 # Permissions Mode
-permission_directory: "0750"
-permission_file: "0640"
+grafana_permission_directory: "0750"
+grafana_permission_file: "0640"
+
+# Handler Flags
+grafana_handler_restart: true
+grafana_handler_stop: true
+grafana_handler_absent: true
 
 # Notifications and Service Names
-notify_restart: "Restart Docker Compose"
-notify_stop: "Stop Docker Compose"
-notify_absent: "Remove Docker Compose"
+grafana_notify_restart: "Restart Docker Compose"
+grafana_notify_stop: "Stop Docker Compose"
+grafana_notify_absent: "Remove Docker Compose"

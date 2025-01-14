@@ -2,35 +2,34 @@
 ---
 - name: Ensure Group for Grafana Loki
   ansible.builtin.group:
-    name: "{{ ownership_group }}"
+    name: "{{ grafana_ownership_group }}"
     state: present
-    system: yes
+    system: true
   become: true
 
 - name: Ensure User for Grafana Loki
   ansible.builtin.user:
-    name: "{{ ownership_owner }}"
-    group: "{{ ownership_group }}"
-    shell: /usr/sbin/nologin
-    system: yes
+    name: "{{ grafana_ownership_owner }}"
+    group: "{{ grafana_ownership_group }}"
+    state: present
   become: true
 
 - name: Securely Create Directory for Grafana Loki
   ansible.builtin.file:
     state: directory
-    path: "{{ loki_path }}"
-    owner: "{{ ownership_owner }}"
-    group: "{{ ownership_group }}"
-    mode: "{{ permission_directory }}"
+    path: "{{ grafana_loki_path }}"
+    owner: "{{ grafana_ownership_owner }}"
+    group: "{{ grafana_ownership_group }}"
+    mode: "{{ grafana_permission_directory }}"
   become: true
 
 - name: Securely Copy Content for Grafana Loki
   ansible.builtin.copy:
     src: "{{ item }}"
-    dest: "{{ loki_path }}/{{ item }}"
-    owner: "{{ ownership_owner }}"
-    group: "{{ ownership_group }}"
-    mode: "{{ permission_file }}"
+    dest: "{{ grafana_loki_path }}/{{ item }}"
+    owner: "{{ grafana_ownership_owner }}"
+    group: "{{ grafana_ownership_group }}"
+    mode: "{{ grafana_permission_file }}"
   loop:
     - config.yml
   become: true
@@ -38,49 +37,49 @@
 - name: Securely Template Files for Grafana Loki
   ansible.builtin.template:
     src: docker-compose.yml.j2
-    dest: "{{ loki_path }}/docker-compose.yml"
-    owner: "{{ ownership_owner }}"
-    group: "{{ ownership_group }}"
-    mode: "{{ permission_file }}"
+    dest: "{{ grafana_loki_path }}/docker-compose.yml"
+    owner: "{{ grafana_ownership_owner }}"
+    group: "{{ grafana_ownership_group }}"
+    mode: "{{ grafana_permission_file }}"
   become: true
 
 - name: Deploy Grafana Loki
   community.docker.docker_compose_v2:
-    project_src: "{{ loki_path }}"
+    project_src: "{{ grafana_loki_path }}"
     state: present
   become: true
   notify:
-    - "{{ notify_restart }}"
+    - "{{ grafana_notify_restart }}"
 
 - name: Destroy Grafana Loki
   community.docker.docker_compose_v2:
-    project_src: "{{ loki_path }}"
+    project_src: "{{ grafana_loki_path }}"
     files:
       - docker-compose.yml
     state: absent
   tags:
     - destroy
   notify:
-    - "{{ notify_absent }}"
+    - "{{ grafana_notify_absent }}"
 
 - name: Restart Grafana Loki
   community.docker.docker_compose_v2:
-    project_src: "{{ loki_path }}"
+    project_src: "{{ grafana_loki_path }}"
     files:
       - docker-compose.yml
     state: restarted
   tags:
     - restart
   notify:
-    - "{{ notify_restart }}"
+    - "{{ grafana_notify_restart }}"
 
 - name: Stop Grafana Loki
   community.docker.docker_compose_v2:
-    project_src: "{{ loki_path }}"
+    project_src: "{{ grafana_loki_path }}"
     files:
       - docker-compose.yml
     state: stopped
   tags:
     - stop
   notify:
-    - "{{ notify_stop }}"
+    - "{{ grafana_notify_stop }}"

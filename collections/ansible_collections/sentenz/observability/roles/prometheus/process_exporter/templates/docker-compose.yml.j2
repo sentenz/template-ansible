@@ -1,18 +1,18 @@
 ---
 services:
-  {{ process_exporter_name }}:
-    image: {{ process_exporter_image }}
-    container_name: {{ process_exporter_name }}
+  {{ prometheus_process_exporter_name }}:
+    image: {{ prometheus_process_exporter_image }}
+    container_name: {{ prometheus_process_exporter_name }}
     volumes:
-      - {{ process_exporter_path }}:/etc/process-exporter
+      - {{ prometheus_process_exporter_path }}:/etc/process-exporter:ro
       - /proc:/host/proc:ro
       - /usr/bin:/host/usr/bin:ro
     command:
       - --config.path=/etc/process-exporter/config.yml
       - --procfs=/host/proc
-      - --web.listen-address=:{{ process_exporter_port }}
+      - --web.listen-address=:{{ prometheus_process_exporter_port }}
     ports:
-      - "{{ process_exporter_port }}:9256"
+      - "{{ prometheus_process_exporter_port }}:9256"
     restart: unless-stopped
     networks:
       - observability
