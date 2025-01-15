@@ -1,0 +1,76 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+- name: Ensure Group for Dependency-Track
+  ansible.builtin.group:
+    name: "{{ dependency_track_ownership_group }}"
+    state: present
+    system: true
+  become: true
+
+- name: Ensure User for Dependency-Track
+  ansible.builtin.user:
+    name: "{{ dependency_track_ownership_owner }}"
+    group: "{{ dependency_track_ownership_group }}"
+    state: present
+  become: true
+
+- name: Securely Create Directory for Dependency-Track
+  ansible.builtin.file:
+    state: directory
+    path: "{{ dependency_track_path }}"
+    owner: "{{ dependency_track_ownership_owner }}"
+    group: "{{ dependency_track_ownership_group }}"
+    mode: "{{ dependency_track_permission_directory }}"
+  become: true
+
+- name: Securely Template Files for Dependency-Track
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "{{ dependency_track_path }}/{{ item | basename | regex_replace('.j2$', '') }}"
+    owner: "{{ dependency_track_ownership_owner }}"
+    group: "{{ dependency_track_ownership_group }}"
+    mode: "{{ dependency_track_permission_file }}"
+  loop:
+    - docker-compose.yml.j2
+  become: true
+
+- name: Deploy Dependency-Track
+  community.docker.docker_compose_v2:
+    project_src: "{{ dependency_track_path }}"
+    state: present
+  become: true
+  notify:
+    - "{{ dependency_track_notify_restart }}"
+
+- name: Destroy Dependency-Track
+  community.docker.docker_compose_v2:
+    project_src: "{{ dependency_track_path }}"
+    files:
+      - docker-compose.yml
+    state: absent
+  tags:
+    - destroy
+  notify:
+    - "{{ dependency_track_notify_absent }}"
+
+- name: Restart Dependency-Track
+  community.docker.docker_compose_v2:
+    project_src: "{{ dependency_track_path }}"
+    files:
+      - docker-compose.yml
+    state: restarted
+  tags:
+    - restart
+  notify:
+    - "{{ dependency_track_notify_restart }}"
+
+- name: Stop Dependency-Track
+  community.docker.docker_compose_v2:
+    project_src: "{{ dependency_track_path }}"
+    files:
+      - docker-compose.yml
+    state: stopped
+  tags:
+    - stop
+  notify:
+    - "{{ dependency_track_notify_stop }}"
