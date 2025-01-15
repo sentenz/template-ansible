@@ -10,7 +10,7 @@
   tags:
     - observability
 
-# - name: Deploy Dependency-Track
-#   import_playbook: playbooks/dependency-track.yml
-#   tags:
-#     - dependency_track
+- name: Deploy Component Analysis
+  import_playbook: playbooks/component-analysis.yml
+  tags:
+    - component_analysis

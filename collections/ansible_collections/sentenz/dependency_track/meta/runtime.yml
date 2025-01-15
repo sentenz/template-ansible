@@ -1,9 +1,0 @@
-# SPDX-License-Identifier: Apache-2.0
----
-requires_ansible: ">=2.16"
-action_groups:
-  dependency_track:
-    - bom_create
-    - bom_delete
-    - bom_read
-    - bom_update

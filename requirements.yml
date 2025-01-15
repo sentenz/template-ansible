@@ -7,6 +7,6 @@ collections:
   - name: sentenz.observability
     src: ./collections/ansible_collections/sentenz/observability
     type: subdirs
-  - name: sentenz.dependency_track
-    src: ./collections/ansible_collections/sentenz/dependency_track
+  - name: sentenz.component_analysis
+    src: ./collections/ansible_collections/sentenz/component_analysis
     type: subdirs
