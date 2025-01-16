@@ -1,5 +1,0 @@
-# SPDX-License-Identifier: Apache-2.0
----
-collections:
-  - name: community.docker
-    version: ">=4.3.0"

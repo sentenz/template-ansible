@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# Dependency-Track
+dependency_track_name: dependency_track
+dependency_track_path: /etc/component_analysis/dependency_track
+dependency_track_network_name: dependency_track_network
+
+# Dependency-Track API Server
+dependency_track_apiserver_name: dependency_track_apiserver
+dependency_track_apiserver_image: dependencytrack/apiserver:latest
+dependency_track_apiserver_port: 8081
+dependency_track_apiserver_volume_name: dependency_track_apiserver_data
+dependency_track_apiserver_data_version: "latest"
+
+dependency_track_alpine_database_url: jdbc:postgresql://{{ dependency_track_database_name }}:{{ dependency_track_database_port }}/{{ dependency_track_name }}
+dependency_track_alpine_database_driver: org.postgresql.Driver
+dependency_track_alpine_database_mode: external
+dependency_track_alpine_database_username: admin
+dependency_track_alpine_database_password: admin
+
+# Dependency-Track Front End (UI)
+dependency_track_frontend_name: dependency_track_frontend
+dependency_track_frontend_image: dependencytrack/frontend:latest
+dependency_track_frontend_port: 8080
+dependency_track_frontend_volume_name: dependency_track_frontend_data
+dependency_track_frontend_version: "latest"
+
+dependency_track_api_base_url: "http://localhost:{{ dependency_track_apiserver_port}}"
+# dependency_track_api_base_url: "http://ec2-3-64-246-3.eu-central-1.compute.amazonaws.com:8081"
+
+# Relational Database
+dependency_track_database_name: dependency_track_database
+dependency_track_database_image: postgres:alpine
+dependency_track_database_port: 5432
+dependency_track_database_volume_name: dependency_track_database_data
+dependency_track_database_version: "latest"
+
+# Credentials (Sensitive Data - To be encrypted with Ansible Vault)
+dependency_track_admin_user: "admin"
+dependency_track_admin_password: "admin"
+# admin_user: "{{ vault_admin_user }}"
+# admin_password: "{{ vault_admin_password }}"

@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+namespace: sentenz
+name: component_analysis
+version: "1.0.0"
+authors:
+  - sentenz
+readme: README.md
+description: >-
+  Ansible Collection for Component Analysis.
+license:
+  - Apache-2.0
+repository: ""
+tags:
+  - sca
+  - sbom
+  - monitoring
+  - linux

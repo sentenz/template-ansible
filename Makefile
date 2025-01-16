@@ -50,6 +50,7 @@ galaxy-uninstall:
 ## Perform the Static Analysis of Ansible configuration
 ansible-lint:
 	ansible-lint ./
+	ansible-lint ./collections/ansible_collections/sentenz/component_analysis/
 	ansible-lint ./collections/ansible_collections/sentenz/observability/
 	ansible-lint ./inventory/
 	ansible-lint ./playbooks/
