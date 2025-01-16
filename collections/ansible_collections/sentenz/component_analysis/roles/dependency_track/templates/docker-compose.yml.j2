@@ -6,7 +6,7 @@ services:
     container_name: {{ dependency_track_apiserver_name }}
     volumes:
       - "{{ dependency_track_apiserver_volume_name }}:/data"
-      - "{{ dependency_track_path }}/application.properties:/data/.dependency-track/application.properties"
+      # - "{{ dependency_track_path }}/application.properties:/data/.dependency-track/application.properties:ro"
     ports:
       - "{{ dependency_track_apiserver_port }}:8080"
     depends_on:
@@ -23,17 +23,18 @@ services:
       restart_policy:
         condition: on-failure
     environment:
-      ALPINE_DATABASE_MODE: external
-      ALPINE_DATABASE_URL: jdbc:postgresql://{{ dependency_track_database_name }}:{{ dependency_track_database_port }}/{{ dependency_track_name }}
-      ALPINE_DATABASE_DRIVER: org.postgresql.Driver
-      ALPINE_DATABASE_USERNAME: admin
-      ALPINE_DATABASE_PASSWORD: admin
+      # XXX(sentenz) Remove environment variables after mounting `application.properties` correctly
+      ALPINE_DATABASE_MODE: {{ dependency_track_alpine_database_mode }}
+      ALPINE_DATABASE_URL: {{ dependency_track_alpine_database_url }}
+      ALPINE_DATABASE_DRIVER: {{ dependency_track_alpine_database_driver }}
+      ALPINE_DATABASE_USERNAME: {{ dependency_track_alpine_database_username }}
+      ALPINE_DATABASE_PASSWORD: {{ dependency_track_alpine_database_password }}
 
   {{ dependency_track_frontend_name }}:
     image: {{ dependency_track_frontend_image }}
     container_name: {{ dependency_track_frontend_name }}
     volumes:
-      - "{{ dependency_track_path }}/config.json:/opt/owasp/dependency-track-frontend/static/config.json"
+      - "{{ dependency_track_path }}/config.json:/opt/owasp/dependency-track-frontend/static/config.json:ro"
     ports:
       - "{{ dependency_track_frontend_port }}:8080"
     depends_on:
@@ -53,8 +54,8 @@ services:
       - {{ dependency_track_network_name }}
     restart: unless-stopped
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: {{ dependency_track_alpine_database_username }}
+      POSTGRES_PASSWORD: {{ dependency_track_alpine_database_password }}
       POSTGRES_DB: {{ dependency_track_name }}
 
 networks:
@@ -65,4 +66,3 @@ networks:
 volumes:
   {{ dependency_track_database_volume_name }}: {}
   {{ dependency_track_apiserver_volume_name }}: {}
-

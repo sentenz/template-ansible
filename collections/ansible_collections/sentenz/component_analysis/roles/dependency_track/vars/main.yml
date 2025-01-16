@@ -6,7 +6,7 @@ dependency_track_ownership_group: "{{ dependency_track_name }}"
 
 # Permissions Mode
 dependency_track_permission_directory: "0750"
-dependency_track_permission_file: "0640"
+dependency_track_permission_file: "0644"
 
 # Handler Flags
 dependency_track_handler_restart: true

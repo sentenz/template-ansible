@@ -3,10 +3,10 @@
 1. Files and Folder
 
     - `application.properties`
-      > This file is used to configure the API server of Dependency-Track.
+      > Configuration file for the Dependency-Track API Server
 
     - `config.json`
-      > This file is used to configure the frontend of Dependency-Track.
+      > Configuration file for the Dependency-Track Front End (UI)
 
       ```json
       {

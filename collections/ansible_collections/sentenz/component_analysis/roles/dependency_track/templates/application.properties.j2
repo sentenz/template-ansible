@@ -55,7 +55,7 @@ alpine.watchdog.logging.interval=0
 # In embedded mode, the system will be more secure and slightly faster. 
 # External mode should be used when utilizing an external database server 
 # (i.e. mysql, postgresql, etc).
-alpine.database.mode=external
+alpine.database.mode={{ dependency_track_alpine_database_mode }}
 
 # Optional
 # Defines the TCP port to use when the database.mode is set to 'server'.
@@ -67,15 +67,15 @@ alpine.database.url={{ dependency_track_alpine_database_url }}
 
 # Required
 # Specifies the JDBC driver class to use.
-alpine.database.driver={{ dependency_track_alpine_database_driver}}
+alpine.database.driver={{ dependency_track_alpine_database_driver }}
 
 # Optional
 # Specifies the username to use when authenticating to the database.
-alpine.database.username=sa
+alpine.database.username={{ dependency_track_alpine_database_username }}
 
 # Optional
 # Specifies the password to use when authenticating to the database.
-# alpine.database.password=
+alpine.database.password={{ dependency_track_alpine_database_password }}
 
 # Optional
 # Specifies a path to the file holding the database password.

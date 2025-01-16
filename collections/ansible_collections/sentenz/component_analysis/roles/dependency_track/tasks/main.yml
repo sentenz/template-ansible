@@ -32,6 +32,8 @@
     mode: "{{ dependency_track_permission_file }}"
   loop:
     - docker-compose.yml.j2
+    - config.json.j2
+    - application.properties.j2
   become: true
 
 - name: Deploy Dependency-Track
