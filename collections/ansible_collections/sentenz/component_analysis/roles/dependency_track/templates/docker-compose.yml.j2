@@ -1,38 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-# FIXME(sentenz) Move sensibel data to Ansible Vault
 services:
-  {{ dependency_track_database_name }}:
-    image: {{ dependency_track_database_image }}
-    container_name: {{ dependency_track_database_name }}
-    volumes:
-      - "{{ dependency_track_database_volume_name }}:/var/lib/postgresql/data"
-    ports:
-      - "{{ dependency_track_database_port }}:5432"
-    networks:
-      - {{ dependency_track_network_name }}
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: {{ dependency_track_name }}
-      # POSTGRES_USER: ${POSTGRES_USERNAME}
-      # POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      # POSTGRES_DB: ${POSTGRES_DB}
-    # healthcheck:
-    #   test: ["CMD-SHELL", "pg_isready -d {{ dependency_track_name }} -U {{ dependency_track_name }}"]
-    #   # test: ["CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USERNAME}"]
-    #   interval: 1s
-    #   timeout: 5s
-    #   retries: 10
-
   {{ dependency_track_apiserver_name }}:
     image: {{ dependency_track_apiserver_image }}
     container_name: {{ dependency_track_apiserver_name }}
-    ports:
-      - "{{ dependency_track_apiserver_port }}:8080"
     volumes:
       - "{{ dependency_track_apiserver_volume_name }}:/data"
+      - "{{ dependency_track_path }}/application.properties:/data/.dependency-track/application.properties"
+    ports:
+      - "{{ dependency_track_apiserver_port }}:8080"
     depends_on:
       - {{ dependency_track_database_name }}
     networks:
@@ -47,139 +23,39 @@ services:
       restart_policy:
         condition: on-failure
     environment:
-    # The Dependency-Track container can be configured using any of the
-    # available configuration properties defined in:
-    # https://docs.dependencytrack.org/getting-started/configuration/
-    # All properties are upper case with periods replaced by underscores.
-    #
-    # Database Properties
       ALPINE_DATABASE_MODE: external
       ALPINE_DATABASE_URL: jdbc:postgresql://{{ dependency_track_database_name }}:{{ dependency_track_database_port }}/{{ dependency_track_name }}
       ALPINE_DATABASE_DRIVER: org.postgresql.Driver
       ALPINE_DATABASE_USERNAME: admin
       ALPINE_DATABASE_PASSWORD: admin
-      ALPINE_DATABASE_POOL_ENABLED: "true"
-      ALPINE_DATABASE_POOL_MAX_SIZE: "20"
-      ALPINE_DATABASE_POOL_MIN_IDLE: "10"
-      ALPINE_DATABASE_POOL_IDLE_TIMEOUT: "300000"
-      ALPINE_DATABASE_POOL_MAX_LIFETIME: "600000"
-    # - ALPINE_DATABASE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}
-    # - ALPINE_DATABASE_USERNAME=${POSTGRES_USERNAME}
-    # - ALPINE_DATABASE_PASSWORD=${POSTGRES_PASSWORD}
-    #
-    # Optional LDAP Properties
-    # - ALPINE_LDAP_ENABLED=true
-    # - ALPINE_LDAP_SERVER_URL=ldap://ldap.example.com:389
-    # - ALPINE_LDAP_BASEDN=dc=example,dc=com
-    # - ALPINE_LDAP_SECURITY_AUTH=simple
-    # - ALPINE_LDAP_BIND_USERNAME=
-    # - ALPINE_LDAP_BIND_PASSWORD=
-    # - ALPINE_LDAP_AUTH_USERNAME_FORMAT=%s@example.com
-    # - ALPINE_LDAP_ATTRIBUTE_NAME=userPrincipalName
-    # - ALPINE_LDAP_ATTRIBUTE_MAIL=mail
-    # - ALPINE_LDAP_GROUPS_FILTER=(&(objectClass=group)(objectCategory=Group))
-    # - ALPINE_LDAP_USER_GROUPS_FILTER=(member:1.2.840.113556.1.4.1941:={USER_DN})
-    # - ALPINE_LDAP_GROUPS_SEARCH_FILTER=(&(objectClass=group)(objectCategory=Group)(cn=*{SEARCH_TERM}*))
-    # - ALPINE_LDAP_USERS_SEARCH_FILTER=(&(objectClass=user)(objectCategory=Person)(cn=*{SEARCH_TERM}*))
-    # - ALPINE_LDAP_USER_PROVISIONING=false
-    # - ALPINE_LDAP_TEAM_SYNCHRONIZATION=false
-    #
-    # Optional OpenID Connect (OIDC) Properties
-    # - ALPINE_OIDC_ENABLED=true
-    # - ALPINE_OIDC_ISSUER=https://auth.example.com/auth/realms/example
-    # - ALPINE_OIDC_USERNAME_CLAIM=preferred_username
-    # - ALPINE_OIDC_TEAMS_CLAIM=groups
-    # - ALPINE_OIDC_USER_PROVISIONING=true
-    # - ALPINE_OIDC_TEAM_SYNCHRONIZATION=true
-    #
-    # Optional HTTP Proxy Settings
-    # - ALPINE_HTTP_PROXY_ADDRESS=proxy.example.com
-    # - ALPINE_HTTP_PROXY_PORT=8888
-    # - ALPINE_HTTP_PROXY_USERNAME=
-    # - ALPINE_HTTP_PROXY_PASSWORD=
-    # - ALPINE_NO_PROXY=
-    #
-    # Optional HTTP Outbound Connection Timeout Settings. All values are in seconds.
-    # - ALPINE_HTTP_TIMEOUT_CONNECTION=30
-    # - ALPINE_HTTP_TIMEOUT_SOCKET=30
-    # - ALPINE_HTTP_TIMEOUT_POOL=60
-    #
-    # Optional Cross-Origin Resource Sharing (CORS)
-    # Cross-Origin Resource Sharing (CORS) headers to include in REST responses.
-    # If "alpine.cors.enabled" is true, CORS headers will be sent, if false, no CORS headers will be sent.
-    # See Also: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
-      ALPINE_CORS_ENABLED: true
-      ALPINE_CORS_ALLOW_ORIGIN: "*"
-      # ALPINE_CORS_ALLOW_ORIGIN: ${CORS_ALLOW_ORIGIN}
-      ALPINE_CORS_ALLOW_METHODS: "GET, POST, PUT, DELETE, OPTIONS"
-      ALPINE_CORS_ALLOW_HEADERS: "Origin, Content-Type, Authorization, X-Requested-With, Content-Length, Accept, Origin, X-Api-Key, X-Total-Count, *"
-      ALPINE_CORS_EXPOSE_HEADERS: "Origin, Content-Type, Authorization, X-Requested-With, Content-Length, Accept, Origin, X-Api-Key, X-Total-Count"
-      ALPINE_CORS_ALLOW_CREDENTIALS: true
-      ALPINE_CORS_MAX_AGE: 3600
-    #
-    # Optional logging configuration
-    # - LOGGING_LEVEL=INFO
-    # - LOGGING_CONFIG_PATH=logback.xml
-    #
-    # Optional metrics properties
-    # - ALPINE_METRICS_ENABLED=true
-    # - ALPINE_METRICS_AUTH_USERNAME=
-    # - ALPINE_METRICS_AUTH_PASSWORD=
-    #
-    # Optional environmental variables to enable default notification publisher templates override and set the base directory to search for templates
-    # - DEFAULT_TEMPLATES_OVERRIDE_ENABLED=false
-    # - DEFAULT_TEMPLATES_OVERRIDE_BASE_DIRECTORY=/data
-    #
-    # Optional configuration for the Snyk analyzer
-    # - SNYK_THREAD_POOL_SIZE=10
-    # - SNYK_RETRY_MAX_ATTEMPTS=6
-    # - SNYK_RETRY_EXPONENTIAL_BACKOFF_MULTIPLIER=2
-    # - SNYK_RETRY_EXPONENTIAL_BACKOFF_INITIAL_DURATION_SECONDS=1
-    # - SNYK_RETRY_EXPONENTIAL_BACKOFF_MAX_DURATION_SECONDS=60
-    #
-    # Optional configuration for the OSS Index analyzer
-    # - OSSINDEX_REQUEST_MAX_PURL=128
-    # - OSSINDEX_RETRY_BACKOFF_MAX_ATTEMPTS=50
-    # - OSSINDEX_RETRY_BACKOFF_MULTIPLIER=2
-    # - OSSINDEX_RETRY_BACKOFF_MAX_DURATION=600000
-    #
-    # Optional configuration for the repository metadata analyzer cache stampede for high concurrency workloads
-    # - REPO_META_ANALYZER_CACHESTAMPEDEBLOCKER_ENABLED=true
-    # - REPO_META_ANALYZER_CACHESTAMPEDEBLOCKER_LOCK_BUCKETS=1000
-    # - REPO_META_ANALYZER_CACHESTAMPEDEBLOCKER_MAX_ATTEMPTS=10
-    #
-    # Optional configuration for the system requirements
-    # - SYSTEM_REQUIREMENT_CHECK_ENABLED=true
-    # Optional environmental variables to provide more JVM arguments to the API Server JVM, i.e. "-XX:ActiveProcessorCount=8"
-    # - EXTRA_JAVA_OPTIONS=
 
   {{ dependency_track_frontend_name }}:
     image: {{ dependency_track_frontend_image }}
     container_name: {{ dependency_track_frontend_name }}
+    volumes:
+      - "{{ dependency_track_path }}/config.json:/opt/owasp/dependency-track-frontend/static/config.json"
     ports:
       - "{{ dependency_track_frontend_port }}:8080"
     depends_on:
       - {{ dependency_track_apiserver_name }}
     networks:
       - {{ dependency_track_network_name }}
-      # volumes:
-      # - "/host/path/to/config.json:/app/static/config.json"
+    restart: unless-stopped
+
+  {{ dependency_track_database_name }}:
+    image: {{ dependency_track_database_image }}
+    container_name: {{ dependency_track_database_name }}
+    volumes:
+      - "{{ dependency_track_database_volume_name }}:/var/lib/postgresql/data"
+    ports:
+      - "{{ dependency_track_database_port }}:5432"
+    networks:
+      - {{ dependency_track_network_name }}
     restart: unless-stopped
     environment:
-      # The base URL of the API server.
-      # NOTE:
-      #   * This URL must be reachable by the browsers of your users.
-      #   * The frontend container itself does NOT communicate with the API server directly, it just serves static files.
-      #   * When deploying to dedicated servers, please use the external IP or domain of the API server.
-      # FIXME(sentenz) Replace API_BASE_URL from Dev to Prod
-      API_BASE_URL: http://localhost:8081
-      # API_BASE_URL: http://ec2-3-64-246-3.eu-central-1.compute.amazonaws.com:8081
-      # - "API_WITH_CREDENTIALS="
-      # - "OIDC_ISSUER="
-      # - "OIDC_CLIENT_ID="
-      # - "OIDC_SCOPE="
-      # - "OIDC_FLOW="
-      # - "OIDC_LOGIN_BUTTON_TEXT="
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: {{ dependency_track_name }}
 
 networks:
   {{ dependency_track_network_name }}:
