@@ -2,13 +2,12 @@
 
 The Ansible Collection for Component Analysis contains modules and roles to assist in automating the management of resources in OWASP Dependency-Track with Ansible.
 
-- [Ansible Collection for Component Analysis](#ansible-collection-for-component-analysis)
-  - [1. Usage](#1-usage)
-    - [1.1. Identity and Access](#11-identity-and-access)
-    - [1.2. Install and Uninstall](#12-install-and-uninstall)
-    - [1.3. Examples and Explanations](#13-examples-and-explanations)
-    - [1.4. Commands and Operations](#14-commands-and-operations)
-  - [2. Contributing](#2-contributing)
+- [1. Usage](#1-usage)
+  - [1.1. Identity and Access](#11-identity-and-access)
+  - [1.2. Install and Uninstall](#12-install-and-uninstall)
+  - [1.3. Examples and Explanations](#13-examples-and-explanations)
+  - [1.4. Commands and Operations](#14-commands-and-operations)
+- [2. Contributing](#2-contributing)
 
 ## 1. Usage
 
@@ -80,13 +79,13 @@ The Ansible Collection for Component Analysis contains modules and roles to assi
 
     ```yml
     ---
-    - name: Uploud BOM to Dependency-Track
+    - name: Uploud SBOM to Dependency-Track
       hosts: localhost
       gather_facts: false
 
       tasks:
-        - name: Create BOM
-          sentenz.component_analysis.bom_create:
+        - name: Create SBOM
+          sentenz.component_analysis.sbom_create:
             base_url: "{{ base_url }}"
             api_key: "{{ api_key }}"
             sbom_file_path: "{{ sbom_file_path }}"

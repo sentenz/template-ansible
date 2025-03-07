@@ -4,24 +4,28 @@ services:
     image: {{ grafana_promtail_image }}
     container_name: {{ grafana_promtail_name }}
     volumes:
-      - {{ grafana_promtail_path }}:/etc/promtail:ro
-      - /var/log:/var/log:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      # - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - "{{ grafana_promtail_path }}:/etc/promtail:ro"
+      - "/var/log:/var/log:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      # - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
     command: 
-      - --config.file=/etc/promtail/config.yml
-    privileged: true
+      - "--config.file=/etc/promtail/config.yml"
     ports:
       - "{{ grafana_promtail_port }}:9080"
     restart: always
     networks:
-      - observability
+{% for network in grafana_networks %}
+      - "{{ network }}"
+{% endfor %}
     deploy:
       mode: global
+    privileged: true
     security_opt:
       - no-new-privileges:true
 
 networks:
-  observability:
-    name: observability
+{% for network in grafana_networks %}
+  {{ network }}:
+    name: "{{ network }}"
     driver: bridge
+{% endfor %}

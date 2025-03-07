@@ -15,10 +15,10 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: bom_read
-short_description: Manage read BOM with REST API
+module: sbom_read
+short_description: Manage read SBOM with REST API
 description:
-  - Read BOM using OpenAPI defination for OWASP Dependency-Track API server.
+  - Read SBOM using OpenAPI defination for OWASP Dependency-Track API server.
 options:
   base_url:
     description: The base URL of the API.
@@ -29,14 +29,14 @@ options:
     required: true
     type: str
   uuid:
-    description: The UUID of the BOM.
+    description: The UUID of the SBOM.
     required: true
     type: str
 """
 
 EXAMPLES = r"""
-- name: Read a BOM
-  sentenz.component_analysis.bom_read:
+- name: Read a SBOM
+  sentenz.component_analysis.sbom_read:
     base_url: http://myapi.com
     api_key: myapikey
     uuid: myuuid

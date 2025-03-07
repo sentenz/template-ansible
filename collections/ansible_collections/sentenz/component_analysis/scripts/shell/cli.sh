@@ -310,7 +310,7 @@ function cli_sbommerge() {
   util_file_create "${log}"
   cp "${files[0]}" "${log}"
 
-  # FIXME(sentenz) Resolve a SBOM merge even woth only one file
+  # FIXME Resolve a SBOM merge even woth only one file
   # Loop through the rest of the files and merge them with the output file
   for ((i = 1; i < ${#files[@]}; i++)); do
     sbommerge --sbom-type spdx --format json --output-file "${log}" "${files[$i]}" "${log}"

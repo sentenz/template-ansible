@@ -1,0 +1,67 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+services:
+  "{{ dependency_track_apiserver_name }}":
+    image: "{{ dependency_track_apiserver_image }}"
+    container_name: "{{ dependency_track_apiserver_name }}"
+    volumes:
+      - "{{ dependency_track_apiserver_volume }}:/data"
+      # - "{{ dependency_track_apiserver_path }}/application.properties:/data/.dependency-track/application.properties:ro"
+{% if dependency_track_apiserver_port_expose %}
+    ports:
+      - "{{ dependency_track_apiserver_port }}:8080"
+{% endif %}
+    depends_on:
+      - "{{ dependency_track_database_name }}"
+    networks:
+{% for network in dependency_track_networks %}
+      - "{{ network }}"
+{% endfor %}
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 12288m
+        reservations:
+          memory: 8192m
+      restart_policy:
+        condition: on-failure
+    labels:
+{% for label in dependency_track_apiserver_labels %}
+      - "{{ label }}"
+{% endfor %}
+    environment:
+      # XXX Remove environment variables after mounting `application.properties` correctly
+      ALPINE_DATABASE_MODE: "{{ dependency_track_alpine_database_mode }}"
+      ALPINE_DATABASE_URL: "{{ dependency_track_alpine_database_url }}"
+      ALPINE_DATABASE_DRIVER: "{{ dependency_track_alpine_database_driver }}"
+      ALPINE_DATABASE_USERNAME: "{{ dependency_track_alpine_database_username }}"
+      ALPINE_DATABASE_PASSWORD: "{{ dependency_track_alpine_database_password }}"
+
+  "{{ dependency_track_database_name }}":
+    image: "{{ dependency_track_database_image }}"
+    container_name: "{{ dependency_track_database_name }}"
+    volumes:
+      - "{{ dependency_track_database_volume }}:/var/lib/postgresql/data"
+    ports:
+      - "{{ dependency_track_database_port }}:5432"
+    networks:
+{% for network in dependency_track_networks %}
+      - "{{ network }}"
+{% endfor %}
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: "{{ dependency_track_alpine_database_username }}"
+      POSTGRES_PASSWORD: "{{ dependency_track_alpine_database_password }}"
+      POSTGRES_DB: "{{ dependency_track_name }}"
+
+networks:
+{% for network in dependency_track_networks %}
+  {{ network }}:
+    name: "{{ network }}"
+    driver: bridge
+{% endfor %}
+
+volumes:
+  "{{ dependency_track_apiserver_volume }}": {}
+  "{{ dependency_track_database_volume }}": {}

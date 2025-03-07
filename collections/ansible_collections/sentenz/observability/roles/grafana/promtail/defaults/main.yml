@@ -1,6 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
+# Observability
+grafana_networks:
+  - observability-network
+
+# Grafana Promtail
 grafana_promtail_name: promtail
 grafana_promtail_image: grafana/promtail:latest
 grafana_promtail_port: 9080
-grafana_promtail_path: /etc/observability/promtail
+grafana_promtail_path: /etc/ansible_collections/observability/promtail

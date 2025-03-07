@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# Ownership
+traefik_ownership_owner: "{{ traefik_name }}"
+traefik_ownership_group: "{{ traefik_name }}"
+
+# Permissions Mode
+traefik_permission_directory: "0755"
+traefik_permission_file: "0644"
+
+# Handler Flags
+traefik_handler_restart: true
+traefik_handler_stop: true
+traefik_handler_absent: true
+
+# Notifications and Service Names
+traefik_notify_restart: Restart Docker Compose
+traefik_notify_stop: Stop Docker Compose
+traefik_notify_absent: Remove Docker Compose

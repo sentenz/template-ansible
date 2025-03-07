@@ -15,10 +15,10 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: bom_delete
-short_description: Manage delete BOM with REST API
+module: sbom_delete
+short_description: Manage delete SBOM with REST API
 description:
-  - Delete BOM using OpenAPI defination for OWASP Dependency-Track API server.
+  - Delete SBOM using OpenAPI defination for OWASP Dependency-Track API server.
 options:
   base_url:
     description: The base URL of the API.
@@ -29,14 +29,14 @@ options:
     required: true
     type: str
   uuid:
-    description: The UUID of the BOM.
+    description: The UUID of the SBOM.
     required: true
     type: str
 """
 
 EXAMPLES = r"""
-- name: Delete a BOM
-  sentenz.component_analysis.bom_delete:
+- name: Delete a SBOM
+  sentenz.component_analysis.sbom_delete:
     base_url: http://myapi.com
     api_key: myapikey
     uuid: myuuid
@@ -81,7 +81,7 @@ def run_module():
 
     result["original_message"] = module.params
     result["message"] = (
-        "BOM deleted successfully" if status_code == 200 else "Failed to delete BOM"
+        "SBOM deleted successfully" if status_code == 200 else "Failed to delete SBOM"
     )
 
     module.exit_json(**result)

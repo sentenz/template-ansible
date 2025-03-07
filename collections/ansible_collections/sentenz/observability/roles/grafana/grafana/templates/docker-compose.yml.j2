@@ -1,28 +1,38 @@
 ---
 services:
-  {{ grafana_name }}:
-    image: {{ grafana_image }}
-    container_name: {{ grafana_name }}
-    user: {{ grafana_ownership_owner }}
+  "{{ grafana_name }}":
+    image: "{{ grafana_image }}"
+    container_name: "{{ grafana_name }}"
+    user: "{{ grafana_ownership_owner }}"
     volumes:
-      # - {{ grafana_path }}/grafana.ini:/etc/grafana:ro
-      - {{ grafana_path }}/dashboards:/var/lib/grafana/dashboards:ro
-      - {{ grafana_path }}/provisioning:/etc/grafana/provisioning:ro
-      - grafana_data:/var/lib/grafana
+      # - "{{ grafana_path }}/grafana.ini:/etc/grafana:ro"
+      - "{{ grafana_path }}/dashboards:/var/lib/grafana/dashboards:ro"
+      - "{{ grafana_path }}/provisioning:/etc/grafana/provisioning:ro"
+      - "{{ grafana_volume }}:/var/lib/grafana"
+{% if grafana_port_expose %}
     ports:
       - "{{ grafana_port }}:3000"
+{% endif %}
     restart: always
     networks:
-      - observability
+{% for network in grafana_networks %}
+      - "{{ network }}"
+{% endfor %}
     deploy:
       mode: global
     security_opt:
       - no-new-privileges:true
+    labels:
+{% for label in grafana_labels %}
+      - "{{ label }}"
+{% endfor %}
 
 networks:
-  observability:
-    name: observability
+{% for network in grafana_networks %}
+  {{ network }}:
+    name: "{{ network }}"
     driver: bridge
+{% endfor %}
 
 volumes:
-  grafana_data: {}
+  "{{ grafana_volume }}": {}

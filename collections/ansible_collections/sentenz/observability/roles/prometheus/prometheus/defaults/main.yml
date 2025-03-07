@@ -1,6 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
+# Observability
+prometheus_network: observability-network
+
+# Prometheus
 prometheus_name: prometheus
 prometheus_image: prom/prometheus:latest
 prometheus_port: 9090
-prometheus_path: /etc/observability/prometheus
+prometheus_volume: prometheus-data
+prometheus_path: /etc/ansible_collections/observability/prometheus

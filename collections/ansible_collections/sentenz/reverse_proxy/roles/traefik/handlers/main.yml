@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+- name: Restart Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ traefik_path }}"
+    files:
+      - docker-compose.yml
+    state: restarted
+  when: traefik_handler_restart | default(false)
+
+- name: Stop Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ traefik_path }}"
+    files:
+      - docker-compose.yml
+    state: stopped
+  when: traefik_handler_stop | default(false)
+  run_once: true
+
+- name: Remove Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ traefik_path }}"
+    files:
+      - docker-compose.yml
+    state: absent
+  when: traefik_handler_absent | default(false)
+  run_once: true

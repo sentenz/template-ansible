@@ -2,7 +2,7 @@
 ---
 namespace: sentenz
 name: observability
-version: "1.0.0"
+version: 1.0.0
 authors:
   - sentenz
 readme: README.md

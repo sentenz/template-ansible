@@ -15,10 +15,10 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: bom_create
-short_description: Manage create BOM with REST API
+module: sbom_create
+short_description: Manage create SBOM with REST API
 description:
-  - Create BOM using OpenAPI defination for OWASP Dependency-Track API server.
+  - Create SBOM using OpenAPI defination for OWASP Dependency-Track API server.
 options:
   base_url:
     description: The base URL of the API.
@@ -65,8 +65,8 @@ EXAMPLES = r"""
   gather_facts: false
 
   tasks:
-    - name: Create BOM
-      sentenz.component_analysis.bom_create:
+    - name: Create SBOM
+      sentenz.component_analysis.sbom_create:
         base_url: "{{ base_url }}"
         api_key: "{{ api_key }}"
         sbom_file_path: "{{ sbom_file_path }}"
@@ -90,12 +90,12 @@ message:
 
 def create_bom(data):
     """
-    Send a POST request to upload a Bill of Materials (BOM).
+    Send a POST request to upload a Bill of Materials (SBOM).
 
     :param base_url: The API base URL.
     :param api_key: The API key for authentication.
     :param project_id: The unique identifier for the project.
-    :param file_path: The file path of the BOM to upload.
+    :param file_path: The file path of the SBOM to upload.
     """
 
     base_url = data["base_url"]

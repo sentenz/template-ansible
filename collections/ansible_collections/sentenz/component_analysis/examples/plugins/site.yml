@@ -6,7 +6,7 @@
   tasks:
     # ansible-playbook -i inventory.ini site.yml -e "base_url=http://3.64.246.3 api_key=<api_key> sbom_file_path=sbom.cdx.json project_name=DataParser project_version=2.8.3"
     - name: Create SBOM
-      sentenz.component_analysis.bom_create:
+      sentenz.component_analysis.sbom_create:
         base_url: "{{ base_url }}"
         api_key: "{{ api_key }}"
         sbom_file_path: "{{ sbom_file_path }}"
@@ -17,7 +17,7 @@
 
     # # ansible-playbook -i inventory.ini site.yml site.yml -e "base_url=http://3.64.246.3 api_key=<api_key> uuid=36f5b85c-0015-43c3-a0ad-489c4138e610"
     # - name: Delete a SBOM
-    #   sentenz.component_analysis.bom_delete:
+    #   sentenz.component_analysis.sbom_delete:
     #     base_url: "{{ base_url }}"
     #     api_key: "{{ api_key }}"
     #     uuid: "{{ uuid }}"
@@ -25,7 +25,7 @@
 
     # # ansible-playbook -i inventory.ini site.yml site.yml -e "base_url=http://3.64.246.3 api_key=<api_key> uuid=36f5b85c-0015-43c3-a0ad-489c4138e610"
     # - name: Read a SBOM
-    #   sentenz.component_analysis.bom_read:
+    #   sentenz.component_analysis.sbom_read:
     #     base_url: "{{ base_url }}"
     #     api_key: "{{ api_key }}"
     #     uuid: "{{ uuid }}"

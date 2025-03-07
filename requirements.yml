@@ -4,6 +4,9 @@ collections:
   - name: sentenz.container
     src: ./collections/ansible_collections/sentenz/container
     type: subdirs
+  - name: sentenz.reverse_proxy
+    src: ./collections/ansible_collections/sentenz/reverse_proxy
+    type: subdirs
   - name: sentenz.observability
     src: ./collections/ansible_collections/sentenz/observability
     type: subdirs

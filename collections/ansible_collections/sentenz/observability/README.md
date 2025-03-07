@@ -1,6 +1,6 @@
 # Ansible Collection for Observability
 
-<!-- TODO(sentenz) -->
+<!-- TODO -->
 
 The Ansible Collection `sentenz.dependency_track` contains modules and roles to assist in automating the management of resources in OWASP Dependency-Track with Ansible.
 
@@ -39,14 +39,14 @@ The Ansible Collection `sentenz.dependency_track` contains modules and roles to 
     > Install a collection from a private repository by running `ansible-galaxy collection install <repository>` command in a terminal.
 
     ```bash
-    ansible-galaxy collection install git@github/sentenz/sentenz.dependency_track.git
+    ansible-galaxy collection install git@gitlab.net:alkl/sentenz.component_analysis.git
     ```
 
 2. Update
     > Upgrade a collection from a private repository by running `ansible-galaxy collection install <repository> --upgrade` command in a terminal.
 
     ```bash
-    ansible-galaxy collection install git@github/sentenz/sentenz.dependency_track.git --upgrade
+    ansible-galaxy collection install git@gitlab.net:alkl/sentenz.component_analysis.git --upgrade
     ```
 
 3. Uninstall
@@ -69,7 +69,7 @@ The Ansible Collection `sentenz.dependency_track` contains modules and roles to 
       become: true
 
       roles:
-        - role: sentenz.dependency_track.dtrack
+        - role: sentenz.component_analysis.dependency_track
     ```
 
     ```bash
@@ -81,13 +81,13 @@ The Ansible Collection `sentenz.dependency_track` contains modules and roles to 
 
     ```yml
     ---
-    - name: Uploud BOM to Dependency-Track
+    - name: Uploud SBOM to Dependency-Track
       hosts: localhost
       gather_facts: false
 
       tasks:
-        - name: Create BOM
-          sentenz.dependency_track.bom_create:
+        - name: Create SBOM
+          sentenz.component_analysis.sbom_create:
             base_url: "{{ base_url }}"
             api_key: "{{ api_key }}"
             sbom_file_path: "{{ sbom_file_path }}"

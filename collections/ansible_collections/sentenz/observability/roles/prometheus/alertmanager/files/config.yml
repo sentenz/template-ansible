@@ -19,20 +19,20 @@
 # receivers:
 #   - name: "team-X-mails"
 #     email_configs:
-#       - from: alexej.kloos@outlook.com
-#         to: alexej.kloos@outlook.com
+#       - from: example@outlook.com
+#         to: example@outlook.com
 #         send_resolved: false
 #         headers:
 #           subject: "Prometheus Mail Alerts"
 
 ---
 route:
-  group_by: ["alertname"]
+  group_by: [alertname]
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 1h
-  receiver: "webhook"
+  receiver: webhook
 receivers:
-  - name: "webhook"
+  - name: webhook
     webhook_configs:
-      - url: "http://localhost:9093/api/alerts"
+      - url: http://localhost:9093/api/alerts

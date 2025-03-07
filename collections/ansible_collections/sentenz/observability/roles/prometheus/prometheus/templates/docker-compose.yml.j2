@@ -1,25 +1,25 @@
 ---
 services:
-  {{ prometheus_name }}:
-    image: {{ prometheus_image }}
-    container_name: {{ prometheus_name }}
+  "{{ prometheus_name }}":
+    image: "{{ prometheus_image }}"
+    container_name: "{{ prometheus_name }}"
     volumes:
-      - {{ prometheus_path }}:/etc/prometheus:ro
-      - prometheus_data:/data/prometheus
+      - "{{ prometheus_path }}:/etc/prometheus:ro"
+      - "{{ prometheus_volume }}:/data/prometheus"
     ports:
       - "{{ prometheus_port }}:9090"
     restart: always
     networks:
-      - observability
+      - "{{ prometheus_network }}"
     deploy:
       mode: global
     security_opt:
       - no-new-privileges:true
 
 networks:
-  observability:
-    name: observability
+  "{{ prometheus_network }}":
+    name: "{{ prometheus_network }}"
     driver: bridge
 
 volumes:
-  prometheus_data: {}
+  "{{ prometheus_volume }}": {}

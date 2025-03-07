@@ -10,7 +10,7 @@ endif
 default: help
 
 help:
-	@awk 'BEGIN {printf "TASK\n\tA centralized collection of commands and operations used in this project.\n\n"}'
+	@awk 'BEGIN {printf "TASK\n\tA collection of task runner used in this project.\n\n"}'
 	@awk 'BEGIN {printf "USAGE\n\tmake $(shell tput -Txterm setaf 6)[target]$(shell tput -Txterm sgr0)\n\n"}' $(MAKEFILE_LIST)
 	@awk '/^##/{c=substr($$0,3);next}c&&/^[[:alpha:]][[:alnum:]_-]+:/{print "$(shell tput -Txterm setaf 6)\t" substr($$1,1,index($$1,":")) "$(shell tput -Txterm sgr0)",c}1{c=0}' $(MAKEFILE_LIST) | column -s: -t
 .PHONY: help
@@ -49,11 +49,12 @@ galaxy-uninstall:
 
 ## Perform the Static Analysis of Ansible configuration
 ansible-lint:
-	ansible-lint ./
-	ansible-lint ./collections/ansible_collections/sentenz/component_analysis/
-	ansible-lint ./collections/ansible_collections/sentenz/observability/
-	ansible-lint ./inventory/
-	ansible-lint ./playbooks/
+	ansible-lint --fix ./
+	ansible-lint --fix ./inventory/
+	ansible-lint --fix ./playbooks/
+	ansible-lint --fix ./collections/ansible_collections/sentenz/component_analysis/
+	ansible-lint --fix ./collections/ansible_collections/sentenz/observability/
+	ansible-lint --fix ./collections/ansible_collections/sentenz/reverse_proxy/
 
 	# ansible-later **/*.yml
 .PHONY: ansible-lint

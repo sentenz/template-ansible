@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+services:
+  "{{ dependency_track_frontend_name }}":
+    image: "{{ dependency_track_frontend_image }}"
+    container_name: "{{ dependency_track_frontend_name }}"
+    # volumes:
+    #   - "{{ dependency_track_frontend_path }}/config.json:/opt/owasp/dependency-track-frontend/static/config.json:ro"
+{% if dependency_track_frontend_port_expose %}
+    ports:
+      - "{{ dependency_track_frontend_port }}:8080"
+{% endif %}
+    networks:
+{% for network in dependency_track_networks %}
+      - "{{ network }}"
+{% endfor %}
+    restart: unless-stopped
+    labels:
+{% for label in dependency_track_frontend_labels %}
+      - "{{ label }}"
+{% endfor %}
+    environment:
+      API_BASE_URL: "{{ dependency_track_frontend_api_base_url }}"
+
+networks:
+{% for network in dependency_track_networks %}
+  {{ network }}:
+    name: "{{ network }}"
+    driver: bridge
+{% endfor %}

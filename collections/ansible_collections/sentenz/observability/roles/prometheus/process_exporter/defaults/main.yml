@@ -1,6 +1,0 @@
-# SPDX-License-Identifier: Apache-2.0
----
-prometheus_process_exporter_name: process_exporter
-prometheus_process_exporter_image: ncabatoff/process-exporter:latest
-prometheus_process_exporter_port: 9256
-prometheus_process_exporter_path: /etc/observability/process-exporter

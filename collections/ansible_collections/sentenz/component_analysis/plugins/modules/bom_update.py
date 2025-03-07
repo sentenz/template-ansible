@@ -15,10 +15,10 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: bom_update
-short_description: Manage update BOM with REST API
+module: sbom_update
+short_description: Manage update SBOM with REST API
 description:
-  - Update BOM using OpenAPI defination for OWASP Dependency-Track API server.
+  - Update SBOM using OpenAPI defination for OWASP Dependency-Track API server.
 options:
   base_url:
     description: The base URL of the API.
@@ -45,8 +45,8 @@ EXAMPLES = r"""
       set_fact:
         bom_data: "{{ lookup('file', json_file) | from_json }}"
 
-    - name: Update BOM
-      sentenz.component_analysis.bom_read:
+    - name: Update SBOM
+      sentenz.component_analysis.sbom_read:
         base_url: 'http://myapi.com'
         api_key: 'myapikey'
         body: "{{ bom_data }}"

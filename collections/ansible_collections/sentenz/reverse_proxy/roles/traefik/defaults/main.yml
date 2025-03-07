@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# Reverse Proxy
+traefik_name: traefik
+traefik_path: /etc/ansible_collections/reverse_proxy/traefik
+traefik_networks:
+  - traefik-network
+
+# Reverse Proxy Traefik
+traefik_image: traefik:latest
+traefik_ports: []
+traefik_acme_email: your-email@example.com
+traefik_acme_storage: /letsencrypt/acme.json
+traefik_certificates_resolver: myresolver
+traefik_challenge_dns_provider: cloudflare
+traefik_challenge_dns_provider_variables: ""
+
+traefik_dynamic_config: /etc/traefik/dynamic/
+
+traefik_challenge:
+  description: The type of challenge for ACME certificate validation.
+  default: debug
+  choices:
+    - http
+    - dns
+    - tls
+    - debug
+
+traefik_challenge_http:
+  - --entryPoints.web.address=:80
+  - --entryPoints.websecure.address=:443
+  - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.httpchallenge=true
+  - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.httpchallenge.entrypoint=web
+  - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.email={{ traefik_acme_email }}
+  - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.storage={{ traefik_acme_storage }}
+
+traefik_challenge_dns:
+  - --entryPoints.web.address=:80
+  - --entrypoints.websecure.address=:443
+  - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.dnschallenge=true
+  - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.dnschallenge.provider={{ traefik_challenge_dns_provider }}
+  - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.email={{ traefik_acme_email }}
+  - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.storage={{ traefik_acme_storage }}
+
+traefik_challenge_tls:
+  - --entrypoints.websecure.address=:443
+  - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.tlschallenge=true
+  - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.email={{ traefik_acme_email }}
+  - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.storage={{ traefik_acme_storage }}
+
+traefik_challenge_debug:
+  - --entrypoints.web.address=:80
+  - --entrypoints.websecure.address=:443
+  - --entrypoints.websecure.http.tls=true
+  - --entrypoints.web.http.redirections.entryPoint.to=websecure
+  - --entrypoints.web.http.redirections.entryPoint.scheme=https
+  - --providers.file.directory={{ traefik_dynamic_config }}
+  - --providers.file.watch=true
+
+traefik_challenge_options: []

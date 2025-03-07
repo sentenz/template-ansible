@@ -1,23 +1,23 @@
 ---
 services:
-  {{ prometheus_alertmanager_name }}:
-    image: {{ prometheus_alertmanager_image }}
-    container_name: {{ prometheus_alertmanager_name }}
+  "{{ prometheus_alertmanager_name }}":
+    image: "{{ prometheus_alertmanager_image }}"
+    container_name: "{{ prometheus_alertmanager_name }}"
     volumes:
-      - {{ prometheus_alertmanager_path }}:/etc/alertmanager:ro
+      - "{{ prometheus_alertmanager_path }}:/etc/alertmanager:ro"
     command:
-      - --config.file=/etc/alertmanager/config.yml
+      - "--config.file=/etc/alertmanager/config.yml"
     ports:
       - "{{ prometheus_alertmanager_port }}:9093"
     restart: always
     networks:
-      - observability
+      - "{{ prometheus_network }}"
     deploy:
       mode: global
     security_opt:
       - no-new-privileges:true
 
 networks:
-  observability:
-    name: observability
+  "{{ prometheus_network }}":
+    name: "{{ prometheus_network }}"
     driver: bridge

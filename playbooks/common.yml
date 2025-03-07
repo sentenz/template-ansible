@@ -4,9 +4,9 @@
   hosts: local
   become: true
   roles:
-    - sentenz.container.docker.ubuntu
+    - role: sentenz.container.docker.ubuntu
   tasks:
     - name: Ensure Runs Once
       debug:
-        msg: "Task runs only once"
+        msg: Task runs only once
       run_once: true
