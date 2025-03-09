@@ -11,6 +11,9 @@ grafana_labels:
   - traefik.http.routers.{{ grafana_router }}.tls=true
   - traefik.http.routers.{{ grafana_router }}.tls.certresolver=letsencrypt
 
+grafana_networks:
+ - observability-network
+
 # Component Analysis (Dependency-Track)
 dependency_track_apiserver_domain: https://api.dependency-track.localhost
 dependency_track_apiserver_port_expose: false
@@ -32,6 +35,9 @@ dependency_track_frontend_labels:
   - traefik.http.routers.{{ dependency_track_frontend_router }}.entrypoints=websecure
   - traefik.http.routers.{{ dependency_track_frontend_router }}.tls=true
   - "traefik.http.routers.{{ grafana_router }}.tls.certresolver=letsencrypt"
+
+dependency_track_networks:
+  - dependency-track-network
 
 # Reverse Proxy (Traefik)
 traefik_challenge: dns
