@@ -67,7 +67,7 @@ test-coverage:
 
 ## Perform install Role and Collection of Ansible Galaxy
 galaxy-install:
-	ansible-galaxy collection install git@github/sentenz/sentenz.component_analysis.git --upgrade
+	ansible-galaxy collection install git@<git-repo>/sentenz.component_analysis.git --upgrade
 .PHONY: galaxy-install
 
 ## Perform upgrade Role and Collection of Ansible Galaxy

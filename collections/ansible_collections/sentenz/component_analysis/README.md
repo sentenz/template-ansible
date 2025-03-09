@@ -37,14 +37,14 @@ The Ansible Collection for Component Analysis contains modules and roles to assi
     > Install a collection from a private repository by running `ansible-galaxy collection install <repository>` command in a terminal.
 
     ```bash
-    ansible-galaxy collection install git@github/sentenz/sentenz.component_analysis.git
+    ansible-galaxy collection install git@<git-repo>/sentenz.component_analysis.git
     ```
 
 2. Update
     > Upgrade a collection from a private repository by running `ansible-galaxy collection install <repository> --upgrade` command in a terminal.
 
     ```bash
-    ansible-galaxy collection install git@github/sentenz/sentenz.component_analysis.git --upgrade
+    ansible-galaxy collection install git@<git-repo>/sentenz.component_analysis.git --upgrade
     ```
 
 3. Uninstall
