@@ -5,10 +5,10 @@ grafana_domain: observability.localhost
 grafana_port_expose: false
 grafana_router: grafana
 grafana_labels:
-  - "traefik.enable=true"
-  - "traefik.http.routers.{{ grafana_router }}.rule=Host(`{{ grafana_domain }}`)"
-  - "traefik.http.routers.{{ grafana_router }}.entrypoints=websecure"
-  - "traefik.http.routers.{{ grafana_router }}.tls=true"
+  - traefik.enable=true
+  - traefik.http.routers.{{ grafana_router }}.rule=Host(`{{ grafana_domain }}`)
+  - traefik.http.routers.{{ grafana_router }}.entrypoints=websecure
+  - traefik.http.routers.{{ grafana_router }}.tls=true
 
 grafana_networks:
  - observability-network

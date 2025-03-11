@@ -8,9 +8,9 @@
     - role: sentenz.observability.prometheus.alertmanager
     - role: sentenz.observability.grafana.grafana
     - role: sentenz.observability.grafana.loki
+    - role: sentenz.reverse_proxy.traefik
     # TODO
     # - role: sentenz.observability.grafana.tempo
-    - role: sentenz.reverse_proxy.traefik
 
 - name: Setup Observability Agents/Collectors
   hosts: local
