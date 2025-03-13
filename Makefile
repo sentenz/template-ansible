@@ -59,25 +59,61 @@ ansible-lint:
 	# ansible-later **/*.yml
 .PHONY: ansible-lint
 
-## Provisioning of CaC to a specified environment
+## Deploy the Ansible configuration to the target environment
 ansible-deploy:
-	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --skip-tags restart,stop,destroy
+	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --skip-tags restart,stop,destroy --vault-password-file "./vault_passwords/$(ENV).vault"
 .PHONY: ansible-deploy
 
-## Destroy of CaC to a specified environment
+## Destroy the Ansible configuration on the target environment
 ansible-destroy:
 	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --tags destroy
 .PHONY: ansible-destroy
 
-## Restarting of CaC to a specified environment
+## Restart the Ansible configuration on the target environment
 ansible-restart:
 	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --tags restart
 .PHONY: ansible-restart
 
-## Stopping of CaC to a specified environment
+## Stop the Ansible configuration on the target environment
 ansible-stop:
 	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --tags stop
 .PHONY: ansible-stop
+
+# Usage: make ansible-vault-encrypt <file>
+#
+## Encrypt the Ansible Vault
+ansible-vault-encrypt:
+	@if [ "$(filter-out $@,$(MAKECMDGOALS))" != "" ]; then \
+		ansible-vault encrypt --vault-password-file="./vault_passwords/$(ENV).vault" "$(filter-out $@,$(MAKECMDGOALS))"; \
+	else \
+		echo "Usage: make ansible-vault-encrypt <file>"; \
+		exit 1; \
+	fi
+.PHONY: ansible-vault-encrypt
+
+# Usage: make ansible-vault-decrypt <file>
+#
+## Decrypt the Ansible Vault
+ansible-vault-decrypt:
+	@if [ "$(filter-out $@,$(MAKECMDGOALS))" != "" ]; then \
+		ansible-vault decrypt --vault-password-file="./vault_passwords/$(ENV).vault" "$(filter-out $@,$(MAKECMDGOALS))"; \
+    else \
+		echo "Usage: make ansible-vault-encrypt <file>"; \
+		exit 1; \
+    fi
+.PHONY: ansible-vault-decrypt
+
+# Usage: make ansible-vault-view <file>
+#
+## View the Ansible Vault
+ansible-vault-view:
+	@if [ "$(filter-out $@,$(MAKECMDGOALS))" != "" ]; then \
+		ansible-vault view --vault-password-file="./vault_passwords/$(ENV).vault" "$(filter-out $@,$(MAKECMDGOALS))"; \
+    else \
+		echo "make ansible-vault-view <file>"; \
+		exit 1; \
+    fi
+.PHONY: ansible-vault-view
 
 ## Open AWS EC2 Instance in the terminal
 aws-terminal:
