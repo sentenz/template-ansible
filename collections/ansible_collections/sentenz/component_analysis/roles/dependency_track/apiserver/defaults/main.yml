@@ -23,11 +23,11 @@ dependency_track_database_port: 5432
 dependency_track_database_volume: dependency-track-database-data
 
 # Dependency-Track API Server Environment Variables
-dependency_track_alpine_database_url: jdbc:postgresql://{{ dependency_track_database_name }}:{{ dependency_track_database_port }}/{{ dependency_track_name }}
-dependency_track_alpine_database_driver: org.postgresql.Driver
-dependency_track_alpine_database_mode: external
-dependency_track_alpine_database_username: admin
-dependency_track_alpine_database_password: admin
+dependency_track_database_url: jdbc:postgresql://{{ dependency_track_database_name }}:{{ dependency_track_database_port }}/{{ dependency_track_name }}
+dependency_track_database_driver: org.postgresql.Driver
+dependency_track_database_mode: external
 # XXX Credentials Sensitive data need to be encrypted with Ansible Vault
-# dependency_track_alpine_database_username: "{{ vault_admin_user }}"
-# dependency_track_alpine_database_password: "{{ vault_admin_password }}"
+dependency_track_database_username: admin
+dependency_track_database_password: admin
+# dependency_track_database_username: "{{ vault_admin_user }}"
+# dependency_track_database_password: "{{ vault_admin_password }}"

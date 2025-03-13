@@ -32,11 +32,11 @@ services:
 {% endfor %}
     environment:
       # XXX Remove environment variables after mounting `application.properties` correctly
-      ALPINE_DATABASE_MODE: "{{ dependency_track_alpine_database_mode }}"
-      ALPINE_DATABASE_URL: "{{ dependency_track_alpine_database_url }}"
-      ALPINE_DATABASE_DRIVER: "{{ dependency_track_alpine_database_driver }}"
-      ALPINE_DATABASE_USERNAME: "{{ dependency_track_alpine_database_username }}"
-      ALPINE_DATABASE_PASSWORD: "{{ dependency_track_alpine_database_password }}"
+      ALPINE_DATABASE_MODE: "{{ dependency_track_database_mode }}"
+      ALPINE_DATABASE_URL: "{{ dependency_track_database_url }}"
+      ALPINE_DATABASE_DRIVER: "{{ dependency_track_database_driver }}"
+      ALPINE_DATABASE_USERNAME: "{{ dependency_track_database_username }}"
+      ALPINE_DATABASE_PASSWORD: "{{ dependency_track_database_password }}"
 
   "{{ dependency_track_database_name }}":
     image: "{{ dependency_track_database_image }}"
@@ -51,8 +51,8 @@ services:
 {% endfor %}
     restart: unless-stopped
     environment:
-      POSTGRES_USER: "{{ dependency_track_alpine_database_username }}"
-      POSTGRES_PASSWORD: "{{ dependency_track_alpine_database_password }}"
+      POSTGRES_USER: "{{ dependency_track_database_username }}"
+      POSTGRES_PASSWORD: "{{ dependency_track_database_password }}"
       POSTGRES_DB: "{{ dependency_track_name }}"
 
 networks:

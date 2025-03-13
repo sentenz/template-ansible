@@ -5,7 +5,7 @@ services:
     container_name: "{{ grafana_name }}"
     user: "{{ grafana_ownership_owner }}"
     volumes:
-      # - "{{ grafana_path }}/grafana.ini:/etc/grafana:ro"
+      - "{{ grafana_path }}/grafana.ini:/etc/grafana/grafana.ini:ro"
       - "{{ grafana_path }}/dashboards:/var/lib/grafana/dashboards:ro"
       - "{{ grafana_path }}/provisioning:/etc/grafana/provisioning:ro"
       - "{{ grafana_volume }}:/var/lib/grafana"
