@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
 # Observability (Grafana)
+grafana_admin_user: "{{ vault_grafana_admin_user }}"
+grafana_admin_password: "{{ vault_grafana_admin_password }}"
+
 grafana_domain: observability.localhost
 grafana_port_expose: false
 grafana_router: grafana
@@ -14,6 +17,9 @@ grafana_networks:
  - observability-network
 
 # Component Analysis (Dependency-Track)
+dependency_track_database_username: "{{ vault_dependency_track_database_username }}"
+dependency_track_database_password: "{{ vault_dependency_track_database_password }}"
+
 dependency_track_apiserver_domain: api.dependency-track.localhost
 dependency_track_apiserver_port_expose: false
 dependency_track_apiserver_router: apiserver
