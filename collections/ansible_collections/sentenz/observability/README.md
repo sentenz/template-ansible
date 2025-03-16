@@ -39,14 +39,14 @@ The Ansible Collection `sentenz.dependency_track` contains modules and roles to 
     > Install a collection from a private repository by running `ansible-galaxy collection install <repository>` command in a terminal.
 
     ```bash
-    ansible-galaxy collection install git@<git-repo>/sentenz.component_analysis.git
+    ansible-galaxy collection install git@<git-repo>/sentenz.observability.git
     ```
 
 2. Update
     > Upgrade a collection from a private repository by running `ansible-galaxy collection install <repository> --upgrade` command in a terminal.
 
     ```bash
-    ansible-galaxy collection install git@<git-repo>/sentenz.component_analysis.git --upgrade
+    ansible-galaxy collection install git@<git-repo>/sentenz.observability.git --upgrade
     ```
 
 3. Uninstall
@@ -69,7 +69,7 @@ The Ansible Collection `sentenz.dependency_track` contains modules and roles to 
       become: true
 
       roles:
-        - role: sentenz.component_analysis.dependency_track
+        - role: sentenz.observability.dependency_track
     ```
 
     ```bash
@@ -87,7 +87,7 @@ The Ansible Collection `sentenz.dependency_track` contains modules and roles to 
 
       tasks:
         - name: Create SBOM
-          sentenz.component_analysis.sbom_create:
+          sentenz.observability.sbom_create:
             base_url: "{{ base_url }}"
             api_key: "{{ api_key }}"
             sbom_file_path: "{{ sbom_file_path }}"

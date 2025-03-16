@@ -61,22 +61,22 @@ ansible-lint:
 
 ## Deploy the Ansible configuration to the target environment
 ansible-deploy:
-	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --skip-tags restart,stop,destroy --vault-password-file "./vault_passwords/$(ENV).vault"
+	ansible-playbook -i inventory/$(ENV)/hosts.yml site.yml --ask-become-pass --skip-tags restart,stop,destroy --vault-password-file "./vault_passwords/$(ENV).vault"
 .PHONY: ansible-deploy
 
 ## Destroy the Ansible configuration on the target environment
 ansible-destroy:
-	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --tags destroy
+	ansible-playbook -i inventory/$(ENV)/hosts.yml site.yml --ask-become-pass --tags destroy --vault-password-file "./vault_passwords/$(ENV).vault"
 .PHONY: ansible-destroy
 
 ## Restart the Ansible configuration on the target environment
 ansible-restart:
-	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --tags restart
+	ansible-playbook -i inventory/$(ENV)/hosts.yml site.yml --ask-become-pass --tags restart --vault-password-file "./vault_passwords/$(ENV).vault"
 .PHONY: ansible-restart
 
 ## Stop the Ansible configuration on the target environment
 ansible-stop:
-	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --tags stop
+	ansible-playbook -i inventory/$(ENV)/hosts.yml site.yml --ask-become-pass --tags stop --vault-password-file "./vault_passwords/$(ENV).vault"
 .PHONY: ansible-stop
 
 # Usage: make ansible-vault-encrypt <file>

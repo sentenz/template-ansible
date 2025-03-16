@@ -20,7 +20,7 @@ grafana_networks:
 dependency_track_database_username: "{{ vault_dependency_track_database_username }}"
 dependency_track_database_password: "{{ vault_dependency_track_database_password }}"
 
-dependency_track_apiserver_domain: api.dependency-track.localhost
+dependency_track_apiserver_domain: api.component-analysis.localhost
 dependency_track_apiserver_port_expose: false
 dependency_track_apiserver_router: apiserver
 dependency_track_apiserver_labels:
@@ -29,8 +29,8 @@ dependency_track_apiserver_labels:
   - traefik.http.routers.{{ dependency_track_apiserver_router }}.entrypoints=websecure
   - traefik.http.routers.{{ dependency_track_apiserver_router }}.tls=true
 
-dependency_track_frontend_domain: dependency-track.localhost
-dependency_track_frontend_api_base_url: https://api.dependency-track.localhost
+dependency_track_frontend_domain: component-analysis.localhost
+dependency_track_frontend_api_base_url: https://api.component-analysis.localhost
 dependency_track_frontend_port_expose: false
 dependency_track_frontend_router: frontend
 dependency_track_frontend_labels:

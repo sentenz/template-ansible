@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
 - name: Setup Component Analysis (Dependency-Track) with Reverse Proxy (Traefik)
-  hosts: local
+  hosts: component_analysis
   become: true
   roles:
     - role: sentenz.component_analysis.dependency_track.apiserver

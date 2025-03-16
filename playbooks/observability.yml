@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
 - name: Setup Observability (Prometheus/Grafana) with Reverse Proxy (Traefik)
-  hosts: local
+  hosts: observability
   become: true
   roles:
     - role: sentenz.observability.prometheus.prometheus

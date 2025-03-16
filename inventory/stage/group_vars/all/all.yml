@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
 # Observability (Grafana)
+grafana_admin_user: "{{ vault_grafana_admin_user }}"
+grafana_admin_password: "{{ vault_grafana_admin_password }}"
+
 grafana_domain: https://staging.observability.dev
 grafana_port_expose: false
 grafana_router: grafana
@@ -15,7 +18,10 @@ grafana_networks:
  - observability-network
 
 # Component Analysis (Dependency-Track)
-dependency_track_apiserver_domain: https://staging.api.dependency-track.dev
+dependency_track_database_username: "{{ vault_dependency_track_database_username }}"
+dependency_track_database_password: "{{ vault_dependency_track_database_password }}"
+
+dependency_track_apiserver_domain: https://staging.api.component-analysis.dev
 dependency_track_apiserver_port_expose: false
 dependency_track_apiserver_router: apiserver
 dependency_track_apiserver_labels:
@@ -23,10 +29,10 @@ dependency_track_apiserver_labels:
   - traefik.http.routers.{{ dependency_track_apiserver_router }}.rule=Host(`{{ dependency_track_apiserver_domain }}`)
   - traefik.http.routers.{{ dependency_track_apiserver_router }}.entrypoints=websecure
   - traefik.http.routers.{{ dependency_track_apiserver_router }}.tls=true
-  - traefik.http.routers.{{ grafana_router }}.tls.certresolver=letsencrypt
+  - traefik.http.routers.{{ dependency_track_apiserver_router }}.tls.certresolver=letsencrypt
 
-dependency_track_frontend_domain: https://staging.dependency-track.dev
-dependency_track_frontend_api_base_url: https://staging.api.dependency-track.dev
+dependency_track_frontend_domain: https://staging.component-analysis.dev
+dependency_track_frontend_api_base_url: https://staging.api.component-analysis.dev
 dependency_track_frontend_port_expose: false
 dependency_track_frontend_router: frontend
 dependency_track_frontend_labels:
@@ -34,7 +40,7 @@ dependency_track_frontend_labels:
   - traefik.http.routers.{{ dependency_track_frontend_router }}.rule=Host(`{{ dependency_track_frontend_domain }}`)
   - traefik.http.routers.{{ dependency_track_frontend_router }}.entrypoints=websecure
   - traefik.http.routers.{{ dependency_track_frontend_router }}.tls=true
-  - "traefik.http.routers.{{ grafana_router }}.tls.certresolver=letsencrypt"
+  - traefik.http.routers.{{ dependency_track_frontend_router }}.tls.certresolver=letsencrypt
 
 dependency_track_networks:
   - dependency-track-network
