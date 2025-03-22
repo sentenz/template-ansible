@@ -1,2 +1,4 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
+traefik_tls_private_key: "{{ inventory_dir }}/../../files/certs/{{ inventory_hostname }}.key"
+traefik_tls_public_cert: "{{ inventory_dir }}/../../files/certs/{{ inventory_hostname }}.crt"
