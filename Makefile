@@ -34,18 +34,18 @@ setup-lint:
 .PHONY: setup-lint
 
 ## Perform install Role and Collection of Ansible Galaxy
-galaxy-install:
+ansible-galaxy-install:
 	find . -name "requirements.yml" -exec ansible-galaxy install --force -r {} \;
-.PHONY: galaxy-install
+.PHONY: ansible-galaxy-install
 
 ## Perform upgrade Role and Collection of Ansible Galaxy
-galaxy-update: galaxy-install
-.PHONY: galaxy-update
+ansible-galaxy-update: ansible-galaxy-install
+.PHONY: ansible-galaxy-update
 
 ## Perform removel Role and Collection of Ansible Galaxy
-galaxy-uninstall:
+ansible-galaxy-uninstall:
 	rm -rf ~/.ansible/collections/ansible_collections/
-.PHONY: galaxy-uninstall
+.PHONY: ansible-galaxy-uninstall
 
 ## Perform the Static Analysis of Ansible configuration
 ansible-lint:
@@ -61,30 +61,30 @@ ansible-lint:
 
 ## Deploy the Ansible configuration to the target environment
 ansible-deploy:
-	ansible-playbook -i inventory/$(ENV)/hosts.yml site.yml --ask-become-pass --skip-tags restart,stop,destroy --vault-password-file "./vault_passwords/$(ENV).vault"
+	ansible-playbook -i inventory/$(ENV)/hosts.yml site.yml --ask-become-pass --skip-tags restart,stop,destroy --vault-password-file "./vault/$(ENV).vault_pass"
 .PHONY: ansible-deploy
 
 ## Destroy the Ansible configuration on the target environment
 ansible-destroy:
-	ansible-playbook -i inventory/$(ENV)/hosts.yml site.yml --ask-become-pass --tags destroy --vault-password-file "./vault_passwords/$(ENV).vault"
+	ansible-playbook -i inventory/$(ENV)/hosts.yml site.yml --ask-become-pass --tags destroy --vault-password-file "./vault/$(ENV).vault_pass"
 .PHONY: ansible-destroy
 
 ## Restart the Ansible configuration on the target environment
 ansible-restart:
-	ansible-playbook -i inventory/$(ENV)/hosts.yml site.yml --ask-become-pass --tags restart --vault-password-file "./vault_passwords/$(ENV).vault"
+	ansible-playbook -i inventory/$(ENV)/hosts.yml site.yml --ask-become-pass --tags restart --vault-password-file "./vault/$(ENV).vault_pass"
 .PHONY: ansible-restart
 
 ## Stop the Ansible configuration on the target environment
 ansible-stop:
-	ansible-playbook -i inventory/$(ENV)/hosts.yml site.yml --ask-become-pass --tags stop --vault-password-file "./vault_passwords/$(ENV).vault"
+	ansible-playbook -i inventory/$(ENV)/hosts.yml site.yml --ask-become-pass --tags stop --vault-password-file "./vault/$(ENV).vault_pass"
 .PHONY: ansible-stop
 
 # Usage: make ansible-vault-encrypt <file>
 #
-## Encrypt the Ansible Vault
+## Create vault encrypted file
 ansible-vault-encrypt:
 	@if [ "$(filter-out $@,$(MAKECMDGOALS))" != "" ]; then \
-		ansible-vault encrypt --vault-password-file="./vault_passwords/$(ENV).vault" "$(filter-out $@,$(MAKECMDGOALS))"; \
+		ansible-vault encrypt --vault-password-file="./vault/$(ENV).vault_pass" "$(filter-out $@,$(MAKECMDGOALS))"; \
 	else \
 		echo "Usage: make ansible-vault-encrypt <file>"; \
 		exit 1; \
@@ -93,10 +93,10 @@ ansible-vault-encrypt:
 
 # Usage: make ansible-vault-decrypt <file>
 #
-## Decrypt the Ansible Vault
+## Decrypt Ansible vault encrypted file
 ansible-vault-decrypt:
 	@if [ "$(filter-out $@,$(MAKECMDGOALS))" != "" ]; then \
-		ansible-vault decrypt --vault-password-file="./vault_passwords/$(ENV).vault" "$(filter-out $@,$(MAKECMDGOALS))"; \
+		ansible-vault decrypt --vault-password-file="./vault/$(ENV).vault_pass" "$(filter-out $@,$(MAKECMDGOALS))"; \
     else \
 		echo "Usage: make ansible-vault-encrypt <file>"; \
 		exit 1; \
@@ -108,9 +108,9 @@ ansible-vault-decrypt:
 ## View the Ansible Vault
 ansible-vault-view:
 	@if [ "$(filter-out $@,$(MAKECMDGOALS))" != "" ]; then \
-		ansible-vault view --vault-password-file="./vault_passwords/$(ENV).vault" "$(filter-out $@,$(MAKECMDGOALS))"; \
+		ansible-vault view --vault-password-file="./vault/$(ENV).vault_pass" "$(filter-out $@,$(MAKECMDGOALS))"; \
     else \
-		echo "make ansible-vault-view <file>"; \
+		echo "Usage: make ansible-vault-view <file>"; \
 		exit 1; \
     fi
 .PHONY: ansible-vault-view
