@@ -20,7 +20,7 @@ services:
   {% for option in traefik_challenge_tls %}
     - "{{ option }}"
   {% endfor %}
-{% elif traefik_challenge == 'debug' %}
+{% elif traefik_challenge in ['intranet', 'debug'] %}
   {% for option in traefik_challenge_debug %}
     - "{{ option }}"
   {% endfor %}
@@ -36,13 +36,13 @@ services:
       # TODO Define the command options in a config file like traefik.yml
       # - "{{ traefik_path }}/traefik.yml:/etc/traefik/traefik.yml"
 {% if traefik_challenge in ['http', 'dns', 'tls'] %}
-      - "{{ traefik_path }}/acme.json:{{ traefik_acme_storage }}"
-{% elif traefik_challenge == 'debug' %}
+      - "{{ traefik_certs_path }}/acme.json:{{ traefik_acme_storage }}"
+{% elif traefik_challenge in ['intranet', 'debug'] %}
       - "{{ traefik_path }}/dynamic.yml:/etc/traefik/dynamic/dynamic.yml"
-      - "{{ traefik_path }}/certs/:/certs/"
+      - "{{ traefik_certs_path }}:/certs/"
 {% endif %}
     ports:
-{% if traefik_challenge in ['http', 'dns', 'debug'] %}
+{% if traefik_challenge in ['http', 'dns', 'intranet', 'debug'] %}
       - "80:80"
       - "443:443"
 {% elif traefik_challenge == 'tls' %}

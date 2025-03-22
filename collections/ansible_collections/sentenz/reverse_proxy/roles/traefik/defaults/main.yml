@@ -15,8 +15,28 @@ traefik_certificates_resolver: myresolver
 traefik_challenge_dns_provider: cloudflare
 traefik_challenge_dns_provider_variables: ""
 
-traefik_dynamic_config: /etc/traefik/dynamic/
+# TODO Consider using a nested dictionary approach for files 
+# traefik_files:
+#   acme_config: acme.json
+#   dynamic_config: dynamic.yml
+#   tls_private_key: certs/key.pem
+#   tls_public_cert: certs/cert.pem
 
+traefik_acme_config: acme.json
+traefik_dynamic_config: dynamic.yml
+traefik_tls_private_key: certs/key.pem
+traefik_tls_public_cert: certs/cert.pem
+
+# TODO Consider using a nested dictionary approach for paths 
+# traefik_paths:
+#   certs: "{{ traefik_path }}/certs"
+#   dynamic_config: /etc/traefik/dynamic/
+#   acme_storage: /letsencrypt/acme.json
+
+traefik_certs_path: "{{ traefik_path }}/certs"
+traefik_dynamic_config_path: /etc/traefik/dynamic/
+
+# Reverse Proxy Traefik HTTPS Challenge
 traefik_challenge:
   description: The type of challenge for ACME certificate validation.
   default: debug
@@ -24,6 +44,7 @@ traefik_challenge:
     - http
     - dns
     - tls
+    - intranet
     - debug
 
 traefik_challenge_http:
@@ -54,7 +75,7 @@ traefik_challenge_debug:
   - --entrypoints.websecure.http.tls=true
   - --entrypoints.web.http.redirections.entryPoint.to=websecure
   - --entrypoints.web.http.redirections.entryPoint.scheme=https
-  - --providers.file.directory={{ traefik_dynamic_config }}
+  - --providers.file.directory={{ traefik_dynamic_config_path }}
   - --providers.file.watch=true
 
 traefik_challenge_options: []

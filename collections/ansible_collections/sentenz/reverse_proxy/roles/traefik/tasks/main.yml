@@ -23,17 +23,17 @@
     mode: "{{ traefik_permission_directory }}"
   loop:
     - "{{ traefik_path }}"
-    - "{{ traefik_path }}/certs"
+    - "{{ traefik_certs_path }}"
   become: true
 
-- name: Securely Copy Content for Traefik
+- name: Securely Copy Certificates for Traefik
   ansible.builtin.copy:
     src: "{{ item }}"
-    dest: "{{ traefik_path }}/{{ item }}"
+    dest: "{{ traefik_certs_path }}/{{ item | basename }}"
     owner: "{{ traefik_ownership_owner }}"
     group: "{{ traefik_ownership_group }}"
     mode: "0600"
-  loop: "{{ (traefik_challenge == 'debug') | ansible.builtin.ternary(['dynamic.yml', 'certs/cert.pem', 'certs/key.pem'], ['acme.json']) }}"
+  loop: "{{ (traefik_challenge in ['intranet', 'debug']) | ansible.builtin.ternary([traefik_tls_public_cert, traefik_tls_private_key], [traefik_acme_config]) }}"
   become: true
 
 - name: Securely Template Files for Traefik
@@ -46,6 +46,7 @@
   loop:
     - docker-compose.yml.j2
     - traefik.yml.j2
+    - dynamic.yml.j2
   become: true
 
 - name: Create shared Docker Networks
