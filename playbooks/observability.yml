@@ -13,7 +13,7 @@
     # - role: sentenz.observability.grafana.tempo
 
 - name: Setup Observability Agents/Collectors
-  hosts: local
+  hosts: observability
   become: true
   roles:
     - role: sentenz.observability.prometheus.node_exporter
