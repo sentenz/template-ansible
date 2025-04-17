@@ -5,6 +5,12 @@ ifneq (,$(wildcard .env))
 	export
 endif
 
+SHELL = /bin/bash
+SHELL_CMD = source
+SHELL_PATH = scripts/shell
+SHELL_FILE_CLI = ${SHELL_PATH}/cli.sh
+SHELL_FILE_FORMAT = ${SHELL_PATH}/format.sh
+
 # Define Targets
 
 default: help
@@ -15,23 +21,20 @@ help:
 	@awk '/^##/{c=substr($$0,3);next}c&&/^[[:alpha:]][[:alnum:]_-]+:/{print "$(shell tput -Txterm setaf 6)\t" substr($$1,1,index($$1,":")) "$(shell tput -Txterm sgr0)",c}1{c=0}' $(MAKEFILE_LIST) | column -s: -t
 .PHONY: help
 
-## Setup the Software Development environment
-setup-ubuntu:
-	apt update
-	apt install software-properties-common
-	add-apt-repository --yes --update ppa:ansible/ansible
-	apt install -y ansible
-.PHONY: setup-ubuntu
+## Bootstrap the Software Development environment
+bootstrap:
+	cd $(@D)/scripts && chmod +x bootstrap.sh && ./bootstrap.sh
+.PHONY: bootstrap
 
 ## Setup the Software Development environment
-setup-alpine:
-	apk add ansible
-.PHONY: setup-alpine
+setup:
+	cd $(@D)/scripts && chmod +x setup.sh && ./setup.sh
+.PHONY: setup
 
-## Setup the linting tools
-setup-lint:
-	pip3 install ansible-lint==24.12.2 --break-system-packages
-.PHONY: setup-lint
+## Teardown the Software Development environment
+teardown:
+	cd $(@D)/scripts && chmod +x teardown.sh && ./teardown.sh
+.PHONY: teardown
 
 ## Perform install Role and Collection of Ansible Galaxy
 ansible-galaxy-install:
@@ -49,14 +52,7 @@ ansible-galaxy-uninstall:
 
 ## Perform the Static Analysis of Ansible configuration
 ansible-lint:
-	ansible-lint --fix ./
-	ansible-lint --fix ./inventory/
-	ansible-lint --fix ./playbooks/
-	ansible-lint --fix ./collections/ansible_collections/sentenz/component_analysis/
-	ansible-lint --fix ./collections/ansible_collections/sentenz/observability/
-	ansible-lint --fix ./collections/ansible_collections/sentenz/reverse_proxy/
-
-	# ansible-later **/*.yml
+	$(SHELL_CMD) $(SHELL_FILE_CLI) && $(SHELL_CMD) $(SHELL_FILE_FORMAT) && cli_ansible_lint | format_gitlab_ansible_lint
 .PHONY: ansible-lint
 
 ## Deploy the Ansible configuration to the target environment
@@ -97,10 +93,10 @@ ansible-vault-encrypt:
 ansible-vault-decrypt:
 	@if [ "$(filter-out $@,$(MAKECMDGOALS))" != "" ]; then \
 		ansible-vault decrypt --vault-password-file="./vault/$(ENV).vault_pass" "$(filter-out $@,$(MAKECMDGOALS))"; \
-    else \
+	else \
 		echo "Usage: make ansible-vault-encrypt <file>"; \
 		exit 1; \
-    fi
+	fi
 .PHONY: ansible-vault-decrypt
 
 # Usage: make ansible-vault-view <file>
@@ -109,10 +105,10 @@ ansible-vault-decrypt:
 ansible-vault-view:
 	@if [ "$(filter-out $@,$(MAKECMDGOALS))" != "" ]; then \
 		ansible-vault view --vault-password-file="./vault/$(ENV).vault_pass" "$(filter-out $@,$(MAKECMDGOALS))"; \
-    else \
+	else \
 		echo "Usage: make ansible-vault-view <file>"; \
 		exit 1; \
-    fi
+	fi
 .PHONY: ansible-vault-view
 
 ## Open AWS EC2 Instance in the terminal
