@@ -6,7 +6,6 @@
     files:
       - docker-compose.yml
     state: restarted
-  when: dependency_track_handler_restart | default(false)
 
 - name: Dependency-Track API Server - Stop Docker Compose
   community.docker.docker_compose_v2:
@@ -14,8 +13,6 @@
     files:
       - docker-compose.yml
     state: stopped
-  when: dependency_track_handler_stop | default(false)
-  run_once: true
 
 - name: Dependency-Track API Server - Remove Docker Compose
   community.docker.docker_compose_v2:
@@ -23,5 +20,3 @@
     files:
       - docker-compose.yml
     state: absent
-  when: dependency_track_handler_absent | default(false)
-  run_once: true

@@ -8,12 +8,7 @@ prometheus_ownership_group: "{{ prometheus_alertmanager_name }}"
 prometheus_permission_directory: "0751"
 prometheus_permission_file: "0644"
 
-# Handler Flags
-prometheus_handler_restart: true
-prometheus_handler_stop: true
-prometheus_handler_absent: true
-
-# Notifications and Service Names
+# Notifications
 prometheus_notify_restart: Alertmanager - Restart Docker Compose
 prometheus_notify_stop: Alertmanager - Stop Docker Compose
 prometheus_notify_absent: Alertmanager - Remove Docker Compose

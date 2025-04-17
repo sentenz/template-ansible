@@ -8,7 +8,7 @@ docker_ownership_group: docker
 docker_permission_directory: "0750"
 docker_permission_file: "0640"
 
-# Notifications and Service Names
+# Notifications
 docker_notify_start: Docker - Start service
 docker_notify_restart: Docker - Restart service
 docker_notify_stop: Docker - Stop service

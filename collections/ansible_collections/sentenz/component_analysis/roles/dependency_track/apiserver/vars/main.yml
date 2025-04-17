@@ -8,12 +8,7 @@ dependency_track_ownership_group: "{{ dependency_track_apiserver_name }}"
 dependency_track_permission_directory: "0755"
 dependency_track_permission_file: "0644"
 
-# Handler Flags
-dependency_track_handler_restart: true
-dependency_track_handler_stop: true
-dependency_track_handler_absent: true
-
-# Notifications and Service Names
+# Notifications
 dependency_track_notify_restart: Dependency-Track API Server - Restart Docker Compose
 dependency_track_notify_stop: Dependency-Track API Server - Stop Docker Compose
 dependency_track_notify_absent: Dependency-Track API Server - Remove Docker Compose

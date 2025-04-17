@@ -6,7 +6,6 @@
     files:
       - docker-compose.yml
     state: restarted
-  when: prometheus_handler_restart | default(false)
 
 - name: Alertmanager - Stop Docker Compose
   community.docker.docker_compose_v2:
@@ -14,8 +13,6 @@
     files:
       - docker-compose.yml
     state: stopped
-  when: prometheus_handler_stop | default(false)
-  run_once: true
 
 - name: Alertmanager - Remove Docker Compose
   community.docker.docker_compose_v2:
@@ -23,5 +20,3 @@
     files:
       - docker-compose.yml
     state: absent
-  when: prometheus_handler_absent | default(false)
-  run_once: true

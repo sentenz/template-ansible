@@ -8,12 +8,7 @@ traefik_ownership_group: "{{ traefik_name }}"
 traefik_permission_directory: "0755"
 traefik_permission_file: "0644"
 
-# Handler Flags
-traefik_handler_restart: true
-traefik_handler_stop: true
-traefik_handler_absent: true
-
-# Notifications and Service Names
+# Notifications
 traefik_notify_restart: Traefik - Restart Docker Compose
 traefik_notify_stop: Traefik - Stop Docker Compose
 traefik_notify_absent: Traefik - Remove Docker Compose
