@@ -1,6 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-- name: Setup Component Analysis (Dependency-Track) with Reverse Proxy (Traefik)
+- name: Component Analysis - Setup Container (Docker)
+  hosts: component_analysis
+  become: true
+  roles:
+    - role: sentenz.container.docker
+
+- name: Component Analysis - Setup Dependency-Track with Reverse Proxy (Traefik)
   hosts: component_analysis
   become: true
   roles:
