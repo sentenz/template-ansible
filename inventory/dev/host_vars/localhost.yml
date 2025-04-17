@@ -1,5 +1,0 @@
-# SPDX-License-Identifier: Apache-2.0
----
-ansible_host: localhost
-ansible_user: sentenz
-ansible_connection: local

@@ -1,2 +1,36 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
+# Component Analysis (Dependency-Track)
+dependency_track_database_username: "{{ vault_dependency_track_database_username }}"
+dependency_track_database_password: "{{ vault_dependency_track_database_password }}"
+
+dependency_track_apiserver_domain: https://staging.api.component-analysis.dev
+dependency_track_apiserver_port_expose: false
+dependency_track_apiserver_router: apiserver
+dependency_track_apiserver_labels:
+  - traefik.enable=true
+  - traefik.http.routers.{{ dependency_track_apiserver_router }}.rule=Host(`{{ dependency_track_apiserver_domain }}`)
+  - traefik.http.routers.{{ dependency_track_apiserver_router }}.entrypoints=websecure
+  - traefik.http.routers.{{ dependency_track_apiserver_router }}.tls=true
+  - traefik.http.routers.{{ dependency_track_apiserver_router }}.tls.certresolver=letsencrypt
+
+dependency_track_frontend_domain: https://staging.component-analysis.dev
+dependency_track_frontend_api_base_url: https://staging.api.component-analysis.dev
+dependency_track_frontend_port_expose: false
+dependency_track_frontend_router: frontend
+dependency_track_frontend_labels:
+  - traefik.enable=true
+  - traefik.http.routers.{{ dependency_track_frontend_router }}.rule=Host(`{{ dependency_track_frontend_domain }}`)
+  - traefik.http.routers.{{ dependency_track_frontend_router }}.entrypoints=websecure
+  - traefik.http.routers.{{ dependency_track_frontend_router }}.tls=true
+  - traefik.http.routers.{{ dependency_track_frontend_router }}.tls.certresolver=letsencrypt
+
+# Reverse Proxy (Traefik)
+traefik_challenge: dns
+traefik_acme_email: ""
+traefik_networks: "{{ (dependency_track_networks | default([])) }}"
+traefik_challenge_dns_provider: cloudflare
+traefik_challenge_dns_provider_variables:
+  - CLOUDFLARE_DNS_API_TOKEN="{{ vault_cloudflare_dns_api_token }}"
+traefik_challenge_options:
+  - "--certificatesresolvers.{{ traefik_certificates_resolver }}.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
