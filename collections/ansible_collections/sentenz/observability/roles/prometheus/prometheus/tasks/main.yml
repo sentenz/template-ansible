@@ -5,14 +5,12 @@
     name: "{{ prometheus_ownership_group }}"
     state: present
     system: true
-  become: true
 
 - name: Prometheus - Ensure user ownership
   ansible.builtin.user:
     name: "{{ prometheus_ownership_owner }}"
     group: "{{ prometheus_ownership_group }}"
     state: present
-  become: true
 
 - name: Prometheus - Securely create directories
   ansible.builtin.file:
@@ -21,7 +19,6 @@
     owner: "{{ prometheus_ownership_owner }}"
     group: "{{ prometheus_ownership_group }}"
     mode: "{{ prometheus_permission_directory }}"
-  become: true
 
 - name: Prometheus - Securely copy content
   ansible.builtin.copy:
@@ -33,7 +30,6 @@
   loop:
     - prometheus.yml
     - alert-rules.yml
-  become: true
 
 - name: Prometheus - Securely template Jinja2 files
   ansible.builtin.template:
@@ -42,13 +38,11 @@
     owner: "{{ prometheus_ownership_owner }}"
     group: "{{ prometheus_ownership_group }}"
     mode: "{{ prometheus_permission_file }}"
-  become: true
 
 - name: Prometheus - Deploy Containers
   community.docker.docker_compose_v2:
     project_src: "{{ prometheus_path }}"
     state: present
-  become: true
   notify:
     - "{{ prometheus_notify_restart }}"
 

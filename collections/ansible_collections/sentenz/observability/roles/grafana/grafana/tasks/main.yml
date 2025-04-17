@@ -5,14 +5,12 @@
     name: "{{ grafana_ownership_group }}"
     state: present
     system: true
-  become: true
 
 - name: Grafana - Ensure user ownership
   ansible.builtin.user:
     name: "{{ grafana_ownership_owner }}"
     group: "{{ grafana_ownership_group }}"
     state: present
-  become: true
 
 - name: Grafana - Securely create directories
   ansible.builtin.file:
@@ -21,7 +19,6 @@
     owner: "{{ grafana_ownership_owner }}"
     group: "{{ grafana_ownership_group }}"
     mode: "{{ grafana_permission_directory }}"
-  become: true
 
 - name: Grafana - Securely copy content
   ansible.builtin.copy:
@@ -33,7 +30,6 @@
   loop:
     - dashboards
     - provisioning
-  become: true
   notify:
     - "{{ grafana_notify_restart }}"
 
@@ -47,13 +43,11 @@
   loop:
     - docker-compose.yml.j2
     - grafana.ini.j2
-  become: true
 
 - name: Grafana - Deploy Containers
   community.docker.docker_compose_v2:
     project_src: "{{ grafana_path }}"
     state: present
-  become: true
   notify:
     - "{{ grafana_notify_restart }}"
 

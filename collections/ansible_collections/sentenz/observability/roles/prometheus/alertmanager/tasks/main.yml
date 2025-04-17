@@ -5,14 +5,12 @@
     name: "{{ prometheus_ownership_group }}"
     state: present
     system: true
-  become: true
 
 - name: Alertmanager - Ensure user ownership
   ansible.builtin.user:
     name: "{{ prometheus_ownership_owner }}"
     group: "{{ prometheus_ownership_group }}"
     state: present
-  become: true
 
 - name: Alertmanager - Securely create directories
   ansible.builtin.file:
@@ -21,7 +19,6 @@
     owner: "{{ prometheus_ownership_owner }}"
     group: "{{ prometheus_ownership_group }}"
     mode: "{{ prometheus_permission_directory }}"
-  become: true
 
 - name: Alertmanager - Securely copy content
   ansible.builtin.copy:
@@ -32,7 +29,6 @@
     mode: "{{ prometheus_permission_file }}"
   loop:
     - config.yml
-  become: true
 
 - name: Alertmanager - Securely template Jinja2 files
   ansible.builtin.template:
@@ -41,13 +37,11 @@
     owner: "{{ prometheus_ownership_owner }}"
     group: "{{ prometheus_ownership_group }}"
     mode: "{{ prometheus_permission_file }}"
-  become: true
 
 - name: Alertmanager - Deploy Containers
   community.docker.docker_compose_v2:
     project_src: "{{ prometheus_alertmanager_path }}"
     state: present
-  become: true
   notify:
     - "{{ prometheus_notify_restart }}"
 

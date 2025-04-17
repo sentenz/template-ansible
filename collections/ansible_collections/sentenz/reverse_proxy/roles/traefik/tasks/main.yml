@@ -5,14 +5,12 @@
     name: "{{ traefik_ownership_group }}"
     state: present
     system: true
-  become: true
 
 - name: Traefik - Ensure user ownership
   ansible.builtin.user:
     name: "{{ traefik_ownership_owner }}"
     group: "{{ traefik_ownership_group }}"
     state: present
-  become: true
 
 - name: Traefik - Securely create directories
   ansible.builtin.file:
@@ -24,7 +22,6 @@
   loop:
     - "{{ traefik_path }}"
     - "{{ traefik_certs_path }}"
-  become: true
 
 - name: Traefik - Securely copy certificates
   ansible.builtin.copy:
@@ -34,7 +31,6 @@
     group: "{{ traefik_ownership_group }}"
     mode: "0600"
   loop: "{{ (traefik_challenge in ['intranet', 'debug']) | ansible.builtin.ternary([traefik_tls_public_cert, traefik_tls_private_key], [traefik_acme_config]) }}"
-  become: true
 
 - name: Traefik - Securely template Jinja2 files
   ansible.builtin.template:
@@ -47,13 +43,11 @@
     - docker-compose.yml.j2
     - traefik.yml.j2
     - dynamic.yml.j2
-  become: true
 
 - name: Traefik - Deploy Containers
   community.docker.docker_compose_v2:
     project_src: "{{ traefik_path }}"
     state: present
-  become: true
   notify:
     - "{{ traefik_notify_restart }}"
 

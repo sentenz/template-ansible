@@ -5,14 +5,12 @@
     name: "{{ prometheus_ownership_group }}"
     state: present
     system: true
-  become: true
 
 - name: Node Exporter - Ensure user ownership
   ansible.builtin.user:
     name: "{{ prometheus_ownership_owner }}"
     group: "{{ prometheus_ownership_group }}"
     state: present
-  become: true
 
 - name: Node Exporter - Securely create directories
   ansible.builtin.file:
@@ -21,7 +19,6 @@
     owner: "{{ prometheus_ownership_owner }}"
     group: "{{ prometheus_ownership_group }}"
     mode: "{{ prometheus_permission_directory }}"
-  become: true
 
 - name: Node Exporter - Securely template Jinja2 files
   ansible.builtin.template:
@@ -30,13 +27,11 @@
     owner: "{{ prometheus_ownership_owner }}"
     group: "{{ prometheus_ownership_group }}"
     mode: "{{ prometheus_permission_file }}"
-  become: true
 
 - name: Node Exporter - Deploy Containers
   community.docker.docker_compose_v2:
     project_src: "{{ prometheus_node_exporter_path }}"
     state: present
-  become: true
   notify:
     - "{{ prometheus_notify_restart }}"
 

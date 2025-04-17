@@ -5,14 +5,12 @@
     name: "{{ grafana_ownership_group }}"
     state: present
     system: true
-  become: true
 
 - name: Promtail - Ensure user ownership
   ansible.builtin.user:
     name: "{{ grafana_ownership_owner }}"
     group: "{{ grafana_ownership_group }}"
     state: present
-  become: true
 
 - name: Promtail - Securely create directories
   ansible.builtin.file:
@@ -21,7 +19,6 @@
     owner: "{{ grafana_ownership_owner }}"
     group: "{{ grafana_ownership_group }}"
     mode: "{{ grafana_permission_directory }}"
-  become: true
 
 - name: Promtail - Securely copy content
   ansible.builtin.copy:
@@ -32,7 +29,6 @@
     mode: "{{ grafana_permission_file }}"
   loop:
     - config.yml
-  become: true
 
 - name: Promtail - Securely template Jinja2 files
   ansible.builtin.template:
@@ -41,13 +37,11 @@
     owner: "{{ grafana_ownership_owner }}"
     group: "{{ grafana_ownership_group }}"
     mode: "{{ grafana_permission_file }}"
-  become: true
 
 - name: Promtail - Deploy Containers
   community.docker.docker_compose_v2:
     project_src: "{{ grafana_promtail_path }}"
     state: present
-  become: true
   notify:
     - "{{ grafana_notify_restart }}"
 
