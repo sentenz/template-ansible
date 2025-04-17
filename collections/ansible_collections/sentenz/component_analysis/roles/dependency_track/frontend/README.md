@@ -13,7 +13,7 @@
         //   * This URL must be reachable by the browsers of your users.
         //   * The frontend container itself does NOT communicate with the API server directly, it just serves static files.
         //   * When deploying to dedicated servers, please use the external IP or domain of the API server.
-        "API_BASE_URL": "",       
+        "API_BASE_URL": "",
         "API_WITH_CREDENTIALS": null,
         // Optional
         // Defines the issuer URL to be used for OpenID Connect.

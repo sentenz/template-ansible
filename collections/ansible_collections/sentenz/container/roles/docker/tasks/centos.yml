@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+- name: Docker for {{ ansible_os_family }} - Remove unofficial packages
+  ansible.builtin.dnf:
+    name: "{{ item }}"
+    state: absent
+    purge: true
+  with_items:
+    - docker
+    - docker-client
+    - docker-client-latest
+    - docker-common
+    - docker-latest
+    - docker-latest-logrotate
+    - docker-logrotate
+    - docker-engine
+  ignore_errors: true
+
+- name: Docker for {{ ansible_os_family }} - Setup packages
+  ansible.builtin.dnf:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - dnf-plugins-core
+
+- name: Docker for {{ ansible_os_family }} - Add repository
+  ansible.builtin.command:
+    - dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+- name: Docker for {{ ansible_os_family }} - Install packages
+  ansible.builtin.dnf:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    - docker-buildx-plugin
+    - docker-compose-plugin
+  notify:
+    - "{{ docker_notify_start }}"
+
+- name: Docker for {{ ansible_os_family }} - Add user group
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: "{{ docker_ownership_owner }}"
+    append: true
+  loop: "{{ docker_users }}"
+  when: docker_users | length > 0
+  notify:
+    - "{{ docker_notify_restart }}"

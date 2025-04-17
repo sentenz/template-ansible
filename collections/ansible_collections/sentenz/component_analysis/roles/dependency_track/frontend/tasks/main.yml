@@ -1,20 +1,20 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-- name: Ensure Group for Dependency-Track Frontend
+- name: Dependency-Track Frontend - Ensure group ownership
   ansible.builtin.group:
     name: "{{ dependency_track_ownership_group }}"
     state: present
     system: true
   become: true
 
-- name: Ensure User for Dependency-Track Frontend
+- name: Dependency-Track Frontend - Ensure user ownership
   ansible.builtin.user:
     name: "{{ dependency_track_ownership_owner }}"
     group: "{{ dependency_track_ownership_group }}"
     state: present
   become: true
 
-- name: Securely Create Directory for Dependency-Track Frontend
+- name: Dependency-Track Frontend - Securely create directories
   ansible.builtin.file:
     state: directory
     path: "{{ dependency_track_frontend_path }}"
@@ -23,7 +23,7 @@
     mode: "{{ dependency_track_permission_directory }}"
   become: true
 
-- name: Securely Template Files for Dependency-Track Frontend
+- name: Dependency-Track Frontend - Securely template Jinja2 files
   ansible.builtin.template:
     src: "{{ item }}"
     dest: "{{ dependency_track_frontend_path }}/{{ item | basename | regex_replace('.j2$', '') }}"
@@ -35,7 +35,7 @@
     - config.json.j2
   become: true
 
-- name: Deploy Dependency-Track Frontend
+- name: Dependency-Track Frontend - Deploy Containers
   community.docker.docker_compose_v2:
     project_src: "{{ dependency_track_frontend_path }}"
     state: present
@@ -43,7 +43,7 @@
   notify:
     - "{{ dependency_track_notify_restart }}"
 
-- name: Destroy Dependency-Track Frontend
+- name: Dependency-Track Frontend - Destroy Containers
   community.docker.docker_compose_v2:
     project_src: "{{ dependency_track_frontend_path }}"
     files:
@@ -54,7 +54,7 @@
   notify:
     - "{{ dependency_track_notify_absent }}"
 
-- name: Restart Dependency-Track Frontend
+- name: Dependency-Track Frontend - Restart Containers
   community.docker.docker_compose_v2:
     project_src: "{{ dependency_track_frontend_path }}"
     files:
@@ -65,7 +65,7 @@
   notify:
     - "{{ dependency_track_notify_restart }}"
 
-- name: Stop Dependency-Track Frontend
+- name: Dependency-Track Frontend - Stop Containers
   community.docker.docker_compose_v2:
     project_src: "{{ dependency_track_frontend_path }}"
     files:

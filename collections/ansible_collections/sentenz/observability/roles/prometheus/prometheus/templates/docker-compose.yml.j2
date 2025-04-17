@@ -6,6 +6,10 @@ services:
     volumes:
       - "{{ prometheus_path }}:/etc/prometheus:ro"
       - "{{ prometheus_volume }}:/data/prometheus"
+    command:
+    # XXX Auto Reload Config is handled under Feature Flags
+    # See https://prometheus.io/docs/prometheus/latest/feature_flags/#auto-reload-config
+    # - "--enable-feature=auto-reload-config"
     ports:
       - "{{ prometheus_port }}:9090"
     restart: always

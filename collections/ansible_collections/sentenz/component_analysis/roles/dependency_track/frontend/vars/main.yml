@@ -14,6 +14,6 @@ dependency_track_handler_stop: true
 dependency_track_handler_absent: true
 
 # Notifications and Service Names
-dependency_track_notify_restart: Restart Docker Compose
-dependency_track_notify_stop: Stop Docker Compose
-dependency_track_notify_absent: Remove Docker Compose
+dependency_track_notify_restart: Dependency-Track Frontend - Restart Docker Compose
+dependency_track_notify_stop: Dependency-Track Frontend - Stop Docker Compose
+dependency_track_notify_absent: Dependency-Track Frontend - Remove Docker Compose

@@ -12,6 +12,6 @@ dependency_track_frontend_port: 8080
 dependency_track_frontend_path: /etc/ansible_collections/component_analysis/dependency_track/frontend
 
 dependency_track_frontend_port_expose: true
-dependency_track_frontend_domain: localhost
+dependency_track_frontend_domain: component-analysis.localhost
 dependency_track_frontend_labels: []
-dependency_track_frontend_api_base_url: https://api.localhost
+dependency_track_frontend_api_base_url: https://api.component-analysis.localhost

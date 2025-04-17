@@ -2,7 +2,7 @@
 ---
 # Observability
 grafana_networks:
- - observability-network
+  - observability-network
 
 # Grafana
 grafana_name: grafana
@@ -12,7 +12,7 @@ grafana_volume: grafana-data
 grafana_path: /etc/ansible_collections/observability/grafana
 
 grafana_port_expose: true
-grafana_domain: localhost
+grafana_domain: observability.localhost
 grafana_labels: []
 
 # XXX Credentials Sensitive data need to be encrypted with Ansible Vault

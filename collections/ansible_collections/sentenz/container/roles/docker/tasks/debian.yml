@@ -1,0 +1,70 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+- name: Docker for {{ ansible_os_family }} - Remove unofficial packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: absent
+    purge: true
+  with_items:
+    - docker.io
+    - docker-compose
+    - docker-compose-v2
+    - docker-doc
+    - podman-docker
+    - containerd
+    - runc
+  ignore_errors: true
+
+- name: Docker for {{ ansible_os_family }} - Update packages
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Docker for {{ ansible_os_family }} - Setup packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg
+    - lsb-release
+
+- name: Docker for {{ ansible_os_family }} - Add GPG key
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Docker for {{ ansible_os_family }} - Add repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    state: present
+    filename: docker
+
+- name: Docker for {{ ansible_os_family }} - Update packages
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Docker for {{ ansible_os_family }} - Install packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    - docker-buildx-plugin
+    - docker-compose-plugin
+  notify:
+    - "{{ docker_notify_start }}"
+
+- name: Docker for {{ ansible_os_family }} - Add user group
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: "{{ docker_ownership_owner }}"
+    append: true
+  loop: "{{ docker_users }}"
+  when: docker_users | length > 0
+  notify:
+    - "{{ docker_notify_restart }}"

@@ -3,8 +3,7 @@
 # Reverse Proxy
 traefik_name: traefik
 traefik_path: /etc/ansible_collections/reverse_proxy/traefik
-traefik_networks:
-  - traefik-network
+traefik_networks: []
 
 # Reverse Proxy Traefik
 traefik_image: traefik:latest
@@ -15,7 +14,7 @@ traefik_certificates_resolver: myresolver
 traefik_challenge_dns_provider: cloudflare
 traefik_challenge_dns_provider_variables: ""
 
-# TODO Consider using a nested dictionary approach for files 
+# TODO Consider using a nested dictionary approach for files
 # traefik_files:
 #   acme_config: acme.json
 #   dynamic_config: dynamic.yml
@@ -27,7 +26,7 @@ traefik_dynamic_config: dynamic.yml
 traefik_tls_private_key: certs/key.pem
 traefik_tls_public_cert: certs/cert.pem
 
-# TODO Consider using a nested dictionary approach for paths 
+# TODO Consider using a nested dictionary approach for paths
 # traefik_paths:
 #   certs: "{{ traefik_path }}/certs"
 #   dynamic_config: /etc/traefik/dynamic/

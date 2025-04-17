@@ -13,7 +13,7 @@ dependency_track_apiserver_path: /etc/ansible_collections/component_analysis/dep
 dependency_track_apiserver_volume: dependency-track-apiserver-data
 
 dependency_track_apiserver_port_expose: true
-dependency_track_apiserver_domain: localhost
+dependency_track_apiserver_domain: api.component-analysis.localhost
 dependency_track_apiserver_labels: []
 
 # Dependency-Track Relational Database

@@ -150,8 +150,7 @@ groups:
     rules:
       # Storage Utilization
       - alert: LowDiskSpace
-        expr: node_filesystem_avail_bytes{mountpoint="/", fstype !~ "tmpfs|shmpfs|overlay"} / node_filesystem_size_bytes{mountpoint="/", fstype !~ "tmpfs|shmpfs|overlay"}
-          * 100 < 20
+        expr: node_filesystem_avail_bytes{mountpoint="/", fstype !~ "tmpfs|shmpfs|overlay"} / node_filesystem_size_bytes{mountpoint="/", fstype !~ "tmpfs|shmpfs|overlay"} * 100 < 20
         for: 5m
         labels:
           severity: warning
@@ -161,8 +160,7 @@ groups:
 
       # Storage Saturation (Potential Inode Exhaustion)
       - alert: LowFreeInodes
-        expr: node_filesystem_files_free{mountpoint="/", fstype !~ "tmpfs|shmpfs|overlay"} / node_filesystem_files{mountpoint="/", fstype !~ "tmpfs|shmpfs|overlay"}
-          * 100 < 10
+        expr: node_filesystem_files_free{mountpoint="/", fstype !~ "tmpfs|shmpfs|overlay"} / node_filesystem_files{mountpoint="/", fstype !~ "tmpfs|shmpfs|overlay"} * 100 < 10
         for: 5m
         labels:
           severity: warning

@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+- name: Docker for {{ ansible_os_family }}
+  ansible.builtin.include_tasks:
+    file: "{{ ansible_os_family | lower }}.yml"

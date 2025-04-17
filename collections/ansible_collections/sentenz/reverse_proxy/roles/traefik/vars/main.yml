@@ -14,6 +14,6 @@ traefik_handler_stop: true
 traefik_handler_absent: true
 
 # Notifications and Service Names
-traefik_notify_restart: Restart Docker Compose
-traefik_notify_stop: Stop Docker Compose
-traefik_notify_absent: Remove Docker Compose
+traefik_notify_restart: Traefik - Restart Docker Compose
+traefik_notify_stop: Traefik - Stop Docker Compose
+traefik_notify_absent: Traefik - Remove Docker Compose
