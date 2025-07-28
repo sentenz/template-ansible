@@ -140,7 +140,7 @@ function cli_dockerfilelint() {
 function cli_golangci_lint() {
   local file="${1:?file is missing}"
 
-  # FIXME(AK) https://github.com/actions/setup-go/issues/14
+  # FIXME https://github.com/actions/setup-go/issues/14
   export PATH="${HOME}"/go/bin:/usr/local/go/bin:"${PATH}"
 
   golangci-lint run --fast "${file}"
@@ -310,7 +310,7 @@ function cli_sbommerge() {
   util_file_create "${log}"
   cp "${files[0]}" "${log}"
 
-  # FIXME(sentenz) Resolve a SBOM merge even woth only one file
+  # FIXME Resolve a SBOM merge even woth only one file
   # Loop through the rest of the files and merge them with the output file
   for ((i = 1; i < ${#files[@]}; i++)); do
     sbommerge --sbom-type spdx --format json --output-file "${log}" "${files[$i]}" "${log}"

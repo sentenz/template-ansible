@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# Component Analysis (Dependency-Track)
+dependency_track_volume_attached: false
+
+dependency_track_apiserver_port_expose: false
+dependency_track_apiserver_router: apiserver
+dependency_track_apiserver_domain: api.component-analysis.local.gd
+dependency_track_apiserver_labels:
+  - traefik.enable=true
+  - traefik.http.routers.{{ dependency_track_apiserver_router }}.rule=Host(`{{ dependency_track_apiserver_domain }}`)
+  - traefik.http.routers.{{ dependency_track_apiserver_router }}.entrypoints=websecure
+  - traefik.http.routers.{{ dependency_track_apiserver_router }}.tls=true
+
+dependency_track_frontend_port_expose: false
+dependency_track_frontend_api_base_url: https://api.component-analysis.local.gd
+dependency_track_frontend_router: frontend
+dependency_track_frontend_domain: component-analysis.local.gd
+dependency_track_frontend_labels:
+  - traefik.enable=true
+  - traefik.http.routers.{{ dependency_track_frontend_router }}.rule=Host(`{{ dependency_track_frontend_domain }}`)
+  - traefik.http.routers.{{ dependency_track_frontend_router }}.entrypoints=websecure
+  - traefik.http.routers.{{ dependency_track_frontend_router }}.tls=true
+
+dependency_track_database_username: "{{ vault_dependency_track_database_username }}"
+dependency_track_database_password: "{{ vault_dependency_track_database_password }}"
+
+# Reverse Proxy (Traefik)
+traefik_challenge: debug
+traefik_acme_email: "{{ vault_traefik_acme_email }}"
+# XXX Use a temporary variable to avoid `maximum recursion depth exceeded` error
+# traefik_networks: "{{ ['observability-network'] + ['dependency-track-network'] }}"
+traefik_networks: "{{ ['dependency-track-network'] }}"
+
+traefik_tls_private_key: "{{ inventory_dir }}/../../files/certs/{{ inventory_hostname }}.key"
+traefik_tls_public_cert: "{{ inventory_dir }}/../../files/certs/{{ inventory_hostname }}.crt"

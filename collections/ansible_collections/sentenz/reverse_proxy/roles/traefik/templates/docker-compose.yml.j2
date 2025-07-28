@@ -1,0 +1,77 @@
+---
+services:
+  "{{ traefik_name }}":
+    image: "{{ traefik_image }}"
+    container_name: "{{ traefik_name }}"
+    command:
+      - "--log.level=INFO"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+{% if traefik_challenge == 'http' %}
+  {% for option in traefik_challenge_http %}
+    - "{{ option }}"
+  {% endfor %}
+{% elif traefik_challenge == 'dns' %}
+  {% for option in traefik_challenge_dns %}
+    - "{{ option }}"
+  {% endfor %}
+{% elif traefik_challenge == 'tls' %}
+  {% for option in traefik_challenge_tls %}
+    - "{{ option }}"
+  {% endfor %}
+{% elif traefik_challenge in ['intranet', 'debug'] %}
+  {% for option in traefik_challenge_debug %}
+    - "{{ option }}"
+  {% endfor %}
+{% endif %}
+{% if traefik_challenge_options %}
+  {%- for option in traefik_challenge_options %}
+    - "{{ option }}"
+  {% endfor %}
+{% endif %}
+
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      # TODO Define the command options in a config file like traefik.yml
+      # - "{{ traefik_path }}/traefik.yml:/etc/traefik/traefik.yml"
+{% if traefik_challenge in ['http', 'dns', 'tls'] %}
+      - "{{ traefik_certs_path }}/acme.json:{{ traefik_acme_storage }}"
+{% elif traefik_challenge in ['intranet', 'debug'] %}
+      - "{{ traefik_path }}/dynamic.yml:/etc/traefik/dynamic/dynamic.yml"
+      - "{{ traefik_certs_path }}:/certs/"
+{% endif %}
+    ports:
+{% if traefik_challenge in ['http', 'dns', 'intranet', 'debug'] %}
+      - "80:80"
+      - "443:443"
+{% elif traefik_challenge == 'tls' %}
+      - "443:443"
+{% endif %}
+{% for port in traefik_ports %}
+      - "{{ port }}"
+{% endfor %}
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+{% for network in traefik_networks %}
+      - "{{ network }}"
+{% endfor %}
+    security_opt:
+      - no-new-privileges:true
+{% if traefik_challenge == 'dns' %}
+    environment:
+  {% for variable in traefik_challenge_dns_provider_variables %}
+      - "{{ variable }}"
+  {% endfor %}
+{% endif %}
+
+networks:
+{% for network in traefik_networks %}
+  {{ network }}:
+    external: true
+{% endfor %}

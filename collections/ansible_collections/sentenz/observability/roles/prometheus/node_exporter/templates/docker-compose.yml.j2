@@ -1,26 +1,40 @@
 ---
 services:
-  {{ prometheus_node_exporter_name }}:
-    image: {{ prometheus_node_exporter_image }}
-    container_name: {{ prometheus_node_exporter_name }}
+  "{{ prometheus_node_exporter_name }}":
+    image: "{{ prometheus_node_exporter_image }}"
+    container_name: "{{ prometheus_node_exporter_name }}"
     volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
+      - "/proc:/host/proc:ro"
+      - "/sys:/host/sys:ro"
+      - "/:/host:ro"
+      - "/:/rootfs:ro"
     command:
-      - --path.procfs=/host/proc
-      - --path.sysfs=/host/sys
-    ports:
-      - "{{ prometheus_node_exporter_port }}:9100"
-    restart: always
-    networks:
-      - observability
-    deploy:
-      mode: global
+      - "--path.procfs=/host/proc"
+      - "--path.rootfs=/rootfs"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+    network_mode: host
+    pid: host
+#    ports:
+#      - "{{ prometheus_node_exporter_port }}:9100"
+#    networks:
+#{% for network in prometheus_networks %}
+#      - "{{ network }}"
+#{% endfor %}
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+#    deploy:
+#      mode: global
     security_opt:
       - no-new-privileges:true
 
-networks:
-  observability:
-    name: observability
-    driver: bridge
+#networks:
+#{% for network in prometheus_networks %}
+#  {{ network }}:
+#    name: "{{ network }}"
+#    driver: bridge
+#{% endfor %}

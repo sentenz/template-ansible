@@ -1,0 +1,38 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# Dependency-Track
+dependency_track_name: dependency-track
+dependency_track_networks:
+  - dependency-track-network
+dependency_track_volume_attached: false
+
+# Dependency-Track API Server
+dependency_track_apiserver_name: dependency-track-apiserver
+dependency_track_apiserver_image: dependencytrack/apiserver:latest
+dependency_track_apiserver_port: 8081
+dependency_track_apiserver_path: /etc/ansible_collections/component_analysis/dependency_track/apiserver
+
+dependency_track_apiserver_volume: dependency-track-apiserver-data
+dependency_track_apiserver_volume_attached: /data
+
+dependency_track_apiserver_port_expose: true
+dependency_track_apiserver_domain: api.component-analysis.localhost
+dependency_track_apiserver_labels: []
+
+# Dependency-Track Relational Database
+dependency_track_database_name: dependency-track-database
+dependency_track_database_image: postgres:alpine
+dependency_track_database_port: 5432
+
+dependency_track_database_volume: dependency-track-database-data
+dependency_track_database_volume_attached: /data/database
+
+# Dependency-Track API Server Environment Variables
+dependency_track_database_url: jdbc:postgresql://{{ dependency_track_database_name }}:{{ dependency_track_database_port }}/{{ dependency_track_name }}
+dependency_track_database_driver: org.postgresql.Driver
+dependency_track_database_mode: external
+# XXX Credentials Sensitive data need to be encrypted with Ansible Vault
+dependency_track_database_username: admin
+dependency_track_database_password: admin
+# dependency_track_database_username: "{{ vault_admin_user }}"
+# dependency_track_database_password: "{{ vault_admin_password }}"

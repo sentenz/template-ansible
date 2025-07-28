@@ -1,0 +1,85 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+- name: Traefik - Ensure group ownership
+  ansible.builtin.group:
+    name: "{{ traefik_ownership_group }}"
+    state: present
+    system: true
+
+- name: Traefik - Ensure user ownership
+  ansible.builtin.user:
+    name: "{{ traefik_ownership_owner }}"
+    group: "{{ traefik_ownership_group }}"
+    state: present
+
+- name: Traefik - Securely create directories
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ traefik_ownership_owner }}"
+    group: "{{ traefik_ownership_group }}"
+    mode: "{{ traefik_permission_directory }}"
+  loop:
+    - "{{ traefik_path }}"
+    - "{{ traefik_certs_path }}"
+
+- name: Traefik - Securely copy certificates
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ traefik_certs_path }}/{{ item | basename }}"
+    owner: "{{ traefik_ownership_owner }}"
+    group: "{{ traefik_ownership_group }}"
+    mode: "0600"
+  loop: "{{ (traefik_challenge in ['intranet', 'debug']) | ansible.builtin.ternary([traefik_tls_public_cert, traefik_tls_private_key], [traefik_acme_config]) }}"
+
+- name: Traefik - Securely template Jinja2 files
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "{{ traefik_path }}/{{ item | basename | regex_replace('.j2$', '') }}"
+    owner: "{{ traefik_ownership_owner }}"
+    group: "{{ traefik_ownership_group }}"
+    mode: "{{ traefik_permission_file }}"
+  loop:
+    - docker-compose.yml.j2
+    - traefik.yml.j2
+    - dynamic.yml.j2
+  notify:
+    - traefik_restart
+
+- name: Traefik - Deploy Containers
+  community.docker.docker_compose_v2:
+    project_src: "{{ traefik_path }}"
+    state: present
+
+- name: Traefik - Destroy Containers
+  community.docker.docker_compose_v2:
+    project_src: "{{ traefik_path }}"
+    files:
+      - docker-compose.yml
+    state: absent
+  tags:
+    - destroy
+  notify:
+    - traefik_absent
+
+- name: Traefik - Restart Containers
+  community.docker.docker_compose_v2:
+    project_src: "{{ traefik_path }}"
+    files:
+      - docker-compose.yml
+    state: restarted
+  tags:
+    - restart
+  notify:
+    - traefik_restart
+
+- name: Traefik - Stop Containers
+  community.docker.docker_compose_v2:
+    project_src: "{{ traefik_path }}"
+    files:
+      - docker-compose.yml
+    state: stopped
+  tags:
+    - stop
+  notify:
+    - traefik_stop

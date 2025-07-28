@@ -1,25 +1,47 @@
 ---
 services:
-  {{ prometheus_name }}:
-    image: {{ prometheus_image }}
-    container_name: {{ prometheus_name }}
+  "{{ prometheus_name }}":
+    image: "{{ prometheus_image }}"
+    container_name: "{{ prometheus_name }}"
     volumes:
-      - {{ prometheus_path }}:/etc/prometheus:ro
-      - prometheus_data:/data/prometheus
+      - "{{ prometheus_path }}:/etc/prometheus:ro"
+      - "{{ prometheus_volume }}:{{ prometheus_host.tsdb_path }}"
     ports:
       - "{{ prometheus_port }}:9090"
-    restart: always
+    command:
+      - "--config.file={{ prometheus_host.config_file }}"
+      - "--storage.tsdb.path={{ prometheus_host.tsdb_path }}"
+      - "--storage.tsdb.retention.time={{ prometheus_host.tsdb_retention_time }}"
+      - "--storage.tsdb.retention.size={{ prometheus_host.tsdb_retention_size }}"
+      - "--storage.tsdb.min-block-duration={{ prometheus_host.tsdb_min_block_duration }}"
+      - "--storage.tsdb.max-block-duration={{ prometheus_host.tsdb_max_block_duration }}"
+      - "--log.level={{ prometheus_host.log_level }}"
+      - "--log.format={{ prometheus_host.log_format }}"
+{% for feature in prometheus_host.enable_features | default([]) %}
+      - "--enable-feature={{ feature }}"
+{% endfor %}
+
     networks:
-      - observability
+{% for network in prometheus_networks %}
+      - "{{ network }}"
+{% endfor %}
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     deploy:
       mode: global
     security_opt:
       - no-new-privileges:true
 
 networks:
-  observability:
-    name: observability
+{% for network in prometheus_networks %}
+  {{ network }}:
+    name: "{{ network }}"
     driver: bridge
+{% endfor %}
 
 volumes:
-  prometheus_data: {}
+  "{{ prometheus_volume }}": {}

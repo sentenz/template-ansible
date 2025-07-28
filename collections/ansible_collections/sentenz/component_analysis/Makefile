@@ -15,7 +15,7 @@ help:
 	@awk '/^##/{c=substr($$0,3);next}c&&/^[[:alpha:]][[:alnum:]_-]+:/{print "$(shell tput -Txterm setaf 6)\t" substr($$1,1,index($$1,":")) "$(shell tput -Txterm sgr0)",c}1{c=0}' $(MAKEFILE_LIST) | column -s: -t
 .PHONY: help
 
-## Setup the Software Development environment
+## Install and configure all dependencies essential for development
 setup:
 	cd $(@D)/scripts && chmod +x setup.sh && ./setup.sh
 .PHONY: setup
@@ -67,7 +67,7 @@ test-coverage:
 
 ## Perform install Role and Collection of Ansible Galaxy
 galaxy-install:
-	ansible-galaxy collection install git@github/sentenz/sentenz.component_analysis.git --upgrade
+	ansible-galaxy collection install git@<git-repo>/sentenz.component_analysis.git --upgrade
 .PHONY: galaxy-install
 
 ## Perform upgrade Role and Collection of Ansible Galaxy

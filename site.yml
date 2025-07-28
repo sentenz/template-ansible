@@ -1,14 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-- name: Deploy Common
-  import_playbook: playbooks/common.yml
-  tags:
-    - common
-
-- name: Deploy Observability
-  import_playbook: playbooks/observability.yml
-  tags:
-    - observability
+# - name: Deploy Observability
+#   import_playbook: playbooks/observability.yml
+#   tags:
+#     - observability
 
 - name: Deploy Component Analysis
   import_playbook: playbooks/component-analysis.yml

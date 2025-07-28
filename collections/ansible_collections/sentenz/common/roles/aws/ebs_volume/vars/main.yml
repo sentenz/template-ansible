@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# Ownership
+ebs_volume_ownership_owner: ec2-user
+ebs_volume_ownership_group: ec2-user
+
+# Permissions Mode
+ebs_volume_permission_directory: "0755"
+ebs_volume_permission_file: "0644"

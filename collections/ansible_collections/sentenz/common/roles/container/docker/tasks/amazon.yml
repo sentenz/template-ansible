@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+- name: Container Docker - {{ ansible_distribution }} - Remove unofficial packages
+  ansible.builtin.dnf:
+    name: "{{ item }}"
+    state: absent
+    purge: true
+  loop: []
+
+- name: Container Docker - {{ ansible_distribution }} - Setup packages
+  ansible.builtin.dnf:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - dnf-plugins-core
+
+- name: Container Docker - {{ ansible_distribution }} - Install packages
+  ansible.builtin.dnf:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - docker
+  notify:
+    - docker_start
+
+- name: Container Docker - {{ ansible_distribution }} - Install Docker Compose CLI plugin
+  block:
+    - name: Container Docker - {{ ansible_distribution }} - Get DOCKER_CONFIG path
+      ansible.builtin.shell: |
+        DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+        echo "$DOCKER_CONFIG"
+      register: docker_config
+      changed_when: false
+      args:
+        executable: /bin/bash
+
+    - name: Container Docker - {{ ansible_distribution }} - Create Docker CLI plugins directory
+      ansible.builtin.file:
+        path: "{{ docker_config.stdout }}/cli-plugins"
+        state: directory
+        mode: '0755'
+
+    - name: Container Docker - {{ ansible_distribution }} - Download Docker Compose plugin
+      ansible.builtin.get_url:
+        url: https://github.com/docker/compose/releases/download/v2.35.1/docker-compose-linux-x86_64
+        dest: "{{ docker_config.stdout }}/cli-plugins/docker-compose"
+        mode: '0755'
+  when: ansible_architecture == 'x86_64'
+  notify:
+    - docker_restart
+
+- name: Container Docker - {{ ansible_distribution }} - Add user group
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: "{{ docker_ownership_owner }}"
+    append: true
+  loop: "{{ docker_users }}"
+  when: docker_users | length > 0
+  notify:
+    - docker_restart

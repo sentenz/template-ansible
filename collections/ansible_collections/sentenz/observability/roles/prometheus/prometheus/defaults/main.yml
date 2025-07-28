@@ -1,6 +1,34 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
+# Observability
+prometheus_networks:
+  - observability-network
+
+# Prometheus
 prometheus_name: prometheus
 prometheus_image: prom/prometheus:latest
 prometheus_port: 9090
-prometheus_path: /etc/observability/prometheus
+prometheus_volume: prometheus-data
+prometheus_path: /etc/ansible_collections/observability/prometheus
+
+# Prometheus Host
+prometheus_host:
+  # Core
+  config_file: /etc/prometheus/prometheus.yml
+
+  # TSDB
+  tsdb_path: /prometheus
+  tsdb_retention_time: 30d
+  tsdb_retention_size: 200GB
+  tsdb_min_block_duration: 2h
+  tsdb_max_block_duration: 2h
+
+  # Runtime behaviour 
+  log_level: info
+  log_format: logfmt
+
+  # Features Flags
+  # XXX Auto Reload Config is handled under Feature Flags
+  # See https://prometheus.io/docs/prometheus/latest/feature_flags/#auto-reload-config
+  enable_features:
+    - auto-reload-config

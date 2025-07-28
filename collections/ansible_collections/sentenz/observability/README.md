@@ -1,127 +1,222 @@
-# Ansible Collection for Observability
+# Ansible Collection for Observabilty
 
-<!-- TODO(sentenz) -->
+- [1. Roles](#1-roles)
+  - [1.1. Grafana](#11-grafana)
+    - [1.1.1. Grafana](#111-grafana)
+      - [1.1.1.1. Details](#1111-details)
+      - [1.1.1.2. Role](#1112-role)
+    - [1.1.2. Loki](#112-loki)
+      - [1.1.2.1. Details](#1121-details)
+      - [1.1.2.2. Role](#1122-role)
+    - [1.1.3. Promtail](#113-promtail)
+      - [1.1.3.1. Details](#1131-details)
+      - [1.1.3.2. Role](#1132-role)
+  - [1.2. Prometheus](#12-prometheus)
+    - [1.2.1. Prometheus](#121-prometheus)
+      - [1.2.1.1. Details](#1211-details)
+      - [1.2.1.2. Role](#1212-role)
+    - [1.2.2. Node Exporter](#122-node-exporter)
+      - [1.2.2.1. Details](#1221-details)
+      - [1.2.2.2. Role](#1222-role)
+    - [1.2.3. Alertmanager](#123-alertmanager)
+      - [1.2.3.1. Details](#1231-details)
+      - [1.2.3.2. Role](#1232-role)
 
-The Ansible Collection `sentenz.dependency_track` contains modules and roles to assist in automating the management of resources in OWASP Dependency-Track with Ansible.
+## 1. Roles
 
-- [1. Usage](#1-usage)
-  - [1.1. Identity and Access](#11-identity-and-access)
-  - [1.2. Install and Uninstall](#12-install-and-uninstall)
-  - [1.3. Examples and Explanations](#13-examples-and-explanations)
-  - [1.4. Commands and Operations](#14-commands-and-operations)
-- [2. Contributing](#2-contributing)
+### 1.1. Grafana
 
-## 1. Usage
+The open and composable observability and data visualization platform. Visualize metrics, logs, and traces from multiple sources like Prometheus, Loki, Elasticsearch, InfluxDB, and Postgres.
 
-### 1.1. Identity and Access
+#### 1.1.1. Grafana
 
-1. SSH Authentication
-    > Connecting to the Repository with Secure Shell (SSH) protocol provides a secure channel over an unsecured network.
+##### 1.1.1.1. Details
 
-    - Private Key
-      > Private Key must be kept secret and secure on the local machine. The `~/.ssh/config` file is a user-specific configuration file for SSH (Secure Shell) clients. The `IdentityFile` keyword specifies the private key file to use for that specific connection. An SSH connection to a server can be made by issuing the command `ssh gitlab` which corresponds to a host entry in the `~/.ssh/config` file.
+1. Compoments and Features
 
-      ```plaintext
-      Host gitlab
-          User git
-          HostName <public_ip/public_dns>
-          IdentityFile ~/.ssh/gitlab
+    - [Grafana](https://github.com/grafana/grafana)
+      > Grafana the platform for monitoring and observability to query, visualize, alert on metrics.
+
+      > [!NOTE]
+      > Available as [Ansible Role](roles/grafana/grafana/tasks/main.yml) in the Collection.
+
+    - [Grafana](https://hub.docker.com/r/grafana/grafana) Docker Hub
+      > The official Grafana docker container.
+
+##### 1.1.1.2. Role
+
+1. Examples and Explantions
+
+    - Playbook
+      > Add a Role using Fully Qualified Domain Name (FQDN).
+
+      ```yaml
+      ---
+      - name: Observability
+        hosts: observability
+        become: true
+        roles:
+          - role: sentenz.observability.grafana.grafana
       ```
 
-    - Public Key
-      > An SSH public key is part of a key pair. Share the public key, e.g. `~/.ssh/gitlab.pub` within the GitLab account in `Preferences > SSH Keys` by configuring `Add new key`.
+#### 1.1.2. Loki
 
-### 1.2. Install and Uninstall
+##### 1.1.2.1. Details
 
-> NOTE The collection is tested and supported with `ansible >=2.12.0`.
+1. Compoments and Features
 
-1. Install
-    > Install a collection from a private repository by running `ansible-galaxy collection install <repository>` command in a terminal.
+    - [Loki](https://github.com/grafana/loki)
+      > Loki is a horizontally-scalable, highly-available, multi-tenant log aggregation system.
 
-    ```bash
-    ansible-galaxy collection install git@github/sentenz/sentenz.dependency_track.git
-    ```
+      > [!NOTE]
+      > Available as [Ansible Role](roles/grafana/loki/tasks/main.yml) in the Collection.
 
-2. Update
-    > Upgrade a collection from a private repository by running `ansible-galaxy collection install <repository> --upgrade` command in a terminal.
+    - [Loki](https://hub.docker.com/r/grafana/loki) Docker Hub
+      > The Cloud Native Log Aggregation by Grafana.
 
-    ```bash
-    ansible-galaxy collection install git@github/sentenz/sentenz.dependency_track.git --upgrade
-    ```
+##### 1.1.2.2. Role
 
-3. Uninstall
-    > Remove a collection from the filesystem by running `rm -rf <path>/<namespace>/<collection>` command in a terminal.
+1. Examples and Explantions
 
-    ```bash
-    rm -rf ~/.ansible/collections/ansible_collections/sentenz/dependency_track
-    rm -rf ./venv/lib/python3.9/site-packages/ansible_collections/sentenz/dependency_track
-    ```
+    - Playbook
+      > Add a Role using Fully Qualified Domain Name (FQDN).
 
-### 1.3. Examples and Explanations
-
-1. Roles
-    > Call the roles by the Fully Qualified Collection Name (FQCN) `<namespace>.<collection>.<module>` or using the `collections` keyword.
-
-    ```yml
-    ---
-    - name: Deploy Dependency-Track
-      hosts: host
-      become: true
-
-      roles:
-        - role: sentenz.dependency_track.dtrack
-    ```
-
-    ```bash
-    ansible-playbook -i inventory.ini site.yml
-    ```
-
-2. Plugins
-    > Call the modules by the Fully Qualified Collection Name (FQCN) `<namespace>.<collection>.<module>` or using the `collections` keyword.
-
-    ```yml
-    ---
-    - name: Uploud BOM to Dependency-Track
-      hosts: localhost
-      gather_facts: false
-
-      tasks:
-        - name: Create BOM
-          sentenz.dependency_track.bom_create:
-            base_url: "{{ base_url }}"
-            api_key: "{{ api_key }}"
-            sbom_file_path: "{{ sbom_file_path }}"
-            project_name: "{{ project_name }}"
-            project_version: "{{ project_version }}"
-    ```
-
-    ```bash
-    ansible-playbook -i inventory.ini site.yml -e "base_url=$URL api_key=$API_KEY sbom_file_path=$BOM_FILE project_name=$PROJECT_NAME project_version=$PROJECT_VERSION"
-    ```
-
-### 1.4. Commands and Operations
-
-1. Tasks
-
-    - [Makefile](Makefile)
-      > Refer to the Makefile as the central task file. Use the command line `make help` in the terminal to list the tasks used for the project.
-
-      ```plaintext
-      $ make help
-
-      TASK
-              A centralized collection of commands and operations used in this project.
-
-      USAGE
-              make [target]
-
-              setup                        Setup the Software Development environment
+      ```yaml
+      ---
+      - name: Observability
+        hosts: observability
+        become: true
+        roles:
+          - role: sentenz.observability.grafana.loki
       ```
 
-## 2. Contributing
+#### 1.1.3. Promtail
 
-Clone the collection into the configured [COLLECTIONS_PATHS](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#collections-paths) based on the `collections/ansible_collections` keywords and the Fully Qualified Collection Name (FQCN) `<namespace>.<collection>` configured in [galaxy.yml](galaxy.yml).
+> [!CAUTION]
+> Promtail is deprecated and will be replaced by [Grafana Alloy](https://grafana.com/docs/loki/latest/setup/migrate/migrate-to-alloy/).
 
-```palintext
-~/collections/ansible_collections/<namespace>/<collection>
-```
+##### 1.1.3.1. Details
+
+1. Compoments and Features
+
+    - [Promtail](https://github.com/grafana/loki)
+      > Promtail is an agent which tails log files and pushes them to Loki.
+
+      > [!NOTE]
+      > Available as [Ansible Role](roles/grafana/promtail/tasks/main.yml) in the Collection.
+
+    - [Promtail](https://hub.docker.com/r/grafana/promtail) Docker Hub
+      > The official Promtail docker container.
+
+##### 1.1.3.2. Role
+
+1. Examples and Explantions
+
+    - Playbook
+      > Add a Role using Fully Qualified Domain Name (FQDN).
+
+      ```yaml
+      ---
+      - name: Observability
+        hosts: observability
+        become: true
+        roles:
+          - role: sentenz.observability.grafana.promtail
+      ```
+
+### 1.2. Prometheus
+
+The Prometheus monitoring system and time series database.
+
+#### 1.2.1. Prometheus
+
+##### 1.2.1.1. Details
+
+1. Compoments and Features
+
+    - [Prometheus](https://github.com/prometheus/prometheus)
+      > Prometheus, a Cloud Native Computing Foundation project, is a systems and service monitoring system.
+
+      > [!NOTE]
+      > Available as [Ansible Role](roles/prometheus/prometheus/tasks/main.yml) in the Collection.
+
+    - [Prometheus](https://hub.docker.com/r/prom/prometheus/) Docker Hub
+      > The official Prometheus docker container.
+
+##### 1.2.1.2. Role
+
+1. Examples and Explantions
+
+    - Playbook
+      > Add a Role using Fully Qualified Domain Name (FQDN).
+
+      ```yaml
+      ---
+      - name: Observability
+        hosts: observability
+        become: true
+        roles:
+          - role: sentenz.observability.prometheus.prometheus
+      ```
+
+#### 1.2.2. Node Exporter
+
+##### 1.2.2.1. Details
+
+1. Compoments and Features
+
+    - [Node Exporter](https://github.com/prometheus/node_exporter)
+      > Prometheus exporter for hardware and OS metrics exposed by *NIX kernels, with pluggable metric collectors.
+
+      > [!NOTE]
+      > Available as [Ansible Role](roles/prometheus/node_exporter/tasks/main.yml) in the Collection.
+
+    - [Node Exporter](https://hub.docker.com/r/prom/node-exporter) Docker Hub
+      > The official Node Exporter docker container.
+
+##### 1.2.2.2. Role
+
+1. Examples and Explantions
+
+    - Playbook
+      > Add a Role using Fully Qualified Domain Name (FQDN).
+
+      ```yaml
+      ---
+      - name: Observability
+        hosts: observability
+        become: true
+        roles:
+          - role: sentenz.observability.prometheus.node_exporter
+      ```
+
+#### 1.2.3. Alertmanager
+
+##### 1.2.3.1. Details
+
+1. Compoments and Features
+
+    - [Alertmanager](https://github.com/prometheus/alertmanager)
+      > The Alertmanager handles alerts sent by client applications such as the Prometheus server.
+
+      > [!NOTE]
+      > Available as [Ansible Role](roles/prometheus/alertmanager/tasks/main.yml) in the Collection.
+
+    - [Alertmanager](https://hub.docker.com/r/prom/alertmanager) Docker Hub
+      > The official Alertmanager docker container.
+
+##### 1.2.3.2. Role
+
+1. Examples and Explantions
+
+    - Playbook
+      > Add a Role using Fully Qualified Domain Name (FQDN).
+
+      ```yaml
+      ---
+      - name: Observability
+        hosts: observability
+        become: true
+        roles:
+          - role: sentenz.observability.prometheus.alertmanager
+      ```

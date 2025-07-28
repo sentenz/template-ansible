@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+- name: Dependency-Track Frontend - Restart Docker Compose
+  listen: dependency_track_restart
+  community.docker.docker_compose_v2:
+    project_src: "{{ dependency_track_frontend_path }}"
+    files:
+      - docker-compose.yml
+    state: restarted
+
+- name: Dependency-Track Frontend - Stop Docker Compose
+  listen: dependency_track_stop
+  community.docker.docker_compose_v2:
+    project_src: "{{ dependency_track_frontend_path }}"
+    files:
+      - docker-compose.yml
+    state: stopped
+
+- name: Dependency-Track Frontend - Remove Docker Compose
+  listen: dependency_track_absent
+  community.docker.docker_compose_v2:
+    project_src: "{{ dependency_track_frontend_path }}"
+    files:
+      - docker-compose.yml
+    state: absent

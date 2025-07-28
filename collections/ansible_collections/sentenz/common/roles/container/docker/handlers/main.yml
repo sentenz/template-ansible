@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+- name: Container Docker - Start service
+  listen: docker_start
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Container Docker - Restart service
+  listen: docker_restart
+  ansible.builtin.service:
+    name: docker
+    state: restarted
+
+- name: Container Docker - Stop service
+  listen: docker_stop
+  ansible.builtin.service:
+    name: docker
+    state: stopped
+
+- name: Container Docker - Remove service
+  listen: docker_absent
+  ansible.builtin.service:
+    name: docker
+    state: absent

@@ -1,36 +1,91 @@
 # Ansible Collection for Component Analysis
 
-The Ansible Collection for Component Analysis contains modules and roles to assist in automating the management of resources in OWASP Dependency-Track with Ansible.
+- [1. Roles](#1-roles)
+  - [1.1. Dependency-Track](#11-dependency-track)
+    - [1.1.1. API Server](#111-api-server)
+      - [1.1.1.1. Details](#1111-details)
+      - [1.1.1.2. Role](#1112-role)
+    - [1.1.2. Front End](#112-front-end)
+      - [1.1.2.1. Details](#1121-details)
+      - [1.1.2.2. Role](#1122-role)
+- [2. Plugins](#2-plugins)
+  - [2.1. Module](#21-module)
+  - [2.2. Install and Uninstall](#22-install-and-uninstall)
+  - [2.3. Examples and Explanations](#23-examples-and-explanations)
 
-- [Ansible Collection for Component Analysis](#ansible-collection-for-component-analysis)
-  - [1. Usage](#1-usage)
-    - [1.1. Identity and Access](#11-identity-and-access)
-    - [1.2. Install and Uninstall](#12-install-and-uninstall)
-    - [1.3. Examples and Explanations](#13-examples-and-explanations)
-    - [1.4. Commands and Operations](#14-commands-and-operations)
-  - [2. Contributing](#2-contributing)
+## 1. Roles
 
-## 1. Usage
+### 1.1. Dependency-Track
 
-### 1.1. Identity and Access
+OWASP Dependency-Track is an intelligent Component Analysis platform for organizations to identify and reduce risk in the software supply chain.
 
-1. SSH Authentication
-    > Connecting to the Repository with Secure Shell (SSH) protocol provides a secure channel over an unsecured network.
+#### 1.1.1. API Server
 
-    - Private Key
-      > Private Key must be kept secret and secure on the local machine. The `~/.ssh/config` file is a user-specific configuration file for SSH (Secure Shell) clients. The `IdentityFile` keyword specifies the private key file to use for that specific connection. An SSH connection to a server can be made by issuing the command `ssh gitlab` which corresponds to a host entry in the `~/.ssh/config` file.
+##### 1.1.1.1. Details
 
-      ```plaintext
-      Host gitlab
-          User git
-          HostName <public_ip/public_dns>
-          IdentityFile ~/.ssh/gitlab
+1. Compoments and Features
+
+    - [Dependency-Track API Server](https://github.com/DependencyTrack/dependency-track)
+      > Dependency-Track monitors component usage across all versions of every application in its portfolio in order to proactively identify risk across an organization.
+
+      > [!NOTE]
+      > Available as [Ansible Role](roles/dependency_track/apiserver/tasks/main.yml) in the Collection.
+
+    - [Dependency-Track API Server](https://hub.docker.com/r/dependencytrack/apiserver) Docker Hub
+      > The official docker container.
+
+##### 1.1.1.2. Role
+
+1. Examples and Explantions
+
+    - Playbook
+      > Add a Role using Fully Qualified Domain Name (FQDN).
+
+      ```yaml
+      ---
+      - name: Component Analysis
+        hosts: component_analysis
+        become: true
+        roles:
+          - role: component_analysis.dependency_track.apiserver
       ```
 
-    - Public Key
-      > An SSH public key is part of a key pair. Share the public key, e.g. `~/.ssh/gitlab.pub` within the GitLab account in `Preferences > SSH Keys` by configuring `Add new key`.
+#### 1.1.2. Front End
 
-### 1.2. Install and Uninstall
+##### 1.1.2.1. Details
+
+1. Compoments and Features
+
+    - [Dependency-Track Front End (UI)](https://github.com/grafana/grafana)
+      > The Front-End is a Single Page Application (SPA) used in Dependency-Track.
+
+      > [!NOTE]
+      > Available as [Ansible Role](roles/dependency_track/frontend/tasks/main.yml) in the Collection.
+
+    - [Dependency-Track Front End (UI)](https://hub.docker.com/r/dependencytrack/frontend) Docker Hub
+      > The official docker container.
+
+##### 1.1.2.2. Role
+
+1. Examples and Explantions
+
+    - Playbook
+      > Add a Role using Fully Qualified Domain Name (FQDN).
+
+      ```yaml
+      ---
+      - name: Component Analysis
+        hosts: component_analysis
+        become: true
+        roles:
+          - role: component_analysis.dependency_track.frontend
+      ```
+
+## 2. Plugins
+
+### 2.1. Module
+
+### 2.2. Install and Uninstall
 
 > NOTE The collection is tested and supported with `ansible >=2.12.0`.
 
@@ -38,14 +93,14 @@ The Ansible Collection for Component Analysis contains modules and roles to assi
     > Install a collection from a private repository by running `ansible-galaxy collection install <repository>` command in a terminal.
 
     ```bash
-    ansible-galaxy collection install git@github/sentenz/sentenz.component_analysis.git
+    ansible-galaxy collection install git@<git-repo>/sentenz.component_analysis.git
     ```
 
 2. Update
     > Upgrade a collection from a private repository by running `ansible-galaxy collection install <repository> --upgrade` command in a terminal.
 
     ```bash
-    ansible-galaxy collection install git@github/sentenz/sentenz.component_analysis.git --upgrade
+    ansible-galaxy collection install git@<git-repo>/sentenz.component_analysis.git --upgrade
     ```
 
 3. Uninstall
@@ -56,37 +111,20 @@ The Ansible Collection for Component Analysis contains modules and roles to assi
     rm -rf ./venv/lib/python3.9/site-packages/ansible_collections/sentenz/dependency_track
     ```
 
-### 1.3. Examples and Explanations
+### 2.3. Examples and Explanations
 
-1. Roles
-    > Call the roles by the Fully Qualified Collection Name (FQCN) `<namespace>.<collection>.<module>` or using the `collections` keyword.
-
-    ```yml
-    ---
-    - name: Deploy Dependency-Track
-      hosts: host
-      become: true
-
-      roles:
-        - role: sentenz.component_analysis.dependency_track
-    ```
-
-    ```bash
-    ansible-playbook -i inventory.ini site.yml
-    ```
-
-2. Plugins
+1. Plugins
     > Call the modules by the Fully Qualified Collection Name (FQCN) `<namespace>.<collection>.<module>` or using the `collections` keyword.
 
     ```yml
     ---
-    - name: Uploud BOM to Dependency-Track
+    - name: Uploud SBOM to Dependency-Track
       hosts: localhost
       gather_facts: false
 
       tasks:
-        - name: Create BOM
-          sentenz.component_analysis.bom_create:
+        - name: Create SBOM
+          sentenz.component_analysis.sbom_create:
             base_url: "{{ base_url }}"
             api_key: "{{ api_key }}"
             sbom_file_path: "{{ sbom_file_path }}"
@@ -97,30 +135,3 @@ The Ansible Collection for Component Analysis contains modules and roles to assi
     ```bash
     ansible-playbook -i inventory.ini site.yml -e "base_url=$URL api_key=$API_KEY sbom_file_path=$BOM_FILE project_name=$PROJECT_NAME project_version=$PROJECT_VERSION"
     ```
-
-### 1.4. Commands and Operations
-
-1. Tasks
-
-    - [Makefile](Makefile)
-      > Refer to the Makefile as the central task file. Use the command line `make help` in the terminal to list the tasks used for the project.
-
-      ```plaintext
-      $ make help
-
-      TASK
-              A centralized collection of commands and operations used in this project.
-
-      USAGE
-              make [target]
-
-              setup                        Setup the Software Development environment
-      ```
-
-## 2. Contributing
-
-Clone the collection into the configured [COLLECTIONS_PATHS](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#collections-paths) based on the `collections/ansible_collections` keywords and the Fully Qualified Collection Name (FQCN) `<namespace>.<collection>` configured in [galaxy.yml](galaxy.yml).
-
-```palintext
-~/collections/ansible_collections/<namespace>/<collection>
-```

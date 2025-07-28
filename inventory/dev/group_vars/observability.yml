@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# Observability (Grafana)
+grafana_admin_user: "{{ vault_grafana_admin_user }}"
+grafana_admin_password: "{{ vault_grafana_admin_password }}"
+
+grafana_port_expose: false
+grafana_router: grafana
+grafana_domain: observability.local.gd
+grafana_labels:
+  - traefik.enable=true
+  - traefik.http.routers.{{ grafana_router }}.rule=Host(`{{ grafana_domain }}`)
+  - traefik.http.routers.{{ grafana_router }}.entrypoints=websecure
+  - traefik.http.routers.{{ grafana_router }}.tls=true
+
+# Reverse Proxy (Traefik)
+traefik_challenge: debug
+traefik_acme_email: "{{ vault_traefik_acme_email }}"
+# XXX Use a temporary variable to avoid `maximum recursion depth exceeded` error
+traefik_networks: "{{ (grafana_networks | default([])) }}"
+
+traefik_tls_private_key: "{{ inventory_dir }}/../../files/certs/{{ inventory_hostname }}.key"
+traefik_tls_public_cert: "{{ inventory_dir }}/../../files/certs/{{ inventory_hostname }}.crt"

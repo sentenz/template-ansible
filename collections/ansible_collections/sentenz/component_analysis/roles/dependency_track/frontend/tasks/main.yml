@@ -1,0 +1,72 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+- name: Dependency-Track Frontend - Ensure group ownership
+  ansible.builtin.group:
+    name: "{{ dependency_track_ownership_group }}"
+    state: present
+    system: true
+
+- name: Dependency-Track Frontend - Ensure user ownership
+  ansible.builtin.user:
+    name: "{{ dependency_track_ownership_owner }}"
+    group: "{{ dependency_track_ownership_group }}"
+    state: present
+
+- name: Dependency-Track Frontend - Securely create directories
+  ansible.builtin.file:
+    state: directory
+    path: "{{ dependency_track_frontend_path }}"
+    owner: "{{ dependency_track_ownership_owner }}"
+    group: "{{ dependency_track_ownership_group }}"
+    mode: "{{ dependency_track_permission_directory }}"
+
+- name: Dependency-Track Frontend - Securely template Jinja2 files
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "{{ dependency_track_frontend_path }}/{{ item | basename | regex_replace('.j2$', '') }}"
+    owner: "{{ dependency_track_ownership_owner }}"
+    group: "{{ dependency_track_ownership_group }}"
+    mode: "{{ dependency_track_permission_file }}"
+  loop:
+    - docker-compose.yml.j2
+    - config.json.j2
+  notify:
+    - dependency_track_restart
+
+- name: Dependency-Track Frontend - Deploy Containers
+  community.docker.docker_compose_v2:
+    project_src: "{{ dependency_track_frontend_path }}"
+    state: present
+
+- name: Dependency-Track Frontend - Destroy Containers
+  community.docker.docker_compose_v2:
+    project_src: "{{ dependency_track_frontend_path }}"
+    files:
+      - docker-compose.yml
+    state: absent
+  tags:
+    - destroy
+  notify:
+    - dependency_track_absent
+
+- name: Dependency-Track Frontend - Restart Containers
+  community.docker.docker_compose_v2:
+    project_src: "{{ dependency_track_frontend_path }}"
+    files:
+      - docker-compose.yml
+    state: restarted
+  tags:
+    - restart
+  notify:
+    - dependency_track_restart
+
+- name: Dependency-Track Frontend - Stop Containers
+  community.docker.docker_compose_v2:
+    project_src: "{{ dependency_track_frontend_path }}"
+    files:
+      - docker-compose.yml
+    state: stopped
+  tags:
+    - stop
+  notify:
+    - dependency_track_stop

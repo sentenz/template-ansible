@@ -1,23 +1,32 @@
 ---
 services:
-  {{ prometheus_alertmanager_name }}:
-    image: {{ prometheus_alertmanager_image }}
-    container_name: {{ prometheus_alertmanager_name }}
+  "{{ prometheus_alertmanager_name }}":
+    image: "{{ prometheus_alertmanager_image }}"
+    container_name: "{{ prometheus_alertmanager_name }}"
     volumes:
-      - {{ prometheus_alertmanager_path }}:/etc/alertmanager:ro
+      - "{{ prometheus_alertmanager_path }}:/etc/alertmanager:ro"
     command:
-      - --config.file=/etc/alertmanager/config.yml
+      - "--config.file=/etc/alertmanager/config.yml"
     ports:
       - "{{ prometheus_alertmanager_port }}:9093"
-    restart: always
     networks:
-      - observability
+{% for network in prometheus_networks %}
+      - "{{ network }}"
+{% endfor %}
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     deploy:
       mode: global
     security_opt:
       - no-new-privileges:true
 
 networks:
-  observability:
-    name: observability
+{% for network in prometheus_networks %}
+  {{ network }}:
+    name: "{{ network }}"
     driver: bridge
+{% endfor %}

@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+namespace: sentenz
+name: reverse_proxy
+version: 1.0.0
+authors:
+  - sentenz
+readme: README.md
+description: >-
+  Ansible Collection for Reverse Proxy.
+license:
+  - Apache-2.0
+repository: ""
+tags:
+  - cloud
+  - proxy

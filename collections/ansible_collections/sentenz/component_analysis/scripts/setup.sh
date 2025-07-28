@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #
-# Setup the Software Development environment.
+# Install and configure all dependencies essential for development.
 
 # -x: print a trace (debug)
 # -u: treat unset variables

@@ -1,29 +1,26 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-- name: Ensure Group for Prometheus
+- name: Prometheus - Ensure group ownership
   ansible.builtin.group:
     name: "{{ prometheus_ownership_group }}"
     state: present
     system: true
-  become: true
 
-- name: Ensure User for Prometheus
+- name: Prometheus - Ensure user ownership
   ansible.builtin.user:
     name: "{{ prometheus_ownership_owner }}"
     group: "{{ prometheus_ownership_group }}"
     state: present
-  become: true
 
-- name: Securely Create Directory for Prometheus
+- name: Prometheus - Securely create directories
   ansible.builtin.file:
     state: directory
     path: "{{ prometheus_path }}"
     owner: "{{ prometheus_ownership_owner }}"
     group: "{{ prometheus_ownership_group }}"
     mode: "{{ prometheus_permission_directory }}"
-  become: true
 
-- name: Securely Copy Content for Prometheus
+- name: Prometheus - Securely copy content
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ prometheus_path }}/{{ item }}"
@@ -33,26 +30,23 @@
   loop:
     - prometheus.yml
     - alert-rules.yml
-  become: true
 
-- name: Securely Template Files for Prometheus
+- name: Prometheus - Securely template Jinja2 files
   ansible.builtin.template:
     src: docker-compose.yml.j2
     dest: "{{ prometheus_path }}/docker-compose.yml"
     owner: "{{ prometheus_ownership_owner }}"
     group: "{{ prometheus_ownership_group }}"
     mode: "{{ prometheus_permission_file }}"
-  become: true
+  notify:
+    - prometheus_restart
 
-- name: Deploy Prometheus
+- name: Prometheus - Deploy Containers
   community.docker.docker_compose_v2:
     project_src: "{{ prometheus_path }}"
     state: present
-  become: true
-  notify:
-    - "{{ prometheus_notify_restart }}"
 
-- name: Destroy Prometheus
+- name: Prometheus - Destroy Containers
   community.docker.docker_compose_v2:
     project_src: "{{ prometheus_path }}"
     files:
@@ -61,9 +55,9 @@
   tags:
     - destroy
   notify:
-    - "{{ prometheus_notify_absent }}"
+    - prometheus_absent
 
-- name: Restart Prometheus
+- name: Prometheus - Restart Containers
   community.docker.docker_compose_v2:
     project_src: "{{ prometheus_path }}"
     files:
@@ -72,9 +66,9 @@
   tags:
     - restart
   notify:
-    - "{{ prometheus_notify_restart }}"
+    - prometheus_restart
 
-- name: Stop Prometheus
+- name: Prometheus - Stop Containers
   community.docker.docker_compose_v2:
     project_src: "{{ prometheus_path }}"
     files:
@@ -83,4 +77,4 @@
   tags:
     - stop
   notify:
-    - "{{ prometheus_notify_stop }}"
+    - prometheus_stop

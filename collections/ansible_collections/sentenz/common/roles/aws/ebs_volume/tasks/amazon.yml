@@ -1,0 +1,59 @@
+---
+- name: AWS EBS Volume - {{ ansible_distribution }} - Create mount point directory
+  ansible.builtin.file:
+    state: directory
+    path: "{{ ebs_volume_mountpoint }}"
+    owner: "{{ ebs_volume_ownership_owner }}"
+    group: "{{ ebs_volume_ownership_group }}"
+    mode: "{{ ebs_volume_permission_directory }}"
+
+- name: AWS EBS Volume - {{ ansible_distribution }} - Check if device is already formatted
+  ansible.builtin.command: lsblk -f -n -o FSTYPE "{{ ebs_volume_device }}"
+  register: ebs_device_fs
+  changed_when: false
+
+- name: AWS EBS Volume - {{ ansible_distribution }} - Format volume if needed
+  ansible.builtin.filesystem:
+    fstype: "{{ ebs_volume_filesystem }}"
+    dev: "{{ ebs_volume_device }}"
+  when: ebs_device_fs.stdout == ""
+
+- name: AWS EBS Volume - {{ ansible_distribution }} - Get volume UUID
+  command: blkid -o value -s UUID {{ ebs_volume_device }}
+  register: ebs_device_uuid
+  changed_when: false
+  failed_when: false
+
+- name: AWS EBS Volume - {{ ansible_distribution }} - Mount volume
+  ansible.builtin.mount:
+    path: "{{ ebs_volume_mountpoint }}"
+    src: "UUID={{ ebs_device_uuid.stdout }}"
+    fstype: "{{ ebs_volume_filesystem }}"
+    opts: "{{ ebs_volume_options }}"
+    dump: "{{ ebs_volume_dump }}"
+    passno: "{{ ebs_volume_passno }}"
+    state: mounted
+  # when: ebs_device_uuid.rc == 0 and ebs_device_uuid.stdout | length > 0
+
+- name: AWS EBS Volume - {{ ansible_distribution }} - Wait for device to be attached
+  ansible.builtin.wait_for:
+    path: "{{ ebs_volume_device }}"
+    state: present
+    timeout: 120
+
+- name: AWS EBS Volume - {{ ansible_distribution }} - Ensure mount entry for volume
+  ansible.builtin.mount:
+    path: "{{ ebs_volume_mountpoint }}"
+    src: "{{ ebs_volume_device }}"
+    fstype: "{{ ebs_volume_filesystem }}"
+    opts: "{{ ebs_volume_options }}"
+    state: present
+
+- name: AWS EBS Volume - {{ ansible_distribution }} - Review ownership and permissions
+  ansible.builtin.file:
+    state: directory
+    recurse: false
+    path: "{{ ebs_volume_mountpoint }}"
+    owner: "{{ ebs_volume_ownership_owner }}"
+    group: "{{ ebs_volume_ownership_group }}"
+    mode: "{{ ebs_volume_permission_directory }}"

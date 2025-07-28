@@ -3,7 +3,5 @@
 requires_ansible: ">=2.16.0"
 action_groups:
   component_analysis:
-    - bom_create
-    - bom_delete
-    - bom_read
-    - bom_update
+    - sbom_upload
+    - sbom_delete

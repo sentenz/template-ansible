@@ -5,80 +5,120 @@ ifneq (,$(wildcard .env))
 	export
 endif
 
+# Define Variables
+
+SHELL = /bin/bash
+SHELL_CMD = source
+SHELL_PATH = scripts/shell
+SHELL_FILE_CLI = ${SHELL_PATH}/cli.sh
+SHELL_FILE_FORMAT = ${SHELL_PATH}/format.sh
+
 # Define Targets
 
 default: help
 
 help:
-	@awk 'BEGIN {printf "TASK\n\tA centralized collection of commands and operations used in this project.\n\n"}'
-	@awk 'BEGIN {printf "USAGE\n\tmake $(shell tput -Txterm setaf 6)[target]$(shell tput -Txterm sgr0)\n\n"}' $(MAKEFILE_LIST)
+	@awk 'BEGIN {printf "Task\n\tA collection of tasks used in the current project.\n\n"}'
+	@awk 'BEGIN {printf "Usage\n\tmake $(shell tput -Txterm setaf 6)<task>$(shell tput -Txterm sgr0)\n\n"}' $(MAKEFILE_LIST)
 	@awk '/^##/{c=substr($$0,3);next}c&&/^[[:alpha:]][[:alnum:]_-]+:/{print "$(shell tput -Txterm setaf 6)\t" substr($$1,1,index($$1,":")) "$(shell tput -Txterm sgr0)",c}1{c=0}' $(MAKEFILE_LIST) | column -s: -t
 .PHONY: help
 
-## Setup the Software Development environment
-setup-ubuntu:
-	apt update
-	apt install software-properties-common
-	add-apt-repository --yes --update ppa:ansible/ansible
-	apt install -y ansible
-.PHONY: setup-ubuntu
+# Prompt for credentials and cache them for the current session
+permission:
+	@sudo -v
+.PHONY: permission
 
-## Setup the Software Development environment
-setup-alpine:
-	apk add ansible
-.PHONY: setup-alpine
+## Initialize a software development workspace with requisites
+bootstrap:
+	@$(MAKE) -s permission
+	cd $(@D)/scripts && chmod +x bootstrap.sh && ./bootstrap.sh
+.PHONY: bootstrap
 
-## Setup the linting tools
-setup-lint:
-	pip3 install ansible-lint==24.12.2 --break-system-packages
-.PHONY: setup-lint
+## Install and configure all dependencies essential for development
+setup:
+	@$(MAKE) -s permission
+	cd $(@D)/scripts && chmod +x setup.sh && ./setup.sh
+.PHONY: setup
+
+## Remove development artifacts and restore the host to its pre-setup state
+teardown:
+	@$(MAKE) -s permission
+	cd $(@D)/scripts && chmod +x teardown.sh && ./teardown.sh
+.PHONY: teardown
 
 ## Perform install Role and Collection of Ansible Galaxy
-galaxy-install:
+ansible-galaxy-install:
 	find . -name "requirements.yml" -exec ansible-galaxy install --force -r {} \;
-.PHONY: galaxy-install
+.PHONY: ansible-galaxy-install
 
 ## Perform upgrade Role and Collection of Ansible Galaxy
-galaxy-update: galaxy-install
-.PHONY: galaxy-update
+ansible-galaxy-update: ansible-galaxy-install
+.PHONY: ansible-galaxy-update
 
 ## Perform removel Role and Collection of Ansible Galaxy
-galaxy-uninstall:
+ansible-galaxy-uninstall:
 	rm -rf ~/.ansible/collections/ansible_collections/
-.PHONY: galaxy-uninstall
+.PHONY: ansible-galaxy-uninstall
 
 ## Perform the Static Analysis of Ansible configuration
 ansible-lint:
-	ansible-lint ./
-	ansible-lint ./collections/ansible_collections/sentenz/component_analysis/
-	ansible-lint ./collections/ansible_collections/sentenz/observability/
-	ansible-lint ./inventory/
-	ansible-lint ./playbooks/
-
-	# ansible-later **/*.yml
+	$(SHELL_CMD) $(SHELL_FILE_CLI) && $(SHELL_CMD) $(SHELL_FILE_FORMAT) && cli_ansible_lint | format_gitlab_ansible_lint
 .PHONY: ansible-lint
 
-## Provisioning of CaC to a specified environment
+## Deploy the Ansible configuration to the target environment
 ansible-deploy:
-	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --skip-tags restart,stop,destroy
+	ansible-playbook -i inventory/$(ENV)/hosts.yml site.yml --ask-become-pass --skip-tags restart,stop,destroy --vault-password-file "./vault/$(ENV).vault_pass"
 .PHONY: ansible-deploy
 
-## Destroy of CaC to a specified environment
+## Destroy the Ansible configuration on the target environment
 ansible-destroy:
-	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --tags destroy
+	ansible-playbook -i inventory/$(ENV)/hosts.yml site.yml --ask-become-pass --tags destroy --vault-password-file "./vault/$(ENV).vault_pass"
 .PHONY: ansible-destroy
 
-## Restarting of CaC to a specified environment
+## Restart the Ansible configuration on the target environment
 ansible-restart:
-	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --tags restart
+	ansible-playbook -i inventory/$(ENV)/hosts.yml site.yml --ask-become-pass --tags restart --vault-password-file "./vault/$(ENV).vault_pass"
 .PHONY: ansible-restart
 
-## Stopping of CaC to a specified environment
+## Stop the Ansible configuration on the target environment
 ansible-stop:
-	ansible-playbook -i inventory/$(ENV)/hosts site.yml --ask-become-pass --tags stop
+	ansible-playbook -i inventory/$(ENV)/hosts.yml site.yml --ask-become-pass --tags stop --vault-password-file "./vault/$(ENV).vault_pass"
 .PHONY: ansible-stop
+
+# Usage: make ansible-vault-encrypt <file>
+#
+## Create Ansible vault encrypted file
+ansible-vault-encrypt:
+	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
+		echo "Usage: make ansible-vault-encrypt <file>"; \
+		exit 1; \
+	fi
+	ansible-vault encrypt --vault-password-file="./vault/$(ENV).vault_pass" "$(filter-out $@,$(MAKECMDGOALS))"
+.PHONY: ansible-vault-encrypt
+
+# Usage: make ansible-vault-decrypt <file>
+#
+## Decrypt Ansible vault encrypted file
+ansible-vault-decrypt:
+	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
+		echo "Usage: make ansible-vault-encrypt <file>"; \
+		exit 1; \
+	fi
+	ansible-vault decrypt --vault-password-file="./vault/$(ENV).vault_pass" "$(filter-out $@,$(MAKECMDGOALS))"
+.PHONY: ansible-vault-decrypt
+
+# Usage: make ansible-vault-view <file>
+#
+## View Ansible vault encrypted file
+ansible-vault-view:
+	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
+		echo "Usage: make ansible-vault-view <file>"; \
+		exit 1; \
+	fi
+	ansible-vault view --vault-password-file="./vault/$(ENV).vault_pass" "$(filter-out $@,$(MAKECMDGOALS))"
+.PHONY: ansible-vault-view
 
 ## Open AWS EC2 Instance in the terminal
 aws-terminal:
-	ssh aws
+	ssh aws-$(ENV)
 .PHONY: aws-terminal

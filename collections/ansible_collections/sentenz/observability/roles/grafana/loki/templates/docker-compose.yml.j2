@@ -1,28 +1,37 @@
 ---
 services:
-  {{ grafana_loki_name }}:
-    image: {{ grafana_loki_image }}
-    container_name: {{ grafana_loki_name }}
-    user: {{ grafana_ownership_owner }}
+  "{{ grafana_loki_name }}":
+    image: "{{ grafana_loki_image }}"
+    container_name: "{{ grafana_loki_name }}"
+    user: "{{ grafana_ownership_owner }}"
     volumes:
-      - {{ grafana_loki_path }}:/etc/loki:ro
-      - loki_data:/data/loki
+      - "{{ grafana_loki_path }}:/etc/loki:ro"
+      - "{{ grafana_loki_volume }}:/data/loki"
     command: 
       - --config.file=/etc/loki/config.yml
     ports:
       - "{{ grafana_loki_port }}:3100"
-    restart: always
     networks:
-      - observability
+{% for network in grafana_networks %}
+      - "{{ network }}"
+{% endfor %}
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     deploy:
       mode: global
     security_opt:
       - no-new-privileges:true
 
 networks:
-  observability:
-    name: observability
+{% for network in grafana_networks %}
+  {{ network }}:
+    name: "{{ network }}"
     driver: bridge
+{% endfor %}
 
 volumes:
-  loki_data: {}
+  "{{ grafana_loki_volume }}": {}

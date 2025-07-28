@@ -1,27 +1,25 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-- name: Restart Docker Compose
+- name: Alertmanager - Restart Docker Compose
+  listen: prometheus_restart
   community.docker.docker_compose_v2:
     project_src: "{{ prometheus_alertmanager_path }}"
     files:
       - docker-compose.yml
     state: restarted
-  when: prometheus_handler_restart | default(false)
 
-- name: Stop Docker Compose
+- name: Alertmanager - Stop Docker Compose
+  listen: prometheus_stop
   community.docker.docker_compose_v2:
     project_src: "{{ prometheus_alertmanager_path }}"
     files:
       - docker-compose.yml
     state: stopped
-  when: prometheus_handler_stop | default(false)
-  run_once: true
 
-- name: Remove Docker Compose
+- name: Alertmanager - Remove Docker Compose
+  listen: prometheus_absent
   community.docker.docker_compose_v2:
     project_src: "{{ prometheus_alertmanager_path }}"
     files:
       - docker-compose.yml
     state: absent
-  when: prometheus_handler_absent | default(false)
-  run_once: true

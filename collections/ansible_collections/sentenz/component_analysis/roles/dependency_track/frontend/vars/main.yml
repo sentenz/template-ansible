@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# Ownership
+dependency_track_ownership_owner: "{{ dependency_track_frontend_name }}"
+dependency_track_ownership_group: "{{ dependency_track_frontend_name }}"
+
+# Permissions Mode
+dependency_track_permission_directory: "0755"
+dependency_track_permission_file: "0644"

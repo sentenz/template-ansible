@@ -1,6 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
+# Observability
+grafana_networks:
+  - observability-network
+
+# Grafana Loki
 grafana_loki_name: loki
 grafana_loki_image: grafana/loki:latest
 grafana_loki_port: 3100
-grafana_loki_path: /etc/observability/loki
+grafana_loki_path: /etc/ansible_collections/observability/loki
+grafana_loki_volume: loki-data

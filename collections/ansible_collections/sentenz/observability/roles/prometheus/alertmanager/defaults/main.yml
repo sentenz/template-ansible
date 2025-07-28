@@ -1,6 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
+# Observability
+prometheus_networks:
+  - observability-network
+
+# Prometheus Alertmanager
 prometheus_alertmanager_name: alertmanager
 prometheus_alertmanager_image: prom/alertmanager:latest
 prometheus_alertmanager_port: 9093
-prometheus_alertmanager_path: /etc/observability/alertmanager
+prometheus_alertmanager_path: /etc/ansible_collections/observability/alertmanager

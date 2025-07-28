@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 from unittest.mock import patch, MagicMock
-from ansible_collections.sentenz.component_analysis.plugins.modules.bom_create import (
+from ansible_collections.sentenz.component_analysis.plugins.modules.sbom_create import (
     create_bom,
 )
 

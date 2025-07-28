@@ -1,23 +1,29 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-- name: Setup Observability
-  hosts: local
+- name: Observability - Setup Common
+  hosts: observability
   become: true
   roles:
-    - sentenz.observability.prometheus.prometheus
-    - sentenz.observability.prometheus.alertmanager
-    - sentenz.observability.grafana.grafana
-    - sentenz.observability.grafana.loki
-    # TODO(sentenz)
-    # - sentenz.observability.grafana.tempo
+    - role: sentenz.common.container.docker
 
-- name: Setup Observability Agents/Collectors
-  hosts: local
+- name: Observability - Setup Prometheus/Grafana with Reverse Proxy (Traefik)
+  hosts: observability
   become: true
   roles:
-    - sentenz.observability.prometheus.node_exporter
-    - sentenz.observability.prometheus.process_exporter
-    - sentenz.observability.grafana.promtail
-    # TODO(sentenz)
-    # - sentenz.observability.prometheus.blackbox_exporter
-    # - sentenz.observability.grafana.alloy
+    - role: sentenz.observability.prometheus.prometheus
+    - role: sentenz.observability.prometheus.alertmanager
+    - role: sentenz.observability.grafana.grafana
+    - role: sentenz.observability.grafana.loki
+    - role: sentenz.reverse_proxy.traefik
+    # TODO
+    # - role: sentenz.observability.grafana.tempo
+
+- name: Observability - Setup Agents/Collectors in Observability
+  hosts: observability
+  become: true
+  roles:
+    - role: sentenz.observability.prometheus.node_exporter
+    - role: sentenz.observability.grafana.promtail
+    # TODO
+    # - role: sentenz.observability.prometheus.blackbox_exporter
+    # - role: sentenz.observability.grafana.alloy

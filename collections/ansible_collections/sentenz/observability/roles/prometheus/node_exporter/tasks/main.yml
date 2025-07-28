@@ -1,46 +1,41 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-- name: Ensure Group for Prometheus Node Exporter
+- name: Node Exporter - Ensure group ownership
   ansible.builtin.group:
     name: "{{ prometheus_ownership_group }}"
     state: present
     system: true
-  become: true
 
-- name: Ensure User for Prometheus Node Exporter
+- name: Node Exporter - Ensure user ownership
   ansible.builtin.user:
     name: "{{ prometheus_ownership_owner }}"
     group: "{{ prometheus_ownership_group }}"
     state: present
-  become: true
 
-- name: Securely Create Directory for Prometheus Node Exporter
+- name: Node Exporter - Securely create directories
   ansible.builtin.file:
     state: directory
     path: "{{ prometheus_node_exporter_path }}"
     owner: "{{ prometheus_ownership_owner }}"
     group: "{{ prometheus_ownership_group }}"
     mode: "{{ prometheus_permission_directory }}"
-  become: true
 
-- name: Securely Template Files for Prometheus Node Exporter
+- name: Node Exporter - Securely template Jinja2 files
   ansible.builtin.template:
     src: docker-compose.yml.j2
     dest: "{{ prometheus_node_exporter_path }}/docker-compose.yml"
     owner: "{{ prometheus_ownership_owner }}"
     group: "{{ prometheus_ownership_group }}"
     mode: "{{ prometheus_permission_file }}"
-  become: true
+  notify:
+    - prometheus_restart
 
-- name: Deploy Prometheus Node Exporter
+- name: Node Exporter - Deploy Containers
   community.docker.docker_compose_v2:
     project_src: "{{ prometheus_node_exporter_path }}"
     state: present
-  become: true
-  notify:
-    - "{{ prometheus_notify_restart }}"
 
-- name: Destroy Prometheus Node Exporter
+- name: Node Exporter - Destroy Containers
   community.docker.docker_compose_v2:
     project_src: "{{ prometheus_node_exporter_path }}"
     files:
@@ -49,9 +44,9 @@
   tags:
     - destroy
   notify:
-    - "{{ prometheus_notify_absent }}"
+    - prometheus_absent
 
-- name: Restart Prometheus Node Exporter
+- name: Node Exporter - Restart Containers
   community.docker.docker_compose_v2:
     project_src: "{{ prometheus_node_exporter_path }}"
     files:
@@ -60,9 +55,9 @@
   tags:
     - restart
   notify:
-    - "{{ prometheus_notify_restart }}"
+    - prometheus_restart
 
-- name: Stop Prometheus Node Exporter
+- name: Node Exporter - Stop Containers
   community.docker.docker_compose_v2:
     project_src: "{{ prometheus_node_exporter_path }}"
     files:
@@ -71,4 +66,4 @@
   tags:
     - stop
   notify:
-    - "{{ prometheus_notify_stop }}"
+    - prometheus_stop

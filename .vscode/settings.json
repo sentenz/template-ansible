@@ -1,0 +1,40 @@
+{
+  "window.title": "${rootName}",
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  "editor.defaultFormatter": null,
+  "editor.formatOnSave": true,
+  "editor.suggest.showFolders": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.stickyScroll.enabled": true,
+  "editor.tabSize": 2,
+  "editor.renderWhitespace": "all",
+  "terminal.integrated.stickyScroll.enabled": true,
+  "conventionalCommits.gitmoji": false,
+  "[markdown]": {
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": true,
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "yzhang.markdown-all-in-one"
+  },
+  "markdown.extension.toc.levels": "2..6",
+  "[shell]": {
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": true,
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": null
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[yaml]": {
+    "editor.formatOnSave": false,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "github.copilot.chat.startDebugging.enabled": true,
+  "github.copilot.chat.agent.runTasks": true
+}

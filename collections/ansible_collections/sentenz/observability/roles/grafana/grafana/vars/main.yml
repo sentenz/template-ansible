@@ -7,13 +7,3 @@ grafana_ownership_group: "{{ grafana_name }}"
 # Permissions Mode
 grafana_permission_directory: "0754"
 grafana_permission_file: "0644"
-
-# Handler Flags
-grafana_handler_restart: true
-grafana_handler_stop: true
-grafana_handler_absent: true
-
-# Notifications and Service Names
-grafana_notify_restart: "Restart Docker Compose"
-grafana_notify_stop: "Stop Docker Compose"
-grafana_notify_absent: "Remove Docker Compose"

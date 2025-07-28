@@ -1,6 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
+# Observability
+prometheus_networks:
+  - observability-network
+
+# Prometheus Node Exporter
 prometheus_node_exporter_name: node_exporter
 prometheus_node_exporter_image: prom/node-exporter:latest
 prometheus_node_exporter_port: 9100
-prometheus_node_exporter_path: /etc/observability/node_exporter
+prometheus_node_exporter_path: /etc/ansible_collections/observability/node_exporter

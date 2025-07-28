@@ -1,20 +1,25 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-# Ports and Networking
+# Observability
+grafana_networks:
+  - observability-network
+
+# Grafana
 grafana_name: grafana
 grafana_image: grafana/grafana:latest
 grafana_port: 3000
-grafana_volume_name: grafana_data
-grafana_version: "latest"
+grafana_volume: grafana-data
+grafana_path: /etc/ansible_collections/observability/grafana
 
-# Paths and Directories
-grafana_path: /etc/observability/grafana
+grafana_port_expose: true
+grafana_domain: observability.localhost
+grafana_labels: []
 
-# Credentials (Sensitive Data - To be encrypted with Ansible Vault)
-grafana_admin_user: "admin"
-grafana_admin_password: "admin"
-# admin_user: "{{ vault_admin_user }}"
-# admin_password: "{{ vault_admin_password }}"
+# XXX Credentials Sensitive data need to be encrypted with Ansible Vault
+grafana_admin_user: admin
+grafana_admin_password: admin
+# grafana_admin_user: "{{ vault_admin_user }}"
+# grafana_admin_password: "{{ vault_admin_password }}"
 
 # Plugins
 grafana_plugins:
@@ -31,6 +36,6 @@ grafana_datasources:
 
 # Dashboards
 grafana_dashboards:
-  - dashboard_id: 6417       # Node Exporter Full
+  - dashboard_id: 6417 # Node Exporter Full
     revision_id: 15
     datasource: Prometheus

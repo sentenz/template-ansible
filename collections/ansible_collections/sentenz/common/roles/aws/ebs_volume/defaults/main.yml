@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+ebs_volume_device: "/dev/sdh"
+ebs_volume_mountpoint: "/data"
+ebs_volume_filesystem: "xfs"
+ebs_volume_options: "defaults,nofail"
+ebs_volume_dump: "0"
+ebs_volume_passno: "2"

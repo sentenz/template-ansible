@@ -1,29 +1,26 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-- name: Ensure Group for Grafana
+- name: Grafana - Ensure group ownership
   ansible.builtin.group:
     name: "{{ grafana_ownership_group }}"
     state: present
     system: true
-  become: true
 
-- name: Ensure User for Grafana
+- name: Grafana - Ensure user ownership
   ansible.builtin.user:
     name: "{{ grafana_ownership_owner }}"
     group: "{{ grafana_ownership_group }}"
     state: present
-  become: true
 
-- name: Securely Create Directory for Grafana
+- name: Grafana - Securely create directories
   ansible.builtin.file:
     state: directory
     path: "{{ grafana_path }}"
     owner: "{{ grafana_ownership_owner }}"
     group: "{{ grafana_ownership_group }}"
     mode: "{{ grafana_permission_directory }}"
-  become: true
 
-- name: Securely Copy Content for Grafana
+- name: Grafana - Securely copy content
   ansible.builtin.copy:
     src: "{{ item }}/"
     dest: "{{ grafana_path }}/{{ item }}/"
@@ -33,11 +30,10 @@
   loop:
     - dashboards
     - provisioning
-  become: true
   notify:
-    - "{{ grafana_notify_restart }}"
+    - grafana_restart
 
-- name: Securely Template Files for Grafana
+- name: Grafana - Securely template Jinja2 files
   ansible.builtin.template:
     src: "{{ item }}"
     dest: "{{ grafana_path }}/{{ item | basename | regex_replace('.j2$', '') }}"
@@ -47,17 +43,15 @@
   loop:
     - docker-compose.yml.j2
     - grafana.ini.j2
-  become: true
+  notify:
+    - grafana_restart
 
-- name: Deploy Grafana
+- name: Grafana - Deploy Containers
   community.docker.docker_compose_v2:
     project_src: "{{ grafana_path }}"
     state: present
-  become: true
-  notify:
-    - "{{ grafana_notify_restart }}"
 
-- name: Destroy Grafana
+- name: Grafana - Destroy Containers
   community.docker.docker_compose_v2:
     project_src: "{{ grafana_path }}"
     files:
@@ -66,9 +60,9 @@
   tags:
     - destroy
   notify:
-    - "{{ grafana_notify_absent }}"
+    - grafana_absent
 
-- name: Restart Grafana
+- name: Grafana - Restart Containers
   community.docker.docker_compose_v2:
     project_src: "{{ grafana_path }}"
     files:
@@ -77,9 +71,9 @@
   tags:
     - restart
   notify:
-    - "{{ grafana_notify_restart }}"
+    - grafana_restart
 
-- name: Stop Grafana
+- name: Grafana - Stop Containers
   community.docker.docker_compose_v2:
     project_src: "{{ grafana_path }}"
     files:
@@ -88,4 +82,4 @@
   tags:
     - stop
   notify:
-    - "{{ grafana_notify_stop }}"
+    - grafana_stop

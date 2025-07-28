@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# Ownership
+traefik_ownership_owner: "{{ traefik_name }}"
+traefik_ownership_group: "{{ traefik_name }}"
+
+# Permissions Mode
+traefik_permission_directory: "0755"
+traefik_permission_file: "0644"

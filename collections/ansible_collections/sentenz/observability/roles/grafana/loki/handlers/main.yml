@@ -1,27 +1,25 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-- name: Restart Docker Compose
+- name: Loki - Restart Docker Compose
+  listen: grafana_restart
   community.docker.docker_compose_v2:
     project_src: "{{ grafana_loki_path }}"
     files:
       - docker-compose.yml
     state: restarted
-  when: grafana_handler_restart | default(false)
 
-- name: Stop Docker Compose
+- name: Loki - Stop Docker Compose
+  listen: grafana_stop
   community.docker.docker_compose_v2:
     project_src: "{{ grafana_loki_path }}"
     files:
       - docker-compose.yml
     state: stopped
-  when: grafana_handler_stop | default(false)
-  run_once: true
 
-- name: Remove Docker Compose
+- name: Loki - Remove Docker Compose
+  listen: grafana_absent
   community.docker.docker_compose_v2:
     project_src: "{{ grafana_loki_path }}"
     files:
       - docker-compose.yml
     state: absent
-  when: grafana_handler_absent | default(false)
-  run_once: true

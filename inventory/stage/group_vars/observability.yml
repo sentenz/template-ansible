@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# Observability (Grafana)
+grafana_admin_user: "{{ vault_grafana_admin_user }}"
+grafana_admin_password: "{{ vault_grafana_admin_password }}"
+
+grafana_port_expose: false
+grafana_router: grafana
+grafana_domain: staging.observability.dev
+grafana_labels:
+  - traefik.enable=true
+  - traefik.http.routers.{{ grafana_router }}.rule=Host(`{{ grafana_domain }}`)
+  - traefik.http.routers.{{ grafana_router }}.entrypoints=websecure
+  - traefik.http.routers.{{ grafana_router }}.tls=true
+  - traefik.http.routers.{{ grafana_router }}.tls.certresolver=letsencrypt
+
+# Reverse Proxy (Traefik)
+traefik_challenge: dns
+traefik_acme_email: "{{ vault_traefik_acme_email }}"
+traefik_networks: "{{ (grafana_networks | default([])) }}"
+traefik_challenge_dns_provider: cloudflare
+traefik_challenge_dns_provider_variables:
+  - CLOUDFLARE_DNS_API_TOKEN="{{ vault_cloudflare_dns_api_token }}"
+traefik_challenge_options:
+  - "--certificatesresolvers.{{ traefik_certificates_resolver }}.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"

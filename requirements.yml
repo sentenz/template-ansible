@@ -1,8 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
 collections:
-  - name: sentenz.container
-    src: ./collections/ansible_collections/sentenz/container
+  - name: sentenz.common
+    src: ./collections/ansible_collections/sentenz/common
+    type: subdirs
+  - name: sentenz.reverse_proxy
+    src: ./collections/ansible_collections/sentenz/reverse_proxy
     type: subdirs
   - name: sentenz.observability
     src: ./collections/ansible_collections/sentenz/observability
