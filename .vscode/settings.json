@@ -34,7 +34,5 @@
     "editor.insertSpaces": true,
     "editor.detectIndentation": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "github.copilot.chat.startDebugging.enabled": true,
-  "github.copilot.chat.agent.runTasks": true
+  }
 }
