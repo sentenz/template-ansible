@@ -23,14 +23,23 @@
     - "{{ traefik_path }}"
     - "{{ traefik_certs_path }}"
 
-- name: Traefik - Securely copy certificates
+- name: Traefik - Securely copy TLS certificates
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ traefik_certs_path }}/{{ item | basename }}"
     owner: "{{ traefik_ownership_owner }}"
     group: "{{ traefik_ownership_group }}"
     mode: "0600"
-  loop: "{{ (traefik_challenge in ['intranet', 'debug']) | ansible.builtin.ternary([traefik_tls_public_cert, traefik_tls_private_key], [traefik_acme_config]) }}"
+  loop: "{{ (traefik_challenge in ['intranet', 'debug']) | ansible.builtin.ternary(
+      [
+        traefik_tls_public_cert,
+        traefik_tls_private_key],
+      [
+        traefik_acme_config
+      ]
+    ) }}"
+  notify:
+    - traefik_restart
 
 - name: Traefik - Securely template Jinja2 files
   ansible.builtin.template:

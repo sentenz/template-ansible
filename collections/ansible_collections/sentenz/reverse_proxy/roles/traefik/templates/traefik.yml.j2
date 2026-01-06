@@ -26,6 +26,15 @@ entryPoints:
     address: ":80"
   websecure:
     address: ":443"
+    http:
+      encodedCharacters:
+        allowEncodedSlash: true          # %2F - Default: false (RECOMMENDED)
+        allowEncodedBackSlash: true      # %5C - Default: false (RECOMMENDED)
+        allowEncodedNullCharacter: true  # %00 - Default: false (RECOMMENDED)
+        allowEncodedSemicolon: true      # %3B - Default: false (RECOMMENDED)
+        allowEncodedPercent: true        # %25 - Default: false (RECOMMENDED)
+        allowEncodedQuestionMark: true   # %3F - Default: false (RECOMMENDED)
+        allowEncodedHash: true           # %23 - Default: false (RECOMMENDED)
 
 ################################################################
 # Traefik logs configuration

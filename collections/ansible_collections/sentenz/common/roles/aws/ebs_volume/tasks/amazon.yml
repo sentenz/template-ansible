@@ -57,3 +57,11 @@
     owner: "{{ ebs_volume_ownership_owner }}"
     group: "{{ ebs_volume_ownership_group }}"
     mode: "{{ ebs_volume_permission_directory }}"
+
+- name: AWS EBS Volume - {{ ansible_distribution }} - Create Ansible remote tmp directory
+  ansible.builtin.file:
+    state: directory
+    path: "{{ ebs_volume_mountpoint }}/.ansible/tmp"
+    owner: "{{ ebs_volume_ownership_owner }}"
+    group: "{{ ebs_volume_ownership_group }}"
+    mode: "{{ ebs_volume_permission_directory }}"

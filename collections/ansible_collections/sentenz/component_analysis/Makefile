@@ -17,17 +17,17 @@ help:
 
 ## Install and configure all dependencies essential for development
 setup:
-	cd $(@D)/scripts && chmod +x setup.sh && ./setup.sh
+	cd $(@D)/scripts && ./setup.sh
 .PHONY: setup
 
 ## Setup the Software Analysis environment
 setup-analysis:
-	cd $(@D)/scripts && chmod +x setup_analysis.sh && ./setup_analysis.sh
+	cd $(@D)/scripts && ./setup_analysis.sh
 .PHONY: setup-analysis
 
 ## Setup the Software Testing environment
 setup-testing:
-	cd $(@D)/scripts && chmod +x setup_testing.sh && ./setup_testing.sh
+	cd $(@D)/scripts && ./setup_testing.sh
 .PHONY: setup-testing
 
 ## Perform the Static Analysis of Ansible configuration

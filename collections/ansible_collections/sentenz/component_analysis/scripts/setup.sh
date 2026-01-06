@@ -23,7 +23,6 @@ function setup() {
   local -i result=0
 
   for script in "${SCRIPTS[@]}"; do
-    chmod +x "${script}"
     ./"${script}"
     ((result = $?))
     ((retval |= "${result}"))
