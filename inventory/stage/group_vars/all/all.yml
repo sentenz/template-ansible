@@ -1,9 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
+# Ansible
+ansible_remote_tmp: /data/.ansible/tmp
+
 # Component Analysis (Dependency-Track)
-dependency_track_apiserver_image: dependencytrack/apiserver:4.13.2
-dependency_track_frontend_image: dependencytrack/frontend:4.13.2
-dependency_track_database_image: postgres:alpine
+dependency_track_apiserver_image: dependencytrack/apiserver:4.13.5
+dependency_track_frontend_image: dependencytrack/frontend:4.13.5
+dependency_track_database_image: postgres:17.5-alpine
 
 # Observability (Grafana/Prometheus)
 grafana_image: grafana/grafana:11.6.1
@@ -15,4 +18,4 @@ prometheus_alertmanager_image: prom/alertmanager:v0.28.1
 prometheus_node_exporter_image: prom/node-exporter:v1.9.1
 
 # Reverse Proxy (Traefik)
-traefik_image: traefik:v3.4.1
+traefik_image: traefik:v3.6.2

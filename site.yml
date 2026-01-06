@@ -1,11 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-# - name: Deploy Observability
-#   import_playbook: playbooks/observability.yml
-#   tags:
-#     - observability
+- name: Deploy Observability
+  import_playbook: playbooks/observability.yml
 
 - name: Deploy Component Analysis
   import_playbook: playbooks/component-analysis.yml
-  tags:
-    - component_analysis

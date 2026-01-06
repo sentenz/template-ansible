@@ -1,5 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
+# Common
+ebs_volume_device: "/dev/sdf"
+
 # Component Analysis (Dependency-Track)
 dependency_track_volume_attached: true
 
@@ -26,11 +29,11 @@ dependency_track_database_username: "{{ vault_dependency_track_database_username
 dependency_track_database_password: "{{ vault_dependency_track_database_password }}"
 
 # Reverse Proxy (Traefik)
-traefik_challenge: dns
+traefik_challenge: debug
 traefik_acme_email: "{{ vault_traefik_acme_email }}"
 traefik_networks: "{{ (dependency_track_networks | default([])) }}"
-traefik_challenge_dns_provider: cloudflare
-traefik_challenge_dns_provider_variables:
-  - CLOUDFLARE_DNS_API_TOKEN="{{ vault_cloudflare_dns_api_token }}"
+
+traefik_tls_private_key: "{{ inventory_dir }}/../../files/certs/{{ inventory_hostname }}.key"
+traefik_tls_public_cert: "{{ inventory_dir }}/../../files/certs/{{ inventory_hostname }}.crt"
 traefik_challenge_options:
   - "--certificatesresolvers.{{ traefik_certificates_resolver }}.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"

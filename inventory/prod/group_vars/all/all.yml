@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
 # Component Analysis (Dependency-Track)
-dependency_track_apiserver_image: dependencytrack/apiserver:4.13.2
-dependency_track_frontend_image: dependencytrack/frontend:4.13.2
+dependency_track_apiserver_image: dependencytrack/apiserver:4.13.6
+dependency_track_frontend_image: dependencytrack/frontend:4.13.6
 dependency_track_database_image: postgres:alpine
 
 # Observability (Grafana/Prometheus)
@@ -15,4 +15,4 @@ prometheus_alertmanager_image: prom/alertmanager:v0.28.1
 prometheus_node_exporter_image: prom/node-exporter:v1.9.1
 
 # Reverse Proxy (Traefik)
-traefik_image: traefik:v3.4.1
+traefik_image: traefik:v3.5.1
