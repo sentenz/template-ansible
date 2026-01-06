@@ -20,7 +20,7 @@ readonly -A APT_PACKAGES=(
   ["bash"]=""
   ["ca-certificates"]=""
   ["snapd"]=""
-  ["python3-pip"]=""
+  ["pip"]=""
   ["npm"]=""
 )
 
