@@ -10,7 +10,6 @@
   "editor.tabSize": 2,
   "editor.renderWhitespace": "all",
   "terminal.integrated.stickyScroll.enabled": true,
-  "conventionalCommits.gitmoji": false,
   "[markdown]": {
     "editor.formatOnSave": true,
     "editor.insertSpaces": true,
@@ -26,13 +25,19 @@
     "editor.tabSize": 2,
     "editor.defaultFormatter": null
   },
-  "[json]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
-  },
   "[yaml]": {
-    "editor.formatOnSave": false,
+    "editor.formatOnSave": true,
     "editor.insertSpaces": true,
     "editor.detectIndentation": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[dockerfile]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-containers"
   }
 }
