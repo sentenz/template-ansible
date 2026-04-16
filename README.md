@@ -8,24 +8,8 @@
     - [2.2.1. TLS Certificates and Private Keys](#221-tls-certificates-and-private-keys)
     - [2.2.2. CA-Signed Certificates from CSRs](#222-ca-signed-certificates-from-csrs)
 - [3. Contribute](#3-contribute)
-  - [3.1. Task Runner](#31-task-runner)
-    - [3.1.1. Make](#311-make)
-  - [3.2. Bootstrap](#32-bootstrap)
-    - [3.2.1. Scripts](#321-scripts)
-  - [3.3. Dev Containers](#33-dev-containers)
-  - [3.4. Release Manager](#34-release-manager)
-    - [3.4.1. Semantic-Release](#341-semantic-release)
-  - [3.5. Update Manager](#35-update-manager)
-    - [3.5.1. Renovate](#351-renovate)
-    - [3.5.2. Dependabot](#352-dependabot)
-  - [3.6. Secrets Manager](#36-secrets-manager)
-    - [3.6.1. Ansible Vault](#361-ansible-vault)
-  - [3.7. Container Manager](#37-container-manager)
-    - [3.7.1. Docker](#371-docker)
-  - [3.8. Policy Manager](#38-policy-manager)
-    - [3.8.1. Conftest](#381-conftest)
-  - [3.9. Supply Chain Manager](#39-supply-chain-manager)
-    - [3.9.1. Trivy](#391-trivy)
+  - [3.1. Secrets Manager](#31-secrets-manager)
+    - [3.1.1. Ansible Vault](#311-ansible-vault)
 - [4. Troubleshoot](#4-troubleshoot)
   - [4.1. TODO](#41-todo)
 - [5. References](#5-references)
@@ -143,165 +127,58 @@ TODO
 
 ## 3. Contribute
 
-Contribution guidelines and project management tools.
+[CONTRIBUTING.md](CONTRIBUTING.md) provides guidens and instructions for contributing to the project.
 
-### 3.1. Task Runner
+- [AI Agents](CONTRIBUTING.md#1-ai-agents)
+  > Automated tools that assist in various development tasks such as code generation, testing, and documentation.
 
-#### 3.1.1. Make
+- [Skills Manager](CONTRIBUTING.md#2-skills-manager)
+  > CLI tool for managing AI agent skills in development projects.
 
-[Make](https://www.gnu.org/software/make/) is a automation tool that defines and manages tasks to streamline development workflows.
+- [Task Runner](CONTRIBUTING.md#3-task-runner)
+  > Make automation tool that defines and manages tasks to streamline development workflows.
 
-1. Insights and Details
+- [Bootstrap](CONTRIBUTING.md#4-bootstrap)
+  > Scripts to bootstrap, setup, and teardown a software development workspace with requisites.
 
-    - [Makefile](Makefile)
-      > Makefile defining tasks for building, testing, and managing the project.
+- [Release Manager](CONTRIBUTING.md#6-release-manager)
+  > Semantic-Release automates the release process by analyzing commit messages.
 
-2. Usage and Instructions
+- [Update Manager](CONTRIBUTING.md#7-update-manager)
+  > Renovate and Dependabot automate dependency updates by creating pull requests.
 
-    - Tasks
+- [Container Manager](CONTRIBUTING.md#9-container-manager)
+  > Docker containerization tool to run applications in isolated container environments.
 
-      ```bash
-      make help
-      ```
+- [Policy Manager](CONTRIBUTING.md#10-policy-manager)
+  > Conftest for policy-as-code enforcement.
 
-      > [!NOTE]
-      > - Each task description must begin with `##` to be included in the task list.
+- [Supply Chain Manager](CONTRIBUTING.md#11-supply-chain-manager)
+  > Trivy for security scanning of vulnerabilities, misconfigurations, and compliance issues.
 
-      ```plaintext
-      $ make help
+### 3.1. Secrets Manager
 
-      Tasks
-              A collection of tasks used in the current project.
+#### 3.1.1. Ansible Vault
 
-      Usage
-              make <task>
-
-              bootstrap         Initialize a software development workspace with requisites
-              setup             Install and configure all dependencies essential for development
-              teardown          Remove development artifacts and restore the host to its pre-setup state
-      ```
-
-### 3.2. Bootstrap
-
-#### 3.2.1. Scripts
-
-[scripts/](scripts/README.md) provides scripts to bootstrap, setup, and teardown a software development workspace with requisites.
-
-1. Insights and Details
-
-    - [bootstrap.sh](scripts/bootstrap.sh)
-      > Initializes a software development workspace with requisites.
-
-    - [setup.sh](scripts/setup.sh)
-      > Installs and configures all dependencies essential for development.
-
-    - [teardown.sh](scripts/teardown.sh)
-      > Removes development artifacts and restores the host to its pre-setup state.
-
-2. Usage and Instructions
-
-    - Tasks
-
-      ```bash
-      make bootstrap
-      ```
-
-      ```bash
-      make setup
-      ```
-
-      ```bash
-      make teardown
-      ```
-
-### 3.3. Dev Containers
-
-[.devcontainer/](.devcontainer/README.md) provides Dev Containers as a consistent development environment using Docker containers.
-
-1. Insights and Details
-
-    - [ansilbe/](.devcontainer/ansilbe/)
-      > Dev Container configuration for Ansible development environment.
-
-      ```json
-      // ...
-      "postCreateCommand": "sudo make bootstrap && sudo make setup",
-      // ...
-      ```
-
-      > [!NOTE]
-      > The `devcontainer.json` runs the `bootstrap` and `setup` tasks to initialize and configure the development environment.
-
-2. Usage and Instructions
-
-    - Tasks
-
-      ```bash
-      # TODO
-      # make devcontainer-ansilbe
-      ```
-
-### 3.4. Release Manager
-
-#### 3.4.1. Semantic-Release
-
-[Semantic-Release](https://github.com/semantic-release/semantic-release) automates the release process by analyzing commit messages to determine the next version number, generating changelog and release notes, and publishing the release.
-
-1. Insights and Details
-
-    - [.releaserc.json](.releaserc.json)
-      > Configuration file for Semantic-Release specifying release rules and plugins.
-
-2. Usage and Instructions
-
-    - CI/CD
-
-      ```yaml
-      uses: sentenz/actions/semantic-release@latest
-      ```
-
-### 3.5. Update Manager
-
-#### 3.5.1. Renovate
-
-[Renovate](https://github.com/renovatebot/renovate) automates dependency updates by creating merge requests for outdated dependencies, libraries and packages.
-
-1. Insights and Details
-
-    - [renovate.json](renovate.json)
-      > Configuration file for Renovate specifying update rules and schedules.
-
-2. Usage and Instructions
-
-    - CI/CD
-
-      ```yaml
-      uses: sentenz/actions/renovate@latest
-      ```
-
-#### 3.5.2. Dependabot
-
-[Dependabot](https://github.com/dependabot/dependabot-core) automates dependency updates by creating pull requests for outdated dependencies, libraries and packages.
-
-1. Insights and Details
-
-    - [.github/dependabot.yml](.github/dependabot.yml)
-      > Configuration file for Dependabot specifying update rules and schedules.
-
-### 3.6. Secrets Manager
-
-#### 3.6.1. Ansible Vault
-
-Ansible Vault is the built-in Ansible tool for encrypting sensitive data such as passwords, API keys, and other secrets used in playbooks and roles.
+[Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html) is a built-in feature of Ansible to encrypt sensitive data and secrets within Ansible playbooks and roles.
 
 1. Insights and Details
 
     - `ansible-vault`
-      > Native Ansible utility to create, view, edit, encrypt, decrypt and rekey vaulted files.
+      > Command-line tool to create, edit, encrypt, decrypt, and view vaulted files.
+
+    - [ansible.cfg](ansible.cfg)
+      > Configure a vault password file for automation (ensure file is protected).
+
+        ```ini
+        [defaults]
+        inventory = ./inventory
+        vault_password_file = ./vault/.vault_pass
+        ```
 
 2. Usage and Instructions
 
-    - Create a vaulted file
+    - Create Vaulted Files
 
       - Tasks
         > Create a new encrypted file interactively.
@@ -310,23 +187,30 @@ Ansible Vault is the built-in Ansible tool for encrypting sensitive data such as
         ansible-vault create secrets.yml
         ```
 
-    - Edit a vaulted file
+    - Edit Vaulted Files
+      > Edit an existing vaulted file interactively.
 
         ```bash
         ansible-vault edit secrets.yml
         ```
 
-    - Encrypt/decrypt existing files
+    - Encrypt/Decrypt Vaulted Files
+      > Encrypt or decrypt existing files interactively.
 
         ```bash
         ansible-vault encrypt group_vars/all/vault.yml
         ansible-vault decrypt group_vars/all/vault.yml
         ```
 
-    - View vaulted content
+      - Tasks
+        > View the content of a vaulted file without decrypting it.
 
         ```bash
-        ansible-vault view secrets.yml
+        make ansible-vault-view <file>
+        ```
+
+        ```bash
+        ansible-vault view group_vars/all/vault.yml
         ```
 
     - Encrypt a single variable/string
@@ -342,15 +226,6 @@ Ansible Vault is the built-in Ansible tool for encrypting sensitive data such as
         ```
 
 3. Integration with Ansible
-
-    - `ansible.cfg`
-      > Configure a vault password file for automation (ensure file is protected).
-
-        ```ini
-        [defaults]
-        inventory = ./inventory
-        vault_password_file = ./vault/.vault_pass
-        ```
 
     - CI / Automation
       > Avoid committing plaintext vault passwords. Provide `ANSIBLE_VAULT_PASSWORD_FILE` or use an encrypted provider in CI.
@@ -377,107 +252,6 @@ Ansible Vault is the built-in Ansible tool for encrypting sensitive data such as
         make secrets-vault-encrypt FILE=group_vars/all/vault.yml
         make secrets-vault-decrypt FILE=group_vars/all/vault.yml
         ```
-
-### 3.7. Container Manager
-
-#### 3.7.1. Docker
-
-[Docker](https://github.com/docker) containerization tool to run applications in isolated container environments and execute container-based tasks.
-
-1. Insights and Details
-
-    - [Dockerfile](Dockerfile)
-      > Dockerfile defining the container image for the project.
-
-2. Usage and Instructions
-
-    - CI/CD
-
-      ```yaml
-      # TODO
-      ```
-
-    - Tasks
-
-      ```bash
-      # TODO
-      ```
-
-### 3.8. Policy Manager
-
-#### 3.8.1. Conftest
-
-[Conftest](https://www.conftest.dev/) is a **Policy as Code (PaC)** tool to streamline policy management for improved development, security and audit capability.
-
-1. Insights and Details
-
-    - [conftest.toml](conftest.toml)
-      > Configuration file for Conftest specifying policy paths and output formats.
-
-    - [tests/policy](tests/policy/)
-      > Directory contains Rego policies for Conftest to enforce best practices and compliance standards.
-
-2. Usage and Instructions
-
-    - CI/CD
-
-      ```yaml
-      uses: sentenz/actions/regal@latest
-      ```
-
-      ```yaml
-      uses: sentenz/actions/conftest@latest
-      ```
-
-    - Tasks
-
-      ```bash
-      make policy-lint-regal <filepath>
-      ```
-
-      ```bash
-      make policy-analysis-conftest <filepath>
-      ```
-
-### 3.9. Supply Chain Manager
-
-#### 3.9.1. Trivy
-
-[Trivy](https://github.com/aquasecurity/trivy) is a comprehensive security scanner for vulnerabilities, misconfigurations, and compliance issues in container images, filesystems, and source code.
-
-1. Insights and Details
-
-    - [trivy.yaml](trivy.yaml)
-      > Configuration file for Trivy specifying scan settings and options.
-
-    - [.trivyignore](.trivyignore)
-      > File specifying vulnerabilities to ignore during Trivy scans.
-
-2. Usage and Instructions
-
-    - CI/CD
-
-      ```yaml
-      uses: sentenz/actions/trivy@latest
-      ```
-
-    - Tasks
-
-      ```bash
-      make sast-trivy-fs <path>
-      ```
-
-      ```bash
-      make sast-trivy-sbom-cyclonedx-fs <path>
-      ```
-
-      ```bash
-      make sast-trivy-sbom-scan <sbom_path>
-      ```
-
-      ```bash
-      make sast-trivy-sbom-license <sbom_path>
-      ```
 
 ## 4. Troubleshoot
 

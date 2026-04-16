@@ -178,10 +178,12 @@ ansible-vault-encrypt:
 		echo "Usage: make ansible-vault-encrypt <file>"; \
 		exit 1; \
 	fi
+
 	@if [ -z "$(ANSIBLE_VAULT_PASSWORD_FILE)" ]; then \
 		echo "Error: ANSIBLE_VAULT_PASSWORD_FILE is not set."; \
 		exit 2; \
 	fi
+
 	ansible-vault encrypt "$(filter-out $@,$(MAKECMDGOALS))"
 .PHONY: ansible-vault-encrypt
 
@@ -190,28 +192,32 @@ ansible-vault-encrypt:
 ## Decrypt a file using Ansible Vault
 ansible-vault-decrypt:
 	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
-		echo "Usage: make ansible-vault-encrypt <file>"; \
+		echo "Usage: make ansible-vault-decrypt <file>"; \
 		exit 1; \
 	fi
+
 	@if [ -z "$(ANSIBLE_VAULT_PASSWORD_FILE)" ]; then \
 		echo "Error: ANSIBLE_VAULT_PASSWORD_FILE is not set."; \
 		exit 2; \
 	fi
+
 	ansible-vault decrypt "$(filter-out $@,$(MAKECMDGOALS))"
 .PHONY: ansible-vault-decrypt
 
 # Usage: make ansible-vault-view <file>
 #
-## View a file encrypted with Ansible Vault
+## View the content of a vaulted file
 ansible-vault-view:
 	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
 		echo "Usage: make ansible-vault-view <file>"; \
 		exit 1; \
 	fi
+
 	@if [ -z "$(ANSIBLE_VAULT_PASSWORD_FILE)" ]; then \
 		echo "Error: ANSIBLE_VAULT_PASSWORD_FILE is not set."; \
 		exit 2; \
 	fi
+
 	ansible-vault view "$(filter-out $@,$(MAKECMDGOALS))"
 .PHONY: ansible-vault-view
 
