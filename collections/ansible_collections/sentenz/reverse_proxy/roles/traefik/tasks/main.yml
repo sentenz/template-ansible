@@ -4,12 +4,9 @@
   ansible.builtin.assert:
     that:
       - traefik_challenge in traefik_challenge_choices
-      - traefik_challenge_dns_provider_variables is iterable
-      - traefik_challenge_dns_provider_variables is not string
-      - traefik_ports is iterable
-      - traefik_ports is not string
-      - traefik_networks is iterable
-      - traefik_networks is not string
+      - traefik_challenge_dns_provider_variables | type_debug == 'list'
+      - traefik_ports | type_debug == 'list'
+      - traefik_networks | type_debug == 'list'
     fail_msg: >-
       Invalid Traefik role variables. Ensure `traefik_challenge` uses one of
       {{ traefik_challenge_choices | join(', ') }} and list-like variables
