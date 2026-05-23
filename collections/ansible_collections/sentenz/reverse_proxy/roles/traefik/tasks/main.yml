@@ -31,7 +31,9 @@
     owner: "{{ traefik_ownership_owner }}"
     group: "{{ traefik_ownership_group }}"
     mode: "0600"
-  loop: "{{ (traefik_challenge in ['intranet', 'debug']) | ansible.builtin.ternary([traefik_tls_public_cert, traefik_tls_private_key], [traefik_acme_config]) }}"
+  loop: >-
+    {{ (traefik_challenge in ['intranet', 'debug'])
+    | ansible.builtin.ternary([traefik_tls_public_cert, traefik_tls_private_key], [traefik_acme_config]) }}
   notify:
     - traefik_restart
 
