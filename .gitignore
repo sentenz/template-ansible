@@ -1,12 +1,17 @@
 # https://www.toptal.com/developers/gitignore/
 
+### Miscellaneous ###
 logs/
 *.log
 
-### Ansible ###
-*.retry
+public/
 
-.ansible/
+### Dotenv ###
+# Ignore dotenv files (unencrypted), allow encrypted files with .enc
+.env
+.env.*
+!.env.enc
+!.env.*.enc
 
 ### VisualStudioCode ###
 .vscode/*
@@ -14,3 +19,17 @@ logs/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+### Certificates ###
+*.pem
+*.key
+*.crt
+*.cer
+*.der
+*.priv
+
+
+### Ansible ###
+*.retry
+.ansible/
+vault/*.vault_pass
