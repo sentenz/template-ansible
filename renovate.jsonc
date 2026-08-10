@@ -133,7 +133,7 @@
       "automerge": false
     },
     {
-      "description": "Group non-major Dockerfile and Containerfile image updates.",
+      "description": "Group Dockerfile and Containerfile image updates.",
       "matchManagers": [
         "dockerfile"
       ],
@@ -141,11 +141,12 @@
         "docker"
       ],
       "matchUpdateTypes": [
+        "major",
         "minor",
         "patch",
-        "digest",
-        "pinDigest"
+        "digest"
       ],
+      "pinDigests": true,
       "groupName": "dockerfile container images",
       "groupSlug": "dockerfile-container-images",
       "automerge": false
@@ -178,9 +179,9 @@
         "major",
         "minor",
         "patch",
-        "digest",
-        "pinDigest"
+        "digest"
       ],
+      "pinDigests": true,
       "groupName": "makefile container images",
       "groupSlug": "makefile-container-images",
       "automerge": true
@@ -212,9 +213,9 @@
         "major",
         "minor",
         "patch",
-        "digest",
-        "pinDigest"
+        "digest"
       ],
+      "pinDigests": true,
       "groupName": "github actions container images",
       "groupSlug": "github-actions-container-images",
       "semanticCommits": "enabled",
