@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
 collections:
+  - name: community.docker
+    version: "4.8.8"
   - name: sentenz.common
     src: ./collections/ansible_collections/sentenz/common
     type: subdirs
