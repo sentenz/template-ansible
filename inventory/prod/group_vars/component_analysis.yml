@@ -33,4 +33,4 @@ traefik_acme_email: "{{ vault_traefik_acme_email }}"
 traefik_networks: "{{ (dependency_track_networks | default([])) }}"
 traefik_challenge_dns_provider: cloudflare
 traefik_challenge_dns_provider_variables:
-  - CLOUDFLARE_DNS_API_TOKEN="{{ vault_cloudflare_dns_api_token }}"
+  - "CLOUDFLARE_DNS_API_TOKEN={{ vault_cloudflare_dns_api_token }}"
