@@ -1,77 +1,131 @@
+# SPDX-License-Identifier: Apache-2.0
+{% set file_challenges = ['file', 'intranet', 'debug'] %}
+{% set acme_challenges = ['http', 'dns', 'tls'] %}
+{% set mount_docker_socket = traefik_docker_socket and traefik_docker_endpoint.startswith('unix://') %}
+{% set challenge_options = traefik_challenge_none %}
+{% if traefik_challenge == 'http' %}
+{%   set challenge_options = traefik_challenge_http %}
+{% elif traefik_challenge == 'dns' %}
+{%   set challenge_options = traefik_challenge_dns %}
+{% elif traefik_challenge == 'tls' %}
+{%   set challenge_options = traefik_challenge_tls %}
+{% elif traefik_challenge == 'file' %}
+{%   set challenge_options = traefik_challenge_file %}
+{% elif traefik_challenge == 'intranet' %}
+{%   set challenge_options = traefik_challenge_intranet %}
+{% elif traefik_challenge == 'debug' %}
+{%   set challenge_options = traefik_challenge_debug %}
+{% endif %}
+{% set default_ports = [] %}
+{% if traefik_publish_default_ports %}
+{%   if traefik_challenge == 'tls' %}
+{%     set default_ports = ['443:443'] %}
+{%   elif traefik_challenge == 'none' %}
+{%     set default_ports = ['80:80'] %}
+{%   else %}
+{%     set default_ports = ['80:80', '443:443'] %}
+{%   endif %}
+{% endif %}
+{% set effective_ports = default_ports + traefik_ports %}
+{% set effective_environment = traefik_environment %}
+{% if traefik_challenge == 'dns' %}
+{%   set effective_environment = effective_environment + traefik_challenge_dns_provider_variables %}
+{% endif %}
 ---
 services:
-  "{{ traefik_name }}":
-    image: "{{ traefik_image }}"
-    container_name: "{{ traefik_name }}"
+  {{ traefik_name | to_json }}:
+    image: {{ traefik_image | to_json }}
+    container_name: {{ traefik_name | to_json }}
     command:
-      - "--log.level=INFO"
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-{% if traefik_challenge == 'http' %}
-  {% for option in traefik_challenge_http %}
-    - "{{ option }}"
-  {% endfor %}
-{% elif traefik_challenge == 'dns' %}
-  {% for option in traefik_challenge_dns %}
-    - "{{ option }}"
-  {% endfor %}
-{% elif traefik_challenge == 'tls' %}
-  {% for option in traefik_challenge_tls %}
-    - "{{ option }}"
-  {% endfor %}
-{% elif traefik_challenge in ['intranet', 'debug'] %}
-  {% for option in traefik_challenge_debug %}
-    - "{{ option }}"
-  {% endfor %}
-{% endif %}
-{% if traefik_challenge_options %}
-  {%- for option in traefik_challenge_options %}
-    - "{{ option }}"
-  {% endfor %}
-{% endif %}
-
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      # TODO Define the command options in a config file like traefik.yml
-      # - "{{ traefik_path }}/traefik.yml:/etc/traefik/traefik.yml"
-{% if traefik_challenge in ['http', 'dns', 'tls'] %}
-      - "{{ traefik_certs_path }}/acme.json:{{ traefik_acme_storage }}"
-{% elif traefik_challenge in ['intranet', 'debug'] %}
-      - "{{ traefik_path }}/dynamic.yml:/etc/traefik/dynamic/dynamic.yml"
-      - "{{ traefik_certs_path }}:/certs/"
-{% endif %}
-    ports:
-{% if traefik_challenge in ['http', 'dns', 'intranet', 'debug'] %}
-      - "80:80"
-      - "443:443"
-{% elif traefik_challenge == 'tls' %}
-      - "443:443"
-{% endif %}
-{% for port in traefik_ports %}
-      - "{{ port }}"
+{% for option in traefik_common_options %}
+      - {{ option | to_json }}
 {% endfor %}
-    restart: unless-stopped
+{% if traefik_docker_network %}
+      - {{ ('--providers.docker.network=' ~ traefik_docker_network) | to_json }}
+{% endif %}
+{% for option in challenge_options %}
+      - {{ option | to_json }}
+{% endfor %}
+{% if traefik_acme_ca_server and traefik_challenge in acme_challenges %}
+{%   set ca_server_option = '--certificatesresolvers.' ~ traefik_certificates_resolver ~ '.acme.caserver=' ~ traefik_acme_ca_server %}
+      - {{ ca_server_option | to_json }}
+{% endif %}
+{% for option in traefik_extra_arguments + traefik_challenge_options %}
+      - {{ option | to_json }}
+{% endfor %}
+{% if mount_docker_socket or traefik_challenge in acme_challenges or traefik_challenge in file_challenges %}
+    volumes:
+{%   if mount_docker_socket %}
+      - type: bind
+        source: {{ traefik_docker_socket | to_json }}
+        target: {{ traefik_docker_socket_target | to_json }}
+        read_only: true
+{%   endif %}
+{%   if traefik_challenge in acme_challenges %}
+      - type: bind
+        source: {{ (traefik_acme_path | dirname) | to_json }}
+        target: {{ (traefik_acme_storage | dirname) | to_json }}
+{%   elif traefik_challenge in file_challenges %}
+      - type: bind
+        source: {{ traefik_dynamic_path | to_json }}
+        target: {{ traefik_dynamic_config_path | to_json }}
+        read_only: true
+      - type: bind
+        source: {{ traefik_certs_path | to_json }}
+        target: "/certs"
+        read_only: true
+{%   endif %}
+{% endif %}
+{% if effective_ports %}
+    ports:
+{%   for port in effective_ports %}
+      - {{ port | string | to_json }}
+{%   endfor %}
+{% endif %}
+{% if effective_environment %}
+    environment:
+{%   for variable in effective_environment %}
+      - {{ variable | to_json }}
+{%   endfor %}
+{% endif %}
+{% if traefik_networks %}
+    networks:
+{%   for network in traefik_networks %}
+      - {{ network | to_json }}
+{%   endfor %}
+{% endif %}
+{% if traefik_labels %}
+    labels:
+{%   for label in traefik_labels %}
+      - {{ label | to_json }}
+{%   endfor %}
+{% endif %}
+    restart: {{ traefik_restart_policy | to_json }}
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-    networks:
-{% for network in traefik_networks %}
-      - "{{ network }}"
-{% endfor %}
     security_opt:
-      - no-new-privileges:true
-{% if traefik_challenge == 'dns' %}
-    environment:
-  {% for variable in traefik_challenge_dns_provider_variables %}
-      - "{{ variable }}"
-  {% endfor %}
+      - "no-new-privileges:true"
+{% if traefik_healthcheck_enabled %}
+    healthcheck:
+      test:
+        - CMD
+        - traefik
+        - healthcheck
+        - --ping
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 {% endif %}
 
+{% if traefik_networks %}
 networks:
-{% for network in traefik_networks %}
-  {{ network }}:
+{%   for network in traefik_networks %}
+  {{ network | to_json }}:
     external: true
-{% endfor %}
+    name: {{ network | to_json }}
+{%   endfor %}
+{% endif %}

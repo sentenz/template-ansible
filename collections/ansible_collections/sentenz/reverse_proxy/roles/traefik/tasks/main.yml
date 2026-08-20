@@ -1,94 +1,169 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-- name: Traefik - Ensure group ownership
-  ansible.builtin.group:
-    name: "{{ traefik_ownership_group }}"
-    state: present
-    system: true
+- name: Traefik | Validate ACME configuration
+  ansible.builtin.assert:
+    that:
+      - traefik_acme_email | length > 3
+      - "'@' in traefik_acme_email"
+      - traefik_certificates_resolver | length > 0
+      - (traefik_acme_path | basename) == (traefik_acme_storage | basename)
+    fail_msg: >-
+      ACME challenges require a valid traefik_acme_email, a non-empty
+      traefik_certificates_resolver, and matching host/container storage
+      filenames.
+    quiet: true
+  when:
+    - traefik_state != 'absent'
+    - traefik_challenge in ['http', 'dns', 'tls']
 
-- name: Traefik - Ensure user ownership
-  ansible.builtin.user:
-    name: "{{ traefik_ownership_owner }}"
-    group: "{{ traefik_ownership_group }}"
-    state: present
+- name: Traefik | Validate DNS challenge configuration
+  ansible.builtin.assert:
+    that:
+      - traefik_challenge_dns_provider | length > 0
+    fail_msg: traefik_challenge_dns_provider must be set for a DNS challenge.
+    quiet: true
+  when:
+    - traefik_state != 'absent'
+    - traefik_challenge == 'dns'
 
-- name: Traefik - Securely create directories
-  ansible.builtin.file:
-    state: directory
-    path: "{{ item }}"
-    owner: "{{ traefik_ownership_owner }}"
-    group: "{{ traefik_ownership_group }}"
-    mode: "{{ traefik_permission_directory }}"
-  loop:
-    - "{{ traefik_path }}"
-    - "{{ traefik_certs_path }}"
+- name: Traefik | Validate Docker provider configuration
+  ansible.builtin.assert:
+    that:
+      - >-
+        not traefik_docker_endpoint.startswith('unix://') or
+        traefik_docker_socket | length > 0
+      - >-
+        traefik_docker_network | length == 0 or
+        traefik_docker_network in traefik_networks
+    fail_msg: >-
+      Unix endpoints require traefik_docker_socket, and
+      traefik_docker_network must be present in traefik_networks.
+    quiet: true
+  when: traefik_state != 'absent'
 
-- name: Traefik - Securely copy TLS certificates
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: "{{ traefik_certs_path }}/{{ item | basename }}"
-    owner: "{{ traefik_ownership_owner }}"
-    group: "{{ traefik_ownership_group }}"
-    mode: "0600"
-  loop: "{{ (traefik_challenge in ['intranet', 'debug']) | ansible.builtin.ternary(
-      [
-        traefik_tls_public_cert,
-        traefik_tls_private_key],
-      [
-        traefik_acme_config
-      ]
-    ) }}"
-  notify:
-    - traefik_restart
+- name: Traefik | Validate file certificate configuration
+  ansible.builtin.assert:
+    that:
+      - traefik_tls_public_cert | length > 0
+      - traefik_tls_private_key | length > 0
+    fail_msg: >-
+      traefik_tls_public_cert and traefik_tls_private_key must be set for a
+      file-based certificate challenge.
+    quiet: true
+  when:
+    - traefik_state != 'absent'
+    - traefik_challenge in ['file', 'intranet', 'debug']
 
-- name: Traefik - Securely template Jinja2 files
-  ansible.builtin.template:
-    src: "{{ item }}"
-    dest: "{{ traefik_path }}/{{ item | basename | regex_replace('.j2$', '') }}"
-    owner: "{{ traefik_ownership_owner }}"
-    group: "{{ traefik_ownership_group }}"
-    mode: "{{ traefik_permission_file }}"
-  loop:
-    - docker-compose.yml.j2
-    - traefik.yml.j2
-    - dynamic.yml.j2
-  notify:
-    - traefik_restart
+- name: Traefik | Inspect the Compose project
+  ansible.builtin.stat:
+    path: "{{ traefik_path }}/docker-compose.yml"
+  register: traefik_compose_file
 
-- name: Traefik - Deploy Containers
-  community.docker.docker_compose_v2:
-    project_src: "{{ traefik_path }}"
-    state: present
+- name: Traefik | Configure the Compose project
+  when: traefik_state != 'absent'
+  block:
+    - name: Traefik | Ensure the host group exists
+      ansible.builtin.group:
+        name: "{{ traefik_ownership_group }}"
+        state: present
+        system: true
+      when: traefik_create_user
 
-- name: Traefik - Destroy Containers
+    - name: Traefik | Ensure the host user exists
+      ansible.builtin.user:
+        name: "{{ traefik_ownership_owner }}"
+        group: "{{ traefik_ownership_group }}"
+        create_home: false
+        state: present
+        system: true
+      when: traefik_create_user
+
+    - name: Traefik | Create the project directory
+      ansible.builtin.file:
+        path: "{{ traefik_path }}"
+        state: directory
+        owner: "{{ traefik_ownership_owner }}"
+        group: "{{ traefik_ownership_group }}"
+        mode: "{{ traefik_permission_directory }}"
+
+    - name: Traefik | Create the ACME storage directory
+      ansible.builtin.file:
+        path: "{{ traefik_acme_path | dirname }}"
+        state: directory
+        owner: "{{ traefik_ownership_owner }}"
+        group: "{{ traefik_ownership_group }}"
+        mode: "{{ traefik_permission_directory }}"
+      when: traefik_challenge in ['http', 'dns', 'tls']
+
+    - name: Traefik | Create the ACME storage without replacing its contents
+      ansible.builtin.file:
+        path: "{{ traefik_acme_path }}"
+        state: touch
+        owner: "{{ traefik_ownership_owner }}"
+        group: "{{ traefik_ownership_group }}"
+        mode: "0600"
+        access_time: preserve
+        modification_time: preserve
+      when: traefik_challenge in ['http', 'dns', 'tls']
+
+    - name: Traefik | Create file certificate directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ traefik_ownership_owner }}"
+        group: "{{ traefik_ownership_group }}"
+        mode: "{{ traefik_permission_directory }}"
+      loop:
+        - "{{ traefik_certs_path }}"
+        - "{{ traefik_dynamic_path }}"
+      when: traefik_challenge in ['file', 'intranet', 'debug']
+
+    - name: Traefik | Install file certificates
+      ansible.builtin.copy:
+        src: "{{ item.src }}"
+        dest: "{{ traefik_certs_path }}/{{ item.src | basename }}"
+        owner: "{{ traefik_ownership_owner }}"
+        group: "{{ traefik_ownership_group }}"
+        mode: "{{ item.mode }}"
+        decrypt: true
+      loop:
+        - src: "{{ traefik_tls_public_cert }}"
+          mode: "0644"
+        - src: "{{ traefik_tls_private_key }}"
+          mode: "0600"
+      loop_control:
+        label: "{{ item.src | basename }}"
+      diff: false
+      notify: traefik_restart
+      when: traefik_challenge in ['file', 'intranet', 'debug']
+
+    - name: Traefik | Render the dynamic certificate configuration
+      ansible.builtin.template:
+        src: dynamic.yml.j2
+        dest: "{{ traefik_dynamic_path }}/{{ traefik_dynamic_config }}"
+        owner: "{{ traefik_ownership_owner }}"
+        group: "{{ traefik_ownership_group }}"
+        mode: "{{ traefik_permission_file }}"
+      diff: false
+      notify: traefik_restart
+      when: traefik_challenge in ['file', 'intranet', 'debug']
+
+    - name: Traefik | Render the Docker Compose configuration
+      ansible.builtin.template:
+        src: docker-compose.yml.j2
+        dest: "{{ traefik_path }}/docker-compose.yml"
+        owner: "{{ traefik_ownership_owner }}"
+        group: "{{ traefik_ownership_group }}"
+        mode: "{{ traefik_permission_file }}"
+      diff: false
+
+- name: Traefik | Apply the requested Compose project state
   community.docker.docker_compose_v2:
     project_src: "{{ traefik_path }}"
     files:
       - docker-compose.yml
-    state: absent
-  tags:
-    - destroy
-  notify:
-    - traefik_absent
-
-- name: Traefik - Restart Containers
-  community.docker.docker_compose_v2:
-    project_src: "{{ traefik_path }}"
-    files:
-      - docker-compose.yml
-    state: restarted
-  tags:
-    - restart
-  notify:
-    - traefik_restart
-
-- name: Traefik - Stop Containers
-  community.docker.docker_compose_v2:
-    project_src: "{{ traefik_path }}"
-    files:
-      - docker-compose.yml
-    state: stopped
-  tags:
-    - stop
-  notify:
-    - traefik_stop
+    state: "{{ traefik_state }}"
+  when:
+    - >-
+      traefik_state != 'absent' or
+      (traefik_compose_file.stat.exists | default(false))

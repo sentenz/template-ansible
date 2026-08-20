@@ -1,0 +1,196 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+argument_specs:
+  main:
+    short_description: Deploy Traefik with Docker Compose
+    description:
+      - Configures Traefik as a Docker reverse proxy.
+      - Supports ACME HTTP-01, DNS-01, TLS-ALPN-01, and file certificates.
+    options:
+      traefik_name:
+        description: Compose service, container, and default host account name.
+        type: str
+      traefik_image:
+        description: Traefik container image reference.
+        type: str
+      traefik_path:
+        description: Host directory containing the Compose project.
+        type: path
+      traefik_state:
+        description: Requested Docker Compose project state.
+        type: str
+        choices:
+          - present
+          - restarted
+          - stopped
+          - absent
+      traefik_restart_policy:
+        description: Docker restart policy for the Traefik service.
+        type: str
+        choices:
+          - 'no'
+          - always
+          - on-failure
+          - unless-stopped
+      traefik_create_user:
+        description: Whether to create the host owner and group.
+        type: bool
+      traefik_ownership_owner:
+        description: Host owner of managed files.
+        type: str
+      traefik_ownership_group:
+        description: Host group of managed files.
+        type: str
+      traefik_permission_directory:
+        description: Permission mode for managed directories.
+        type: str
+      traefik_permission_file:
+        description: Permission mode for generated configuration files.
+        type: str
+      traefik_docker_endpoint:
+        description: Docker provider API endpoint as seen by Traefik.
+        type: str
+      traefik_docker_socket:
+        description: Host Docker socket to mount, or an empty string for none.
+        type: str
+      traefik_docker_socket_target:
+        description: Docker socket path inside the Traefik container.
+        type: str
+      traefik_docker_network:
+        description: Default network used by the Traefik Docker provider.
+        type: str
+      traefik_exposed_by_default:
+        description: Whether the Docker provider exposes unlabeled services.
+        type: bool
+      traefik_networks:
+        description: Existing external Docker networks attached to Traefik.
+        type: list
+        elements: str
+      traefik_publish_default_ports:
+        description: Whether to publish challenge-appropriate HTTP(S) ports.
+        type: bool
+      traefik_ports:
+        description: Additional Compose port mappings.
+        type: list
+        elements: str
+      traefik_environment:
+        description: Additional container environment entries.
+        type: list
+        elements: str
+      traefik_labels:
+        description: Labels applied to the Traefik container.
+        type: list
+        elements: str
+      traefik_dashboard_enabled:
+        description: Whether to enable the internal dashboard API.
+        type: bool
+      traefik_healthcheck_enabled:
+        description: Whether to enable ping and the Compose health check.
+        type: bool
+      traefik_access_log_enabled:
+        description: Whether to enable Traefik access logs.
+        type: bool
+      traefik_log_level:
+        description: Traefik log severity.
+        type: str
+        choices:
+          - DEBUG
+          - PANIC
+          - FATAL
+          - ERROR
+          - WARN
+          - INFO
+      traefik_challenge:
+        description: Certificate acquisition or loading mode.
+        type: str
+        choices:
+          - none
+          - http
+          - dns
+          - tls
+          - file
+          - intranet
+          - debug
+      traefik_acme_email:
+        description: Registration email used by the ACME provider.
+        type: str
+      traefik_acme_config:
+        description: ACME storage filename.
+        type: str
+      traefik_acme_path:
+        description: Persistent ACME storage file on the host.
+        type: path
+      traefik_acme_storage:
+        description: Persistent ACME storage file inside the container.
+        type: path
+      traefik_acme_ca_server:
+        description: Optional alternate ACME directory URL.
+        type: str
+      traefik_certificates_resolver:
+        description: Name assigned to the Traefik certificate resolver.
+        type: str
+      traefik_challenge_dns_provider:
+        description: Lego DNS provider name used for DNS-01.
+        type: str
+      traefik_challenge_dns_provider_variables:
+        description: DNS provider environment entries.
+        type: list
+        elements: str
+      traefik_tls_public_cert:
+        description: Public certificate source on the Ansible controller.
+        type: str
+      traefik_tls_private_key:
+        description: Private key source on the Ansible controller.
+        type: str
+      traefik_certs_path:
+        description: Host directory containing installed certificates.
+        type: path
+      traefik_dynamic_path:
+        description: Host directory containing dynamic Traefik configuration.
+        type: path
+      traefik_dynamic_config:
+        description: Dynamic Traefik configuration filename.
+        type: str
+      traefik_dynamic_config_path:
+        description: Dynamic configuration directory inside the container.
+        type: path
+      traefik_common_options:
+        description: Common role-managed Traefik CLI arguments.
+        type: list
+        elements: str
+      traefik_challenge_none:
+        description: CLI arguments used without certificate management.
+        type: list
+        elements: str
+      traefik_challenge_http:
+        description: CLI arguments used for the ACME HTTP-01 challenge.
+        type: list
+        elements: str
+      traefik_challenge_dns:
+        description: CLI arguments used for the ACME DNS-01 challenge.
+        type: list
+        elements: str
+      traefik_challenge_tls:
+        description: CLI arguments used for the ACME TLS-ALPN-01 challenge.
+        type: list
+        elements: str
+      traefik_challenge_file:
+        description: CLI arguments used for file-based certificates.
+        type: list
+        elements: str
+      traefik_challenge_intranet:
+        description: CLI arguments used by the legacy intranet alias.
+        type: list
+        elements: str
+      traefik_challenge_debug:
+        description: CLI arguments used by the legacy debug alias.
+        type: list
+        elements: str
+      traefik_extra_arguments:
+        description: Additional Traefik CLI arguments.
+        type: list
+        elements: str
+      traefik_challenge_options:
+        description: Backward-compatible additional Traefik CLI arguments.
+        type: list
+        elements: str
