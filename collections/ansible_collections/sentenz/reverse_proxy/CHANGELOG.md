@@ -23,8 +23,6 @@ All notable changes to `sentenz.reverse_proxy` are documented in this file.
 
 - Prevented normal role runs from deploying, destroying, restarting, and
   stopping the same Compose project in sequence.
-- Restored the repository lifecycle tags as explicit, opt-in operations.
-- Migrated ACME data from the legacy `certs/acme.json` storage location.
 - Preserved existing ACME account and certificate data across role runs.
 - Disabled Traefik's insecure API mode.
 

@@ -59,8 +59,7 @@ labels:
 Port 80 must be reachable by the certificate authority. The persistent ACME
 directory is mounted read-write so Traefik can update its storage atomically.
 The `acme.json` file is created only when absent; subsequent role runs preserve
-its certificate data. Existing data at the legacy `certs/acme.json` path is
-migrated when the new store is absent or empty.
+its certificate data.
 
 ```yaml
 roles:
@@ -123,8 +122,8 @@ certificate.
 
 ### Lifecycle
 
-`traefik_state` is the lifecycle selector for direct role usage. A normal role
-run no longer executes destructive and stop operations after deployment.
+`traefik_state` is the sole lifecycle selector. A normal role run no longer
+executes destructive and stop operations after deployment.
 
 ```yaml
 traefik_state: present    # create or update; default
@@ -135,10 +134,6 @@ traefik_state: absent     # remove the Compose project containers and network
 
 Setting `absent` leaves managed configuration and certificate storage on the
 host. This permits a later deployment to retain ACME state.
-
-The repository Make targets remain compatible with the `destroy`, `restart`,
-and `stop` tags. These tagged operations are opt-in and do not run during a
-normal role invocation.
 
 ### Principal variables
 

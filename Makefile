@@ -672,9 +672,9 @@ ansible-lint:
 
 # ─── Dependency Manager ──────────────────────────────────────────────────────────────────────────
 
-## Install Ansible collections from the root dependency manifest
+## Perform install Role and Collection of Ansible Galaxy
 ansible-collections-install:
-	ansible-galaxy collection install --force -r requirements.yml
+	find . -name "requirements.yml" -exec ansible-galaxy install --force -r {} \;
 .PHONY: ansible-collections-install
 
 ## Perform upgrade Role and Collection of Ansible Galaxy
