@@ -1,5 +1,18 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
+- name: Traefik - Validate role variables
+  ansible.builtin.assert:
+    that:
+      - traefik_challenge in traefik_challenge_choices
+      - traefik_challenge_dns_provider_variables | type_debug == 'list'
+      - traefik_ports | type_debug == 'list'
+      - traefik_networks | type_debug == 'list'
+    fail_msg: >-
+      Invalid Traefik role variables. Ensure `traefik_challenge` uses one of
+      {{ traefik_challenge_choices | join(', ') }} and list-like variables
+      (`traefik_challenge_dns_provider_variables`, `traefik_ports`, `traefik_networks`)
+      are YAML lists.
+
 - name: Traefik - Ensure group ownership
   ansible.builtin.group:
     name: "{{ traefik_ownership_group }}"
