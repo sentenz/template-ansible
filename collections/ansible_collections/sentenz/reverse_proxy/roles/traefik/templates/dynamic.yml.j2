@@ -1,4 +1,5 @@
+---
 tls:
   certificates:
     - certFile: /certs/{{ traefik_tls_public_cert | basename }}
-      keyFile:  /certs/{{ traefik_tls_private_key | basename }}
+      keyFile: /certs/{{ traefik_tls_private_key | basename }}
