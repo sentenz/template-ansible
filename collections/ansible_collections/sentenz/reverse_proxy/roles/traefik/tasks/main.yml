@@ -11,6 +11,7 @@
     name: "{{ traefik_ownership_owner }}"
     group: "{{ traefik_ownership_group }}"
     state: present
+    system: true
 
 - name: Traefik - Securely create directories
   ansible.builtin.file:
@@ -30,14 +31,9 @@
     owner: "{{ traefik_ownership_owner }}"
     group: "{{ traefik_ownership_group }}"
     mode: "0600"
-  loop: "{{ (traefik_challenge in ['intranet', 'debug']) | ansible.builtin.ternary(
-      [
-        traefik_tls_public_cert,
-        traefik_tls_private_key],
-      [
-        traefik_acme_config
-      ]
-    ) }}"
+  loop: >-
+    {{ (traefik_challenge in ['intranet', 'debug'])
+    | ansible.builtin.ternary([traefik_tls_public_cert, traefik_tls_private_key], [traefik_acme_config]) }}
   notify:
     - traefik_restart
 
@@ -68,8 +64,6 @@
     state: absent
   tags:
     - destroy
-  notify:
-    - traefik_absent
 
 - name: Traefik - Restart Containers
   community.docker.docker_compose_v2:
@@ -79,8 +73,6 @@
     state: restarted
   tags:
     - restart
-  notify:
-    - traefik_restart
 
 - name: Traefik - Stop Containers
   community.docker.docker_compose_v2:
@@ -90,5 +82,3 @@
     state: stopped
   tags:
     - stop
-  notify:
-    - traefik_stop

@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+argument_specs:
+  main:
+    short_description: Install and manage Traefik as a reverse proxy.
+    options:
+      traefik_challenge:
+        description:
+          - ACME and TLS challenge mode used by the Traefik deployment.
+        type: str
+        default: debug
+        choices:
+          - http
+          - dns
+          - tls
+          - intranet
+          - debug
+      traefik_challenge_dns_provider:
+        description:
+          - DNS provider name used for DNS challenge configuration.
+        type: str
+      traefik_challenge_dns_provider_variables:
+        description:
+          - Environment variables passed to Traefik for the DNS challenge provider.
+        type: list
+        elements: str
+        default: []
+      traefik_ports:
+        description:
+          - Extra port mappings exposed by the Traefik container.
+        type: list
+        elements: str
+        default: []
+      traefik_networks:
+        description:
+          - External Docker networks joined by the Traefik container.
+        type: list
+        elements: str
+        default: []
+      traefik_challenge_options:
+        description:
+          - Extra command-line flags appended to the Traefik container command.
+        type: list
+        elements: str
+        default: []
