@@ -1,90 +1,90 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-# Reverse Proxy
+# Deployment
 traefik_name: traefik
+traefik_image: traefik:v3.7.11
 traefik_path: /etc/ansible_collections/reverse_proxy/traefik
+traefik_state: present
+traefik_restart_policy: unless-stopped
+
+# Host ownership and permissions
+traefik_create_user: true
+traefik_ownership_owner: "{{ traefik_name }}"
+traefik_ownership_group: "{{ traefik_name }}"
+traefik_permission_directory: "0750"
+traefik_permission_file: "0600"
+
+# Docker provider and Compose integration
+traefik_docker_endpoint: unix:///var/run/docker.sock
+traefik_docker_socket: /var/run/docker.sock
+traefik_docker_socket_target: "{{ traefik_docker_endpoint | regex_replace('^unix://', '') }}"
+traefik_docker_network: ""
+traefik_exposed_by_default: false
 traefik_networks: []
-
-# Reverse Proxy Traefik
-traefik_image: traefik:latest
+traefik_publish_default_ports: true
 traefik_ports: []
-traefik_acme_email: your-email@example.com
-traefik_acme_storage: /letsencrypt/acme.json
-traefik_certificates_resolver: myresolver
-traefik_challenge_dns_provider: cloudflare
-traefik_challenge_dns_provider_variables: ""
+traefik_environment: []
+traefik_labels: []
 
-# TODO Consider using a nested dictionary approach for files
-# traefik_files:
-#   acme_config: acme.json
-#   dynamic_config: dynamic.yml
-#   tls_private_key: certs/key.pem
-#   tls_public_cert: certs/cert.pem
+# Traefik API and observability
+traefik_dashboard_enabled: false
+traefik_healthcheck_enabled: true
+traefik_access_log_enabled: false
+traefik_log_level: INFO
 
+# Certificate management
+# Supported modes: none, http, dns, tls, file. The intranet and debug values
+# are retained as aliases for file-based certificates.
+traefik_challenge: none
+traefik_acme_email: ""
 traefik_acme_config: acme.json
-traefik_dynamic_config: dynamic.yml
-traefik_tls_private_key: certs/key.pem
-traefik_tls_public_cert: certs/cert.pem
+traefik_acme_path: "{{ traefik_path }}/letsencrypt/{{ traefik_acme_config }}"
+traefik_acme_storage: "/letsencrypt/{{ traefik_acme_config }}"
+traefik_acme_ca_server: ""
+traefik_certificates_resolver: letsencrypt
+traefik_challenge_dns_provider: cloudflare
+traefik_challenge_dns_provider_variables: []
 
-# TODO Consider using a nested dictionary approach for paths
-# traefik_paths:
-#   certs: "{{ traefik_path }}/certs"
-#   dynamic_config: /etc/traefik/dynamic/
-#   acme_storage: /letsencrypt/acme.json
-
+# File-based certificates are read from the Ansible controller. Vault-encrypted
+# private keys are supported by ansible.builtin.copy.
+traefik_tls_public_cert: ""
+traefik_tls_private_key: ""
 traefik_certs_path: "{{ traefik_path }}/certs"
-traefik_dynamic_config_path: /etc/traefik/dynamic/
+traefik_dynamic_path: "{{ traefik_path }}/dynamic"
+traefik_dynamic_config: dynamic.yml
+traefik_dynamic_config_path: /etc/traefik/dynamic
 
-# Reverse Proxy Traefik HTTPS Challenge
-traefik_challenge:
-  description: The type of challenge for ACME certificate validation.
-  default: debug
-  choices:
-    - http
-    - dns
-    - tls
-    - intranet
-    - debug
+# Common static configuration expressed as Traefik CLI arguments.
+traefik_common_options:
+  - --global.checknewversion=false
+  - --global.sendanonymoususage=false
+  - --log.level={{ traefik_log_level }}
+  - --accesslog={{ traefik_access_log_enabled | ternary('true', 'false') }}
+  - --api.dashboard={{ traefik_dashboard_enabled | ternary('true', 'false') }}
+  - --api.insecure=false
+  - --ping={{ traefik_healthcheck_enabled | ternary('true', 'false') }}
+  - --providers.docker=true
+  - --providers.docker.endpoint={{ traefik_docker_endpoint }}
+  - --providers.docker.exposedbydefault={{ traefik_exposed_by_default | ternary('true', 'false') }}
+
+traefik_challenge_none:
+  - --entrypoints.web.address=:80
 
 traefik_challenge_http:
-  - --entryPoints.web.address=:80
-  - --entryPoints.websecure.address=:443
+  - --entrypoints.web.address=:80
+  - --entrypoints.websecure.address=:443
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.httpchallenge=true
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.httpchallenge.entrypoint=web
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.email={{ traefik_acme_email }}
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.storage={{ traefik_acme_storage }}
 
-# FIXME Override `name`, `domain` and `certresolver` without redefining the entire router, then display the result
-traefik_challenge_http_router:
-  - name: service
-    domain: localhost
-    certresolver: letsencrypt
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.{{ name }}.rule=Host(`{{ domain }}`)
-      - traefik.http.routers.{{ name }}.entrypoints=websecure
-      - traefik.http.routers.{{ name }}.tls=true
-      - traefik.http.routers.{{ name }}.tls.certresolver={{ certresolver }}
-
 traefik_challenge_dns:
-  - --entryPoints.web.address=:80
+  - --entrypoints.web.address=:80
   - --entrypoints.websecure.address=:443
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.dnschallenge=true
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.dnschallenge.provider={{ traefik_challenge_dns_provider }}
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.email={{ traefik_acme_email }}
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.storage={{ traefik_acme_storage }}
-
-# FIXME Override `name`, `domain` and `certresolver` without redefining the entire router, then display the result
-traefik_challenge_dns_router:
-  - name: service
-    domain: localhost
-    certresolver: letsencrypt
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.{{ name }}.rule=Host(`{{ domain }}`)
-      - traefik.http.routers.{{ name }}.entrypoints=websecure
-      - traefik.http.routers.{{ name }}.tls=true
-      - traefik.http.routers.{{ name }}.tls.certresolver={{ certresolver }}
 
 traefik_challenge_tls:
   - --entrypoints.websecure.address=:443
@@ -92,35 +92,21 @@ traefik_challenge_tls:
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.email={{ traefik_acme_email }}
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.storage={{ traefik_acme_storage }}
 
-# FIXME Override `name`, `domain` and `certresolver` without redefining the entire router, then display the result
-traefik_challenge_tls_router:
-  - name: service
-    domain: localhost
-    certresolver: letsencrypt
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.{{ name }}.rule=Host(`{{ domain }}`)
-      - traefik.http.routers.{{ name }}.entrypoints=websecure
-      - traefik.http.routers.{{ name }}.tls=true
-      - traefik.http.routers.{{ name }}.tls.certresolver={{ certresolver }}
-
-traefik_challenge_debug:
+traefik_challenge_file:
   - --entrypoints.web.address=:80
   - --entrypoints.websecure.address=:443
   - --entrypoints.websecure.http.tls=true
-  - --entrypoints.web.http.redirections.entryPoint.to=websecure
-  - --entrypoints.web.http.redirections.entryPoint.scheme=https
+  - --entrypoints.web.http.redirections.entrypoint.to=websecure
+  - --entrypoints.web.http.redirections.entrypoint.scheme=https
   - --providers.file.directory={{ traefik_dynamic_config_path }}
   - --providers.file.watch=true
 
-# FIXME Override `name` and `domain` without redefining the entire router, then display the result
-traefik_challenge_debug_router:
-  name: service
-  domain: localhost
-  labels:
-    - "traefik.enable=true"
-    - "traefik.http.routers.{{ name }}.rule=Host(`{{ domain }}`)"
-    - "traefik.http.routers.{{ name }}.entrypoints=websecure"
-    - "traefik.http.routers.{{ name }}.tls=true"
+# Backward-compatible option-list aliases for the legacy challenge names.
+traefik_challenge_intranet: "{{ traefik_challenge_file }}"
+traefik_challenge_debug: "{{ traefik_challenge_file }}"
 
+# Additional arguments are appended after role-managed arguments.
+traefik_extra_arguments: []
+
+# Backward-compatible name for additional CLI arguments.
 traefik_challenge_options: []

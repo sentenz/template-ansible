@@ -2,15 +2,22 @@
 ---
 namespace: sentenz
 name: reverse_proxy
-version: 1.0.0
+version: 1.1.0
 authors:
   - sentenz
 readme: README.md
 description: >-
-  Ansible Collection for Reverse Proxy.
+  Deploy and operate reverse proxies with Docker Compose.
 license:
   - Apache-2.0
-repository: ""
+repository: https://github.com/sentenz/template-ansible
+documentation: https://github.com/sentenz/template-ansible/tree/main/collections/ansible_collections/sentenz/reverse_proxy
+homepage: https://github.com/sentenz/template-ansible
+issues: https://github.com/sentenz/template-ansible/issues
+dependencies:
+  community.docker: ">=4.8.8,<5.0.0"
 tags:
   - cloud
+  - docker
   - proxy
+  - traefik
