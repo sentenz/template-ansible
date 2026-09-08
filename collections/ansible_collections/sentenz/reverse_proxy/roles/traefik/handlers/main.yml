@@ -7,19 +7,3 @@
     files:
       - docker-compose.yml
     state: restarted
-
-- name: Traefik - Stop Docker Compose
-  listen: traefik_stop
-  community.docker.docker_compose_v2:
-    project_src: "{{ traefik_path }}"
-    files:
-      - docker-compose.yml
-    state: stopped
-
-- name: Traefik - Remove Docker Compose
-  listen: traefik_absent
-  community.docker.docker_compose_v2:
-    project_src: "{{ traefik_path }}"
-    files:
-      - docker-compose.yml
-    state: absent
