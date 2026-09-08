@@ -7,12 +7,13 @@ traefik_networks: []
 
 # Reverse Proxy Traefik
 traefik_image: traefik:latest
+traefik_api_insecure: false
 traefik_ports: []
 traefik_acme_email: your-email@example.com
 traefik_acme_storage: /letsencrypt/acme.json
 traefik_certificates_resolver: myresolver
 traefik_challenge_dns_provider: cloudflare
-traefik_challenge_dns_provider_variables: ""
+traefik_challenge_dns_provider_variables: []
 
 # TODO Consider using a nested dictionary approach for files
 # traefik_files:
@@ -36,15 +37,13 @@ traefik_certs_path: "{{ traefik_path }}/certs"
 traefik_dynamic_config_path: /etc/traefik/dynamic/
 
 # Reverse Proxy Traefik HTTPS Challenge
-traefik_challenge:
-  description: The type of challenge for ACME certificate validation.
-  default: debug
-  choices:
-    - http
-    - dns
-    - tls
-    - intranet
-    - debug
+traefik_challenge: debug
+traefik_challenge_choices:
+  - http
+  - dns
+  - tls
+  - intranet
+  - debug
 
 traefik_challenge_http:
   - --entryPoints.web.address=:80
