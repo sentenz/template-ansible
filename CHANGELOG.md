@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.2](https://github.com/sentenz/template-ansible/compare/1.0.1...1.0.2) (2026-09-22)
+
+### Bug Fixes
+
+* **deps:** update dependency community.docker to v5 ([#68](https://github.com/sentenz/template-ansible/issues/68)) ([d1a4302](https://github.com/sentenz/template-ansible/commit/d1a4302ef5817e9087e289899eb46ad8e25bc6d2))
+
 ## [1.0.1](https://github.com/sentenz/template-ansible/compare/1.0.0...1.0.1) (2026-09-22)
 
 ### Bug Fixes
