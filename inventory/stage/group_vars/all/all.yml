@@ -4,18 +4,18 @@
 ansible_remote_tmp: /data/.ansible/tmp
 
 # Component Analysis (Dependency-Track)
-dependency_track_apiserver_image: dependencytrack/apiserver:4.13.5
-dependency_track_frontend_image: dependencytrack/frontend:4.13.5
-dependency_track_database_image: postgres:17.5-alpine
+dependency_track_apiserver_image: dependencytrack/apiserver:4.14.4@sha256:9008fc010a21f435b7c012c5933c6c2e3c3b47d4d26f06b5fc75947a7dc2be23
+dependency_track_frontend_image: dependencytrack/frontend:4.14.4@sha256:ea3ee89aeb46483725562d4a96d637edef62173ffd490d7d6d357eca94f00805
+dependency_track_database_image: postgres:17.11-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
 
 # Observability (Grafana/Prometheus)
-grafana_image: grafana/grafana:11.6.1
-grafana_loki_image: grafana/loki:3.5.0
-grafana_promtail_image: grafana/promtail:3.5.0
+grafana_image: grafana/grafana:11.6.16@sha256:d67af92050b8d93b393dc741864752a69c9da1ffa39c1bb9af49ad5d9e47d2c3
+grafana_loki_image: grafana/loki:3.7.8@sha256:1107dd5274e0ada47e42472b7a7e71f3b2a2fe878878108f3e2f9e51528f0193
+grafana_promtail_image: grafana/promtail:3.6.11@sha256:a761cb834cfaeee29745440d4884d6748f0a08d8f68928db1d707018c1dcfbe9
 
-prometheus_image: prom/prometheus:v3.3.0
-prometheus_alertmanager_image: prom/alertmanager:v0.28.1
-prometheus_node_exporter_image: prom/node-exporter:v1.9.1
+prometheus_image: prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0
+prometheus_alertmanager_image: prom/alertmanager:v0.34.1@sha256:e9733bafb1bdef9b00e25a21f8f99dc26a22224bf16641ad754d1649f4c3357a
+prometheus_node_exporter_image: prom/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0
 
 # Reverse Proxy (Traefik)
-traefik_image: traefik:v3.6.2
+traefik_image: traefik:v3.7.13@sha256:24841fe2de7304c149343d877d2923b4c8800a38ba015dea9174c23b20e344a0
