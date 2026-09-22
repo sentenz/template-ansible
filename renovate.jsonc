@@ -37,7 +37,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Update versioned Docker image references in Makefiles and Ansible inventory group variables.",
+      "description": "Update Docker image references in Makefiles and Ansible inventory group variables.",
       "managerFilePatterns": [
         "**/[Mm]akefile",
         "**/GNUMakefile",
@@ -46,8 +46,7 @@
       ],
       "matchStringsStrategy": "any",
       "matchStrings": [
-        "(?<depName>traefik):(?<currentValue>v?\\d[0-9A-Za-z_.-]*)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?",
-        "(?<depName>(?:(?:[A-Za-z0-9.-]+(?::[0-9]+)?/)?[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)+)):(?<currentValue>v?\\d[0-9A-Za-z_.-]*)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
+        "(?<depName>(?:(?:[A-Za-z0-9.-]+(?::[0-9]+)?/)?[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*)):(?<currentValue>[A-Za-z0-9_][0-9A-Za-z_.-]*)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
       ],
       "autoReplaceStringTemplate": "{{{depName}}}:{{{newValue}}}{{#if newDigest}}@{{{newDigest}}}{{else}}{{#if currentDigest}}@{{{currentDigest}}}{{/if}}{{/if}}",
       "datasourceTemplate": "docker",
@@ -67,6 +66,19 @@
       "automerge": false
     },
     {
+      "description": "Pin Docker images used by GitHub Actions to immutable digests.",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchDepTypes": [
+        "docker",
+        "container",
+        "service"
+      ],
+      "pinDigests": true,
+      "automerge": true
+    },
+    {
       "description": "Group Docker image updates used by GitHub Actions.",
       "matchManagers": [
         "github-actions"
@@ -82,7 +94,6 @@
         "patch",
         "digest"
       ],
-      "pinDigests": true,
       "groupName": "github actions container images",
       "groupSlug": "github-actions-container-images",
       "semanticCommits": "enabled",
