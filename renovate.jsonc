@@ -37,90 +37,23 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Update versioned Docker image references in Makefiles and KinD cluster configuration.",
+      "description": "Update Docker image references in Makefiles and Ansible inventory group variables.",
       "managerFilePatterns": [
         "**/[Mm]akefile",
         "**/GNUMakefile",
         "**/*.mk",
-        "**/kind-cluster.{yml,yaml}"
+        "inventory/**/group_vars/**/*.yml"
       ],
       "matchStringsStrategy": "any",
       "matchStrings": [
-        "(?<depName>(?:(?:[A-Za-z0-9.-]+(?::[0-9]+)?/)?[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)+)):(?<currentValue>v?\\d[0-9A-Za-z_.-]*)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
+        "(?<depName>(?:(?:[A-Za-z0-9.-]+(?::[0-9]+)?/)?[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*)):(?<currentValue>[A-Za-z0-9_][0-9A-Za-z_.-]*)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
       ],
-      "autoReplaceStringTemplate": "{{{prefix}}}{{{depName}}}:{{{newValue}}}{{#if newDigest}}@{{{newDigest}}}{{else}}{{#if currentDigest}}@{{{currentDigest}}}{{/if}}{{/if}}",
+      "autoReplaceStringTemplate": "{{{depName}}}:{{{newValue}}}{{#if newDigest}}@{{{newDigest}}}{{else}}{{#if currentDigest}}@{{{currentDigest}}}{{/if}}{{/if}}",
       "datasourceTemplate": "docker",
       "versioningTemplate": "docker"
     }
   ],
   "packageRules": [
-    {
-      "description": "Group major updates.",
-      "matchManagers": [
-        "!ansible-galaxy"
-      ],
-      "matchDatasources": [
-        "!docker"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
-      "groupName": "major versions",
-      "groupSlug": "major-versions",
-      "automerge": false
-    },
-    {
-      "description": "Group minor updates.",
-      "matchManagers": [
-        "!ansible-galaxy"
-      ],
-      "matchDatasources": [
-        "!docker"
-      ],
-      "matchUpdateTypes": [
-        "minor"
-      ],
-      "groupName": "minor versions",
-      "groupSlug": "minor-versions",
-      "automerge": false
-    },
-    {
-      "description": "Group patch updates.",
-      "matchManagers": [
-        "!ansible-galaxy"
-      ],
-      "matchDatasources": [
-        "!docker"
-      ],
-      "matchUpdateTypes": [
-        "patch"
-      ],
-      "groupName": "patch versions",
-      "groupSlug": "patch-versions",
-      "automerge": false
-    },
-    {
-      "description": "Group Ansible Galaxy dependency updates from requirements/galaxy files.",
-      "matchManagers": [
-        "ansible-galaxy"
-      ],
-      "matchFileNames": [
-        "**/requirements.yml",
-        "**/requirements.ansible.yml",
-        "**/galaxy.yml"
-      ],
-      "matchUpdateTypes": [
-        "major",
-        "minor",
-        "patch"
-      ],
-      "groupName": "ansible dependencies",
-      "groupSlug": "ansible-dependencies",
-      "semanticCommits": "enabled",
-      "semanticCommitType": "fix",
-      "semanticCommitScope": "deps",
-      "automerge": false
-    },
     {
       "description": "Pin Dockerfile and Containerfile images to immutable digests.",
       "matchManagers": [
@@ -131,6 +64,42 @@
       ],
       "pinDigests": true,
       "automerge": false
+    },
+    {
+      "description": "Pin Docker images used by GitHub Actions to immutable digests.",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchDepTypes": [
+        "docker",
+        "container",
+        "service"
+      ],
+      "pinDigests": true,
+      "automerge": true
+    },
+    {
+      "description": "Group Docker image updates used by GitHub Actions.",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchDepTypes": [
+        "docker",
+        "container",
+        "service"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch",
+        "digest"
+      ],
+      "groupName": "github actions container images",
+      "groupSlug": "github-actions-container-images",
+      "semanticCommits": "enabled",
+      "semanticCommitType": "ci",
+      "semanticCommitScope": "deps",
+      "automerge": true
     },
     {
       "description": "Group Dockerfile and Containerfile image updates.",
@@ -163,7 +132,7 @@
       "automerge": false
     },
     {
-      "description": "Group Docker image updates in Makefiles.",
+      "description": "Group and pin Docker image updates in Makefiles.",
       "matchManagers": [
         "custom.regex"
       ],
@@ -184,44 +153,51 @@
       "pinDigests": true,
       "groupName": "makefile container images",
       "groupSlug": "makefile-container-images",
+      "semanticCommits": "enabled",
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "deps",
       "automerge": true
     },
     {
-      "description": "Pin Docker images used by GitHub Actions to immutable digests.",
+      "description": "Group and pin Docker image updates in Ansible inventory group variables.",
       "matchManagers": [
-        "github-actions"
+        "custom.regex"
       ],
-      "matchDepTypes": [
-        "docker",
-        "container",
-        "service"
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchFileNames": [
+        "inventory/**/group_vars/**/*.yml"
       ],
       "pinDigests": true,
-      "automerge": true
+      "groupName": "inventory container images",
+      "groupSlug": "inventory-container-images",
+      "semanticCommits": "enabled",
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "deps",
+      "automerge": false
     },
     {
-      "description": "Group Docker image updates used by GitHub Actions.",
+      "description": "Group Ansible Galaxy dependency updates from requirements files.",
       "matchManagers": [
-        "github-actions"
+        "ansible-galaxy"
       ],
-      "matchDepTypes": [
-        "docker",
-        "container",
-        "service"
+      "matchFileNames": [
+        "**/requirements.yml",
+        "**/requirements.ansible.yml",
+        "**/galaxy.yml"
       ],
       "matchUpdateTypes": [
         "major",
         "minor",
-        "patch",
-        "digest"
+        "patch"
       ],
-      "pinDigests": true,
-      "groupName": "github actions container images",
-      "groupSlug": "github-actions-container-images",
+      "groupName": "ansible dependencies",
+      "groupSlug": "ansible-dependencies",
       "semanticCommits": "enabled",
-      "semanticCommitType": "ci",
+      "semanticCommitType": "fix",
       "semanticCommitScope": "deps",
-      "automerge": true
+      "automerge": false
     }
   ]
 }
