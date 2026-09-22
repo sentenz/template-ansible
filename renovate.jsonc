@@ -190,10 +190,8 @@
       "matchUpdateTypes": [
         "major",
         "minor",
-        "patch",
-        "digest"
+        "patch"
       ],
-      "pinDigests": true,
       "groupName": "ansible dependencies",
       "groupSlug": "ansible-dependencies",
       "semanticCommits": "enabled",
