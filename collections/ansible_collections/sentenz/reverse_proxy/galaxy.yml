@@ -10,7 +10,7 @@ description: >-
   Ansible Collection for Reverse Proxy.
 license:
   - Apache-2.0
-repository: ""
+repository: https://github.com/sentenz/template-ansible
 tags:
   - cloud
   - proxy
