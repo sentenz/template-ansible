@@ -1,94 +1,75 @@
 # SPDX-License-Identifier: Apache-2.0
 ---
-- name: Traefik - Ensure group ownership
-  ansible.builtin.group:
-    name: "{{ traefik_ownership_group }}"
-    state: present
-    system: true
+- name: Traefik - Validate lifecycle request
+  ansible.builtin.assert:
+    that:
+      - ansible_run_tags | intersect(['destroy', 'restart', 'stop']) | length <= 1
+      - traefik_path is string and traefik_path is match('^/.+')
+      - traefik_path | normpath != '/'
+      - "'..' not in traefik_path.split('/')"
+    fail_msg: Use at most one of --tags destroy, restart, or stop, and an absolute project path.
+  tags: always
 
-- name: Traefik - Ensure user ownership
-  ansible.builtin.user:
-    name: "{{ traefik_ownership_owner }}"
-    group: "{{ traefik_ownership_group }}"
-    state: present
+- name: Traefik - Configure and deploy
+  when: ansible_run_tags | intersect(['destroy', 'restart', 'stop']) | length == 0
+  block:
+    - name: Traefik - Validate configuration
+      ansible.builtin.import_tasks: validate.yml
 
-- name: Traefik - Securely create directories
-  ansible.builtin.file:
-    state: directory
-    path: "{{ item }}"
-    owner: "{{ traefik_ownership_owner }}"
-    group: "{{ traefik_ownership_group }}"
-    mode: "{{ traefik_permission_directory }}"
-  loop:
-    - "{{ traefik_path }}"
-    - "{{ traefik_certs_path }}"
+    - name: Traefik - Prepare configuration
+      ansible.builtin.import_tasks: configure.yml
 
-- name: Traefik - Securely copy TLS certificates
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: "{{ traefik_certs_path }}/{{ item | basename }}"
-    owner: "{{ traefik_ownership_owner }}"
-    group: "{{ traefik_ownership_group }}"
-    mode: "0600"
-  loop: "{{ (traefik_challenge in ['intranet', 'debug']) | ansible.builtin.ternary(
-      [
-        traefik_tls_public_cert,
-        traefik_tls_private_key],
-      [
-        traefik_acme_config
-      ]
-    ) }}"
-  notify:
-    - traefik_restart
+    - name: Traefik - Deploy containers and wait for health
+      community.docker.docker_compose_v2:
+        project_src: "{{ traefik_path }}"
+        files: [docker-compose.yml]
+        docker_cli: "{{ traefik_docker_cli }}"
+        state: present
+        recreate: "{{ 'always' if traefik_certificates.changed | default(false) else 'auto' }}"
+        pull: missing
+        wait: true
+        wait_timeout: "{{ traefik_wait_timeout }}"
+      no_log: true
+      when: not ansible_check_mode
 
-- name: Traefik - Securely template Jinja2 files
-  ansible.builtin.template:
-    src: "{{ item }}"
-    dest: "{{ traefik_path }}/{{ item | basename | regex_replace('.j2$', '') }}"
-    owner: "{{ traefik_ownership_owner }}"
-    group: "{{ traefik_ownership_group }}"
-    mode: "{{ traefik_permission_file }}"
-  loop:
-    - docker-compose.yml.j2
-    - traefik.yml.j2
-    - dynamic.yml.j2
-  notify:
-    - traefik_restart
+    - name: Traefik - Explain check mode scope
+      ansible.builtin.debug:
+        msg: Check mode predicts file changes; Compose validation and container reconciliation require a normal run.
+      when: ansible_check_mode
 
-- name: Traefik - Deploy Containers
+# 'never' prevents ordinary runs; the explicit conditions also protect against
+# inherited role tags and --tags never accidentally selecting lifecycle actions.
+- name: Traefik - Destroy containers without deleting certificate data
   community.docker.docker_compose_v2:
     project_src: "{{ traefik_path }}"
-    state: present
-
-- name: Traefik - Destroy Containers
-  community.docker.docker_compose_v2:
-    project_src: "{{ traefik_path }}"
-    files:
-      - docker-compose.yml
+    files: [docker-compose.yml]
+    docker_cli: "{{ traefik_docker_cli }}"
     state: absent
-  tags:
-    - destroy
-  notify:
-    - traefik_absent
+    remove_volumes: false
+  no_log: true
+  when: "'destroy' in ansible_run_tags"
+  tags: [never, destroy]
 
-- name: Traefik - Restart Containers
+- name: Traefik - Recreate containers and wait for health
   community.docker.docker_compose_v2:
     project_src: "{{ traefik_path }}"
-    files:
-      - docker-compose.yml
-    state: restarted
-  tags:
-    - restart
-  notify:
-    - traefik_restart
+    files: [docker-compose.yml]
+    docker_cli: "{{ traefik_docker_cli }}"
+    state: present
+    recreate: always
+    pull: missing
+    wait: true
+    wait_timeout: "{{ traefik_wait_timeout }}"
+  no_log: true
+  when: "'restart' in ansible_run_tags"
+  tags: [never, restart]
 
-- name: Traefik - Stop Containers
+- name: Traefik - Stop containers
   community.docker.docker_compose_v2:
     project_src: "{{ traefik_path }}"
-    files:
-      - docker-compose.yml
+    files: [docker-compose.yml]
+    docker_cli: "{{ traefik_docker_cli }}"
     state: stopped
-  tags:
-    - stop
-  notify:
-    - traefik_stop
+  no_log: true
+  when: "'stop' in ansible_run_tags"
+  tags: [never, stop]

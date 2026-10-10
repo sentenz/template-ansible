@@ -1,0 +1,81 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+- name: Traefik - Validate deployment settings
+  ansible.builtin.assert:
+    that:
+      - traefik_challenge in ['http', 'dns', 'tls', 'intranet', 'debug']
+      - traefik_name is match('^[a-zA-Z0-9][a-zA-Z0-9_.-]*$')
+      - traefik_image is string and traefik_image | length > 0
+      - "':' in traefik_image and not traefik_image.endswith(':latest')"
+      - traefik_certs_path is match('^/.+')
+      - traefik_certs_path | normpath != '/'
+      - traefik_dynamic_config_path is match('^/.+')
+      - traefik_dynamic_config_path | normpath != '/'
+      - traefik_dynamic_config is match('^[a-zA-Z0-9_-]+[.]ya?ml$')
+      - traefik_docker_endpoint is match('^(unix:///|tcp://).+')
+      - traefik_docker_socket is match('^/.+')
+      - traefik_container_user is string and traefik_container_user is match('^[0-9]+:[0-9]+$')
+      - traefik_permission_file in ['0600', '0400']
+      - traefik_permission_directory in ['0700', '0750']
+      - traefik_tls_min_version in ['VersionTLS12', 'VersionTLS13']
+      - traefik_log_level in ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'PANIC']
+      - traefik_access_log is boolean
+      - traefik_strict_request_validation is boolean
+      - traefik_wait_timeout | int > 0
+    fail_msg: Invalid Traefik settings; consult the role README for supported values.
+
+- name: Traefik - Validate list settings
+  ansible.builtin.assert:
+    that:
+      - item is sequence and item is not string and item is not mapping
+      - item | select('string') | list | length == item | length
+    fail_msg: Ports, networks, trusted IPs, and CLI options must be lists of strings.
+  loop:
+    - "{{ traefik_networks }}"
+    - "{{ traefik_ports }}"
+    - "{{ traefik_published_ports }}"
+    - "{{ traefik_forwarded_headers_trusted_ips }}"
+    - "{{ traefik_proxy_protocol_trusted_ips }}"
+    - "{{ traefik_challenge_http }}"
+    - "{{ traefik_challenge_dns }}"
+    - "{{ traefik_challenge_tls }}"
+    - "{{ traefik_challenge_debug }}"
+    - "{{ traefik_challenge_options }}"
+  no_log: true
+
+- name: Traefik - Validate certificate pair
+  ansible.builtin.assert:
+    that:
+      - traefik_tls_private_key is string and traefik_tls_public_cert is string
+      - (traefik_tls_private_key | length > 0) == (traefik_tls_public_cert | length > 0)
+      - traefik_challenge != 'intranet' or traefik_tls_private_key | length > 0
+      - traefik_tls_private_key | length == 0 or (traefik_tls_private_key | basename) != (traefik_tls_public_cert | basename)
+    fail_msg: Supply both certificate paths with different filenames; intranet mode requires an explicit pair.
+  when: traefik_challenge in ['intranet', 'debug']
+
+- name: Traefik - Validate ACME settings
+  ansible.builtin.assert:
+    that:
+      - traefik_acme_email is match('^[^@ ]+@[^@ ]+[.][^@ ]+$')
+      - traefik_acme_email != 'your-email@example.com'
+      - traefik_certificates_resolver is match('^[a-zA-Z0-9_-]+$')
+      - traefik_acme_storage is match('^/[^/]+/.+[.]json$')
+      - traefik_acme_storage | dirname not in ['/', '/etc', '/etc/traefik', '/certs']
+      - traefik_acme_storage | dirname != traefik_dynamic_config_path
+      - "'..' not in traefik_acme_storage.split('/')"
+    fail_msg: ACME requires an email, resolver name, and JSON storage in a dedicated absolute container directory.
+  when: traefik_challenge in ['http', 'dns', 'tls']
+
+- name: Traefik - Validate DNS provider credentials
+  ansible.builtin.assert:
+    that:
+      - traefik_challenge_dns_provider is match('^[a-zA-Z0-9_-]+$')
+      - traefik_challenge_dns_provider_variables is sequence
+      - traefik_challenge_dns_provider_variables is not string
+      - traefik_challenge_dns_provider_variables is not mapping
+      - >-
+        traefik_challenge_dns_provider_variables | select('match', '^[A-Za-z_][A-Za-z0-9_]*=')
+        | list | length == traefik_challenge_dns_provider_variables | length
+    fail_msg: DNS credentials must be a list of NAME=value strings.
+  no_log: true
+  when: traefik_challenge == 'dns'

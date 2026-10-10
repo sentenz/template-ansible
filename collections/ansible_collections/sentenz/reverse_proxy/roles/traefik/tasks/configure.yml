@@ -1,0 +1,88 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+- name: Traefik - Securely create directories
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ traefik_ownership_owner }}"
+    group: "{{ traefik_ownership_group }}"
+    mode: "{{ traefik_permission_directory }}"
+  loop:
+    - "{{ traefik_path }}"
+    - "{{ traefik_certs_path }}"
+    - "{{ traefik_path }}/dynamic"
+
+- name: Traefik - Securely copy supplied TLS certificates
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ traefik_certs_path }}/{{ item | basename }}"
+    owner: "{{ traefik_ownership_owner }}"
+    group: "{{ traefik_ownership_group }}"
+    mode: "0600"
+  loop:
+    - "{{ traefik_tls_public_cert }}"
+    - "{{ traefik_tls_private_key }}"
+  when:
+    - traefik_challenge in ['intranet', 'debug']
+    - traefik_tls_private_key | length > 0
+  no_log: true
+  diff: false
+  register: traefik_certificates
+
+- name: Traefik - Preserve persistent ACME state
+  when: traefik_challenge in ['http', 'dns', 'tls']
+  block:
+    - name: Traefik - Inspect ACME storage without reading private data
+      ansible.builtin.stat:
+        path: "{{ traefik_certs_path }}/{{ traefik_acme_storage | basename }}"
+        get_checksum: false
+        get_mime: false
+      register: traefik_acme_stat
+
+    - name: Traefik - Reject unexpected ACME storage types
+      ansible.builtin.assert:
+        that:
+          - not traefik_acme_stat.stat.exists or (traefik_acme_stat.stat.isreg | default(false))
+        fail_msg: ACME storage must be a regular file, not a directory or symlink.
+
+    - name: Traefik - Initialize ACME storage only when absent
+      ansible.builtin.copy:
+        src: "{{ traefik_acme_config }}"
+        dest: "{{ traefik_certs_path }}/{{ traefik_acme_storage | basename }}"
+        owner: "{{ traefik_ownership_owner }}"
+        group: "{{ traefik_ownership_group }}"
+        mode: "0600"
+        force: false
+      when: not traefik_acme_stat.stat.exists
+      no_log: true
+      diff: false
+
+    - name: Traefik - Enforce ACME storage permissions without replacing content
+      ansible.builtin.file:
+        path: "{{ traefik_certs_path }}/{{ traefik_acme_storage | basename }}"
+        state: file
+        owner: "{{ traefik_ownership_owner }}"
+        group: "{{ traefik_ownership_group }}"
+        mode: "0600"
+      when: not ansible_check_mode or traefik_acme_stat.stat.exists
+
+- name: Traefik - Template watched dynamic configuration
+  ansible.builtin.template:
+    src: dynamic.yml.j2
+    dest: "{{ traefik_path }}/dynamic/{{ traefik_dynamic_config }}"
+    owner: "{{ traefik_ownership_owner }}"
+    group: "{{ traefik_ownership_group }}"
+    mode: "{{ traefik_permission_file }}"
+
+- name: Traefik - Validate and atomically install Compose configuration
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ traefik_path }}/docker-compose.yml"
+    owner: "{{ traefik_ownership_owner }}"
+    group: "{{ traefik_ownership_group }}"
+    mode: "{{ traefik_permission_file }}"
+    validate: >-
+      {{ traefik_docker_cli | quote }} compose --project-directory {{ traefik_path | quote }}
+      -f %s config --quiet
+  no_log: true
+  diff: false

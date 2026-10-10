@@ -1,4 +1,10 @@
+---
 tls:
+  options:
+    default:
+      minVersion: {{ traefik_tls_min_version | to_json }}
+{% if traefik_challenge in ['intranet', 'debug'] and traefik_tls_private_key %}
   certificates:
-    - certFile: /certs/{{ traefik_tls_public_cert | basename }}
-      keyFile:  /certs/{{ traefik_tls_private_key | basename }}
+    - certFile: {{ ('/certs/' ~ (traefik_tls_public_cert | basename)) | to_json }}
+      keyFile: {{ ('/certs/' ~ (traefik_tls_private_key | basename)) | to_json }}
+{% endif %}
