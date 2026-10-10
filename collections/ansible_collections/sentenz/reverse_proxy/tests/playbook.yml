@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+- name: Exercise the Traefik role locally
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  roles:
+    - role: sentenz.reverse_proxy.traefik
+      tags: traefik_test

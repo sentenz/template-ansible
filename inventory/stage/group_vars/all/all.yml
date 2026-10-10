@@ -18,4 +18,4 @@ prometheus_alertmanager_image: prom/alertmanager:v0.34.1@sha256:e9733bafb1bdef9b
 prometheus_node_exporter_image: prom/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0
 
 # Reverse Proxy (Traefik)
-traefik_image: traefik:v3.7.13@sha256:24841fe2de7304c149343d877d2923b4c8800a38ba015dea9174c23b20e344a0
+traefik_image: traefik:v3.7.14@sha256:575fa15b135078fe5e50aa847987d96dbddd7b093c172429618404df73f3fa7c
