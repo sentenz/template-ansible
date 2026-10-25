@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.5](https://github.com/sentenz/template-ansible/compare/1.0.4...1.0.5) (2026-10-25)
+
+### Bug Fixes
+
+* **deps:** update inventory container images ([#104](https://github.com/sentenz/template-ansible/issues/104)) ([7fc1f68](https://github.com/sentenz/template-ansible/commit/7fc1f688c3c497d0fcf13a6614c8ec04546ce7c6))
+
 ## [1.0.4](https://github.com/sentenz/template-ansible/compare/1.0.3...1.0.4) (2026-10-18)
 
 ### Bug Fixes
