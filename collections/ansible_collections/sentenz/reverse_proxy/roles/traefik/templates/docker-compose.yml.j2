@@ -5,7 +5,7 @@ services:
     container_name: "{{ traefik_name }}"
     command:
       - "--log.level=INFO"
-      - "--api.insecure=true"
+      - "--api.insecure={{ (traefik_api_insecure | bool) | ansible.builtin.ternary('true', 'false') }}"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
 {% if traefik_challenge == 'http' %}
@@ -57,21 +57,25 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+{% if traefik_networks %}
     networks:
-{% for network in traefik_networks %}
+  {% for network in traefik_networks %}
       - "{{ network }}"
-{% endfor %}
+  {% endfor %}
+{% endif %}
     security_opt:
       - no-new-privileges:true
-{% if traefik_challenge == 'dns' %}
+{% if traefik_challenge == 'dns' and traefik_challenge_dns_provider_variables %}
     environment:
   {% for variable in traefik_challenge_dns_provider_variables %}
       - "{{ variable }}"
   {% endfor %}
 {% endif %}
 
+{% if traefik_networks %}
 networks:
 {% for network in traefik_networks %}
   {{ network }}:
     external: true
 {% endfor %}
+{% endif %}
