@@ -5,12 +5,16 @@
     name: "{{ traefik_ownership_group }}"
     state: present
     system: true
+  tags:
+    - deploy
 
 - name: Traefik - Ensure user ownership
   ansible.builtin.user:
     name: "{{ traefik_ownership_owner }}"
     group: "{{ traefik_ownership_group }}"
     state: present
+  tags:
+    - deploy
 
 - name: Traefik - Securely create directories
   ansible.builtin.file:
@@ -22,6 +26,8 @@
   loop:
     - "{{ traefik_path }}"
     - "{{ traefik_certs_path }}"
+  tags:
+    - deploy
 
 - name: Traefik - Securely copy TLS certificates
   ansible.builtin.copy:
@@ -31,15 +37,13 @@
     group: "{{ traefik_ownership_group }}"
     mode: "0600"
   loop: "{{ (traefik_challenge in ['intranet', 'debug']) | ansible.builtin.ternary(
-      [
-        traefik_tls_public_cert,
-        traefik_tls_private_key],
-      [
-        traefik_acme_config
-      ]
+      [traefik_tls_public_cert, traefik_tls_private_key],
+      [traefik_acme_config]
     ) }}"
   notify:
     - traefik_restart
+  tags:
+    - deploy
 
 - name: Traefik - Securely template Jinja2 files
   ansible.builtin.template:
@@ -54,11 +58,15 @@
     - dynamic.yml.j2
   notify:
     - traefik_restart
+  tags:
+    - deploy
 
 - name: Traefik - Deploy Containers
   community.docker.docker_compose_v2:
     project_src: "{{ traefik_path }}"
     state: present
+  tags:
+    - deploy
 
 - name: Traefik - Destroy Containers
   community.docker.docker_compose_v2:
@@ -67,6 +75,7 @@
       - docker-compose.yml
     state: absent
   tags:
+    - never
     - destroy
   notify:
     - traefik_absent
@@ -78,6 +87,7 @@
       - docker-compose.yml
     state: restarted
   tags:
+    - never
     - restart
   notify:
     - traefik_restart
@@ -89,6 +99,7 @@
       - docker-compose.yml
     state: stopped
   tags:
+    - never
     - stop
   notify:
     - traefik_stop

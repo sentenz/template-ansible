@@ -9,32 +9,27 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
 {% if traefik_challenge == 'http' %}
-  {% for option in traefik_challenge_http %}
-    - "{{ option }}"
-  {% endfor %}
+{% for option in traefik_challenge_http %}
+      - "{{ option }}"
+{% endfor %}
 {% elif traefik_challenge == 'dns' %}
-  {% for option in traefik_challenge_dns %}
-    - "{{ option }}"
-  {% endfor %}
+{% for option in traefik_challenge_dns %}
+      - "{{ option }}"
+{% endfor %}
 {% elif traefik_challenge == 'tls' %}
-  {% for option in traefik_challenge_tls %}
-    - "{{ option }}"
-  {% endfor %}
+{% for option in traefik_challenge_tls %}
+      - "{{ option }}"
+{% endfor %}
 {% elif traefik_challenge in ['intranet', 'debug'] %}
-  {% for option in traefik_challenge_debug %}
-    - "{{ option }}"
-  {% endfor %}
+{% for option in traefik_challenge_debug %}
+      - "{{ option }}"
+{% endfor %}
 {% endif %}
-{% if traefik_challenge_options %}
-  {%- for option in traefik_challenge_options %}
-    - "{{ option }}"
-  {% endfor %}
-{% endif %}
-
+{% for option in traefik_challenge_options %}
+      - "{{ option }}"
+{% endfor %}
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      # TODO Define the command options in a config file like traefik.yml
-      # - "{{ traefik_path }}/traefik.yml:/etc/traefik/traefik.yml"
 {% if traefik_challenge in ['http', 'dns', 'tls'] %}
       - "{{ traefik_certs_path }}/acme.json:{{ traefik_acme_storage }}"
 {% elif traefik_challenge in ['intranet', 'debug'] %}
@@ -65,9 +60,9 @@ services:
       - no-new-privileges:true
 {% if traefik_challenge == 'dns' %}
     environment:
-  {% for variable in traefik_challenge_dns_provider_variables %}
+{% for variable in traefik_challenge_dns_provider_variables %}
       - "{{ variable }}"
-  {% endfor %}
+{% endfor %}
 {% endif %}
 
 networks:

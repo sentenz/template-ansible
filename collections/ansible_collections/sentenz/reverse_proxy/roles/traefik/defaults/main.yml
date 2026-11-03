@@ -12,39 +12,21 @@ traefik_acme_email: your-email@example.com
 traefik_acme_storage: /letsencrypt/acme.json
 traefik_certificates_resolver: myresolver
 traefik_challenge_dns_provider: cloudflare
-traefik_challenge_dns_provider_variables: ""
+traefik_challenge_dns_provider_variables: []
 
-# TODO Consider using a nested dictionary approach for files
-# traefik_files:
-#   acme_config: acme.json
-#   dynamic_config: dynamic.yml
-#   tls_private_key: certs/key.pem
-#   tls_public_cert: certs/cert.pem
-
+# Files
 traefik_acme_config: acme.json
 traefik_dynamic_config: dynamic.yml
 traefik_tls_private_key: certs/key.pem
 traefik_tls_public_cert: certs/cert.pem
 
-# TODO Consider using a nested dictionary approach for paths
-# traefik_paths:
-#   certs: "{{ traefik_path }}/certs"
-#   dynamic_config: /etc/traefik/dynamic/
-#   acme_storage: /letsencrypt/acme.json
-
+# Paths
 traefik_certs_path: "{{ traefik_path }}/certs"
 traefik_dynamic_config_path: /etc/traefik/dynamic/
 
 # Reverse Proxy Traefik HTTPS Challenge
-traefik_challenge:
-  description: The type of challenge for ACME certificate validation.
-  default: debug
-  choices:
-    - http
-    - dns
-    - tls
-    - intranet
-    - debug
+# Choices: http, dns, tls, intranet, debug
+traefik_challenge: debug
 
 traefik_challenge_http:
   - --entryPoints.web.address=:80
@@ -54,55 +36,52 @@ traefik_challenge_http:
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.email={{ traefik_acme_email }}
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.storage={{ traefik_acme_storage }}
 
-# FIXME Override `name`, `domain` and `certresolver` without redefining the entire router, then display the result
 traefik_challenge_http_router:
-  - name: service
-    domain: localhost
-    certresolver: letsencrypt
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.{{ name }}.rule=Host(`{{ domain }}`)
-      - traefik.http.routers.{{ name }}.entrypoints=websecure
-      - traefik.http.routers.{{ name }}.tls=true
-      - traefik.http.routers.{{ name }}.tls.certresolver={{ certresolver }}
+  name: service
+  domain: localhost
+  certresolver: "{{ traefik_certificates_resolver }}"
+  labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.{{ traefik_name }}.rule=Host(`localhost`)"
+    - "traefik.http.routers.{{ traefik_name }}.entrypoints=websecure"
+    - "traefik.http.routers.{{ traefik_name }}.tls=true"
+    - "traefik.http.routers.{{ traefik_name }}.tls.certresolver={{ traefik_certificates_resolver }}"
 
 traefik_challenge_dns:
   - --entryPoints.web.address=:80
-  - --entrypoints.websecure.address=:443
+  - --entryPoints.websecure.address=:443
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.dnschallenge=true
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.dnschallenge.provider={{ traefik_challenge_dns_provider }}
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.email={{ traefik_acme_email }}
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.storage={{ traefik_acme_storage }}
 
-# FIXME Override `name`, `domain` and `certresolver` without redefining the entire router, then display the result
 traefik_challenge_dns_router:
-  - name: service
-    domain: localhost
-    certresolver: letsencrypt
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.{{ name }}.rule=Host(`{{ domain }}`)
-      - traefik.http.routers.{{ name }}.entrypoints=websecure
-      - traefik.http.routers.{{ name }}.tls=true
-      - traefik.http.routers.{{ name }}.tls.certresolver={{ certresolver }}
+  name: service
+  domain: localhost
+  certresolver: "{{ traefik_certificates_resolver }}"
+  labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.{{ traefik_name }}.rule=Host(`localhost`)"
+    - "traefik.http.routers.{{ traefik_name }}.entrypoints=websecure"
+    - "traefik.http.routers.{{ traefik_name }}.tls=true"
+    - "traefik.http.routers.{{ traefik_name }}.tls.certresolver={{ traefik_certificates_resolver }}"
 
 traefik_challenge_tls:
-  - --entrypoints.websecure.address=:443
+  - --entryPoints.websecure.address=:443
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.tlschallenge=true
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.email={{ traefik_acme_email }}
   - --certificatesresolvers.{{ traefik_certificates_resolver }}.acme.storage={{ traefik_acme_storage }}
 
-# FIXME Override `name`, `domain` and `certresolver` without redefining the entire router, then display the result
 traefik_challenge_tls_router:
-  - name: service
-    domain: localhost
-    certresolver: letsencrypt
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.{{ name }}.rule=Host(`{{ domain }}`)
-      - traefik.http.routers.{{ name }}.entrypoints=websecure
-      - traefik.http.routers.{{ name }}.tls=true
-      - traefik.http.routers.{{ name }}.tls.certresolver={{ certresolver }}
+  name: service
+  domain: localhost
+  certresolver: "{{ traefik_certificates_resolver }}"
+  labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.{{ traefik_name }}.rule=Host(`localhost`)"
+    - "traefik.http.routers.{{ traefik_name }}.entrypoints=websecure"
+    - "traefik.http.routers.{{ traefik_name }}.tls=true"
+    - "traefik.http.routers.{{ traefik_name }}.tls.certresolver={{ traefik_certificates_resolver }}"
 
 traefik_challenge_debug:
   - --entrypoints.web.address=:80
@@ -113,14 +92,13 @@ traefik_challenge_debug:
   - --providers.file.directory={{ traefik_dynamic_config_path }}
   - --providers.file.watch=true
 
-# FIXME Override `name` and `domain` without redefining the entire router, then display the result
 traefik_challenge_debug_router:
   name: service
   domain: localhost
   labels:
     - "traefik.enable=true"
-    - "traefik.http.routers.{{ name }}.rule=Host(`{{ domain }}`)"
-    - "traefik.http.routers.{{ name }}.entrypoints=websecure"
-    - "traefik.http.routers.{{ name }}.tls=true"
+    - "traefik.http.routers.{{ traefik_name }}.rule=Host(`localhost`)"
+    - "traefik.http.routers.{{ traefik_name }}.entrypoints=websecure"
+    - "traefik.http.routers.{{ traefik_name }}.tls=true"
 
 traefik_challenge_options: []
