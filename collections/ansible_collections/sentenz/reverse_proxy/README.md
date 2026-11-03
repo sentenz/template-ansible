@@ -51,3 +51,11 @@ Traefik is a modern HTTP reverse proxy and ingress controller for Cloud Native E
           - role: sentenz.observability.grafana.grafana
           - role: sentenz.reverse_proxy.traefik
       ```
+
+3. Important Variables
+
+    - `traefik_challenge`
+      > Select the Traefik certificate mode. Supported values are `http`, `dns`, `tls`, `intranet`, and `debug`.
+
+    - `traefik_challenge_dns_provider_variables`
+      > Provide DNS challenge provider environment variables as a list of `KEY=value` strings.
