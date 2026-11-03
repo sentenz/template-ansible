@@ -5,29 +5,31 @@ services:
     container_name: "{{ traefik_name }}"
     command:
       - "--log.level=INFO"
+{% if traefik_api_insecure %}
       - "--api.insecure=true"
+{% endif %}
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
 {% if traefik_challenge == 'http' %}
   {% for option in traefik_challenge_http %}
-    - "{{ option }}"
+      - "{{ option }}"
   {% endfor %}
 {% elif traefik_challenge == 'dns' %}
   {% for option in traefik_challenge_dns %}
-    - "{{ option }}"
+      - "{{ option }}"
   {% endfor %}
 {% elif traefik_challenge == 'tls' %}
   {% for option in traefik_challenge_tls %}
-    - "{{ option }}"
+      - "{{ option }}"
   {% endfor %}
 {% elif traefik_challenge in ['intranet', 'debug'] %}
   {% for option in traefik_challenge_debug %}
-    - "{{ option }}"
+      - "{{ option }}"
   {% endfor %}
 {% endif %}
 {% if traefik_challenge_options %}
-  {%- for option in traefik_challenge_options %}
-    - "{{ option }}"
+  {% for option in traefik_challenge_options %}
+      - "{{ option }}"
   {% endfor %}
 {% endif %}
 
@@ -57,10 +59,12 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+{% if traefik_networks %}
     networks:
 {% for network in traefik_networks %}
       - "{{ network }}"
 {% endfor %}
+{% endif %}
     security_opt:
       - no-new-privileges:true
 {% if traefik_challenge == 'dns' %}
@@ -70,8 +74,10 @@ services:
   {% endfor %}
 {% endif %}
 
+{% if traefik_networks %}
 networks:
 {% for network in traefik_networks %}
   {{ network }}:
     external: true
 {% endfor %}
+{% endif %}
